@@ -12,8 +12,8 @@ Progetto di un gestionale per PACI, da usare anche come progetto combinato di Di
 > Ogni attore ha un DB per ogni Microservizio. \
 
 > Il DB centralizzato si sincronizza ad ogni evento con quello distribuito: \
-> 1. Evento dell'attore => Pusha la info al DB (controllo preliminare per verificare che siano allineati)
-> 2. Evento centralizzato => Pusha la info al DB degli ATTORI coinvolti (dopo verifica)
+> 1. Evento dell'attore => Aggiorna il suo DB e successivamente si sincronizza a quello centralizzato. 
+> 2. Evento centralizzato => Pusha l'evento all'Attore, che reagisce aggiornando il suo DB personale e solo dopo si sincronizza a quello centralizzato.
 
 > La struttura del DB è da verificare, potrebbe aver senso sfruttare qualcosa di più "strutturato" rispetto al bellissimo MongoDB. -> Da VALUTARE le opzioni.
 
