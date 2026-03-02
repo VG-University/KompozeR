@@ -29,5 +29,30 @@ Progetto di un gestionale per PACI, da usare anche come progetto combinato di Di
 > Per fare in modo di strutturare il progetto in modo ordinato e funzionale, verrà eseguito il flusso di progettazione identificato dal DDD. \
 > Solo dopo aver definito TUTTO si passerà all'implementazione. 
 
+## Report LaTeX
+
+Il report è nella cartella `Report/` ed è strutturato in:
+
+- `Report.tex`: file principale
+- `style.sty`: stile (font, spaziature, impaginazione)
+- `chapters/*.tex`: capitoli separati
+
+### Compilazione (PDF)
+
+Da root progetto:
+
+```powershell
+cd Report
+pdflatex Report.tex
+pdflatex Report.tex
+```
+
+Oppure, se disponibile:
+
+```powershell
+cd Report
+latexmk -pdf Report.tex
+```
+
 
 

@@ -1,0 +1,31 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}Abstract}{ii}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Domain-Driven Design}{1}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Obiettivi}{1}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Ubiquitous Language}{1}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Bounded Context}{1}{section.2.3}%
+\contentsline {chapter}{\numberline {3}Requirements Analysis}{2}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Requisiti Funzionali}{2}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Requisiti Non Funzionali}{2}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Use Case principali}{2}{section.3.3}%
+\contentsline {chapter}{\numberline {4}Dal DDD ai Microservizi}{3}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Strategia di Decomposizione}{3}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Contratti tra Servizi}{3}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Trade-off}{3}{section.4.3}%
+\contentsline {chapter}{\numberline {5}System Architecture}{4}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Vista ad Alto Livello}{4}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Persistenza e Dati}{4}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Osservabilità}{4}{section.5.3}%
+\contentsline {chapter}{\numberline {6}Admin Dashboard}{5}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Obiettivi della Dashboard}{5}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Funzionalità principali}{5}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Esperienza Utente}{5}{section.6.3}%
+\contentsline {chapter}{\numberline {7}Test and Validation}{6}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Strategia di Test}{6}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Criteri di Accettazione}{6}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Risultati}{6}{section.7.3}%
+\contentsline {chapter}{\numberline {8}Conclusioni}{7}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Sintesi}{7}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Limiti}{7}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Sviluppi Futuri}{7}{section.8.3}%
+\providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 
