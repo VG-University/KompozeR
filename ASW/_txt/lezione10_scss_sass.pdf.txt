@@ -1,0 +1,541 @@
+Sass - SCSS
+1
+CSS dal 1996
+• Cascading Style Sheet (CSS) is the language for
+describing the presentation of Web pages,
+including colors, layout, and fonts.
+• CSS can be used with any XML-based markup
+language.
+• Separation of structure (or content) from
+presentation.
+• The separation of HTML from CSS makes it easier
+to maintain sites and share style sheets across
+pages.
+[W3C]
+2
+Alcune limitazioni
+• Tante limitazioni!
+• Tra le più comuni:
+1. Il committente cambia idea a CSS completato
+2. File pieni di commenti
+3. Probabili molte chiamate HTTP per caricare lo
+stile della pagina Web (molteplici file CSS esterni)
+3
+La soluzione: Preprocessor & Transpiler
+• Vengono utilizzati per:
+– Aggiungere feature non disponibili nel linguaggio
+di partenza
+– Mantenere il codice DRY e manutenibile.
+– Eseguire controlli a tempo di “compilazione”
+• Alcuni Preprocessor/Transpiler:
+– Per HTML: HAML, Pug, Slim, ecc
+– Per CSS: SASS, Less, Stylus, PostCSS, ecc
+– Per Javascript: TypeScript, DART, ecc
+4
+CSS Preprocessor
+• Un preprocessore CSS serve a definire fogli di stile con
+una forma più semplice, completa e potente rispetto ai
+CSS e a generare file CSS ottimizzati, aggregando le
+strutture definite anche in modo complesso
+5
+SASS: definizione
+• SASS sta per Syntactically Awesome Style Sheets
+1. Sass is an extension of CSS that adds power and
+elegance to the basic language
+2. It allows developers to use variables, nested rules,
+mixins, inline imports, and more
+3. Sass helps keep large stylesheets well-organized, and
+get small stylesheets up and running quickly
+[https://sass-lang.com/]
+6
+SASS: installazione
+• Installazione Anywhere (Standalone)
+– E’ possible installare Sass su Windows, Mac e Linux
+– Download del pacchetto specifico per il Sistema
+operativo da GitHub, aggiungere il percorso alla
+variabile d’ambiente PATH
+– Non ci sono dipendenze esterne o altro che debba
+essere installato
+7
+SASS: installazione
+• Installazione Anywhere (npm)
+– E’ possibile Usare Node.js Package Manager,
+eseguendo
+npm install -g sass
+– Potrebbe essere più lento delle altre possibili
+soluzioni
+8
+SASS: installazione
+• Installazione su Windows (Chocolatey)
+– Se si usa Chocolatey package manager per Windows,
+è possibile installare DART Sass eseguendo
+choco install sass
+• Install on Mac OS X (Homebrew)
+– Se si usa Homebrew package manager per Mac OS X,
+è possibile installare DART Sass eseguendo
+brew install sass/sass/sass
+9
+SASS: caratteristiche tecniche
+• Estensioni del linguaggio (variables, nesting,
+import, mixins, eccetera)
+• Direttive di controllo (if, for, each, while)
+• Funzioni ausiliarie (colori, numeri, liste,
+eccetera)
+• Output formattato e personalizzabile
+10
+SASS: sintassi
+• La sintassi di Sass si discosta dalle regole base
+del CSS
+• Questo rende la vita difficile agli sviluppatori
+che devono ri-convertire il loro modo di
+lavorare in CSS (e i loro progetti) verso questo
+nuovo linguaggio
+11
+SCSS
+• SCSS sta per Sassy - CSS
+• Fully CSS-compatible
+12
+CSS
+#sidebar {
+width: 30%;
+background-color: #ffaaaa;
+}
+13
+SASS vs SCSS
+#sidebar
+SASS
+width: 30%
+background-color: #faa
+#sidebar {
+CSS
+width: 30%;
+background-color: #faa;
+}
+#sidebar {
+SCSS
+width: 30%;
+background-color: #faa;
+}
+14
+SCSS: Command line
+• Run SASS sass input.scss output.css
+• Watch file
+sass --watch input.scss:output.css
+• Watch directory
+sass –-watch app/sass:public/stylesheets
+15
+SCSS: Command line - Output
+• Sass consente di definire lo stile dell’output “CSS” che
+desideriamo ottenere
+sass –-watch style.scss:style.css --style compressed
+• Usando il flag --style da linea di comando con le
+seguenti opzioni:
+1. nested
+2. expanded
+3. compact
+4. compressed
+16
+SCSS: Command line - Output
+Nested Expanded
+#main { #main {
+color: #fff; color: #fff;
+background: #000; } background: #000; }
+#main p { #main p {
+width: 10em; } width: 10em; }
+Compact
+#main { color: #fff; background: #000; }
+#main p { width: 10em; }
+Compressed
+#main{color:#fff;background:#000;}#main p{width:10em;}
+17
+Nested Rules
+#main p { #main p {
+SCSS CSS
+color: #0f0; color: #0f0;
+width: 97%; width: 97%;
+}
+.redbox {
+background-color: #f00; #main p .redbox {
+color: #000; background-color: #f00;
+} color: #000;
+} }
+18
+Parent Selector «&»
+a {
+CSS
+font-weight: bold;
+a {
+text-decoration: none;
+font-weight: bold;
+}
+text-decoration: none;
+&:hover { color: #FFF;
+} a:hover {
+body.firefox & { color: #FFF;
+font-weight: normal; }
+}
+} SCSS body.firefox a {
+font-weight: normal;
+}
+19
+Parent Selector «&»
+#main {
+#main {
+SCSS CSS
+color: black;
+color: black;
+}
+a {
+#main a {
+font-weight: bold;
+font-weight: bold;
+&:hover { color: red; } }
+#main a:hover {
+}
+color: red;
+}
+}
+20
+Parent Selector «&»
+#main { #main {
+SCSS CSS
+color: black; color: black;
+&-sidebar {
+}
+border: 1px solid; }
+#main-sidebar {
+}
+border: 1px solid;
+}
+}
+21
+Variabili
+#main {
+#main {
+$width: 5em !global;
+width: 5em;
+width: $width;
+}
+}
+#sidebar {
+width: 5em;
+#sidebar {
+} CSS
+width: $width; }
+}
+} SCSS
+!global indica una variabile che può essere usata
+globalmente. Una nuova assegnazione ne modifica
+il valore da quel punto in poi
+22
+Variabili
+#main {
+#main {
+$pippo: 5em !global;
+width: 5em;
+width: $pippo;
+}
+}
+#sidebar {
+width: 5em;
+#sidebar {
+} CSS
+width: $pippo; }
+}
+} SCSS
+!global indica una variabile che può essere usata
+globalmente. Una nuova assegnazione ne modifica
+il valore da quel punto in poi
+23
+Variabili: Tipi supportati
+I tipi supportati nativamente da SASS sono:
+numeri, stringhe, colori, booleani, null, liste e
+mappe chiave-valore
+$numero: 5;
+$stringa: "Stringa di prova";
+$colore: #ff00ff;
+$boolean: true;
+$valoreNulla: null;
+$lista: ("elem1", "elem2", "elem3");
+$mappa: (k1: v1, k2: v2, k3: v3);
+24
+Operazioni
+Operazioni supportate: + - * /
+[Nota. L’espressione viene valutata solo se è
+presente sintassi SCSS]
+p {
+font: 10px/8px; /*Plain CSS, non esegue la divisione*/
+$width: 1000px;
+width: $width/2; //uso di una variabile, la divisione viene eseguita
+width: round(1.5)/2;
+//uso di una funzione, la divisione viene eseguita
+height: (500px/2);
+//uso delle parentesi, la divisione viene eseguita
+margin-left: 5px + 8px/2px;
+//uso di +, la divisione viene eseguita
+font: (italic bold 10px/8px); //uso di parentesi, la divisione
+viene eseguita
+}
+25
+Operazioni
+p { p {
+$marg: 10px -5px; margin: 10px -5px;
+margin: $marg; }
+CSS
+SCSS
+}
+p { p {
+$marg: 10px-5px; margin: 5px;
+margin: $marg; }
+CSS
+SCSS
+}
+26
+Interpolazione #{}
+p {
+SCSS
+Se voglio mantenere la
+$font-size: 12px;
+sintassi CSS utilizzando
+$line-height: 30px;
+variabili SCSS, occorre
+font: #{$font-size}/#{$line-height}
+} utilizzare un carattere
+di interpolazione #{}
+Senza l’interpolazione
+p {
+delle variabili SCSS
+font: 12px/30px;
+CSS sarebbe stata eseguita
+}
+la divisione.
+27
+Operazioni
+p.superclass a#mynewid {
+$myvar: superclass;
+SCSS
+p.#{$myvar} { color: #0F0;
+a##{myneid} { }
+color: #0F0; p.superclass a#mynewid:hover
+&:hover { {
+background:#000; } background: #000;
+}
+}
+&:after{
+p.superclass:after {
+content: hello + -world;
+content: hello-world;
+}
+CSS
+}
+28
+DRY
+• “Don’t Repeat Yourself”
+• SCSS offre un insieme di direttive che consentono di
+rendere il codice più ordinato, modulare e scalabile
+rispetto a CSS
+29
+Direttive: @import
+Consente di importare file SCSS esterni col fine di
+utilizzare regole definite al loro interno, rendendo tutto
+estremamente modulare
+@import "foo.scss";
+@import "foo" screen;
+@import "http://foo.com/bar";
+@import url(foo);
+[Nota. Se non vuole essere creato un file .css corrispondente,
+aggiungere underscore “_” al nome del file: _variables.scss]
+30
+Struttura cartelle e file: un esempio
+31
+Direttive: @media
+$media: screen;
+SCSS
+$feature: -webkit-min-device-pixel-ratio;
+$value: 1.5;
+@media #{$media} and ($feature: $value) {
+.sidebar {
+width: 500px;
+}
+}
+@media screen and (-webkit-min-device-pixel-ratio: 1.5) {
+.sidebar {
+width: 500px;
+}
+CSS
+}
+32
+Direttive: @extend
+<div class="error seriousError">
+HTML
+Oh no! You’ve been hacked!
+</div>
+.error, .seriousError {
+.error {
+SCSS
+border: 1px #f00;
+border: 1px #f00;
+background-color: #fdd;
+background-color: #fdd;
+}
+}
+.seriousError {
+.seriousError {
+@extend .error;
+border-width: 3px;
+border-width: 3px;
+} CSS
+}
+33
+Direttive: @extend
+.error, .seriousError {
+.error {
+SCSS
+border: 1px #f00; border: 1px #f00;
+background-color: #fdd; background-color: #fdd;
+} }
+.error.intrusion {
+.error.intrusion,
+background-image: .intrusion.seriousError {
+url("hacked.png");
+background-image:
+} url("hacked.png");
+.seriousError {
+}
+@extend .error;
+.seriousError {
+border-width: 3px;
+border-width: 3px;
+} CSS
+}
+34
+Direttive: @extend
+Placeholder selector “%”
+%bordered {
+border: 1px solid #CCC; .fancy-box {
+} border: 1px solid #CCC;
+.padded { }
+padding: 10px;
+} .padded, .fancy-box {
+.fancy-box { padding: 10px;
+@extend %bordered; } CSS
+@extend .padded;
+SCSS
+}
+35
+Direttive di controllo
+• Le direttive di controllo (control
+directives), aggiungono un ulteriore livello
+di dinamicità a SCSS, consentendo di
+includere regole solo al verificarsi di
+determinate condizioni
+o @if
+o @for
+o @each
+o @while
+36
+@if
+$type: monter;
+p {
+@if $type == ocean {
+p {
+color: blue; CSS
+color: green;
+} @else if $type == monster
+}
+{
+color: green;
+} @else {
+color: black;
+SCSS
+}
+}
+37
+@for
+SCSS CSS
+38
+@each
+SCSS
+CSS
+39
+@while
+SCSS CSS
+40
+Riuso del codice
+• Quali direttive principali abbiamo
+visto per il riuso del codice?
+1.@import - importa un file SCSS
+2.@extend - estende una porzione di
+codice SCSS precedentemente definita
+41
+Mixin
+• Consente di definire “stili” (regole)
+che possono essere riutilizzati
+• Accetta argomenti in input, col fine di
+definire procedure che aggiungano un
+buon livello di variabilità al risultato
+ottenuto
+42
+Mixin - @mixin/@include
+SCSS
+CSS
+43
+Mixin - @mixin/@include
+CSS
+SCSS
+• La presenza di argomenti in (che non è un
+@mixin
+semplice ), cambia completamente la visione
+@extend
+del riuso del codice in un linguaggio come CSS, in cui il
+riuso è di fatto assente
+44
+Mixin – input arguments
+• Definire valori di default
+• Assegnare valori a certi argomenti in chiamata (per
+nome argomento)
+45
+Mixin – input arguments
+• Definire un numero di argomenti sconosciuto
+46
+Mixin – input arguments
+• Passare un numero di argomenti sconosciuto (in
+chiamata)
+47
+SASS Function
+• Esiste un insieme di funzioni messe a
+disposizione da Sass per la manipolazione dei
+dati, esempio:
+• colori
+• stringhe (quote, str-length, to-upper-case, …)
+• numeri (max, min, random, round, …)
+• …
+48
+SASS Function - @function/@return
+CSS
+SCSS
+49
+Riferimenti
+• Sass documentation
+(https://sass-lang.com/documentation)
+• Sass Functions
+(https://sass-lang.com/documentation/at-
+rules/function)
+• Sass Built-In Modules
+(https://sass-lang.com/documentation/modules)
+• CSS Tricks - snippets
+(https://css-tricks.com/snippets/sass/)
+• CSS Tricks - SCSS style guide
+(https://css-tricks.com/sass-style-guide/)
+50
+Riferimenti
+• The Sass Way
+(http://thesassway.com/)
+• Sitepoint
+(https://www.sitepoint.com/8-tips-help-get-best-
+sass/)
+• Nettuts
+(https://code.tutsplus.com/tutorials/search/sass)
+• Sass Meister – editor
+(https://www.sassmeister.com/)
+51

@@ -1,0 +1,1451 @@
+StayHealthy
+Applicazioni e Servizi Web
+29 gennaio 2021
+Indice
+0.1 Introduzione. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+0.2 Requisiti . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+0.3 Design . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+0.3.1 Mockup . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+0.3.2 Analisi target user . . . . . . . . . . . . . . . . . . . . . . 13
+0.3.3 Storyboard . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+0.3.4 Back-end . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+0.3.5 Front-end . . . . . . . . . . . . . . . . . . . . . . . . . . . 31
+0.4 Tecnologie . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 39
+0.4.1 Stack MERN . . . . . . . . . . . . . . . . . . . . . . . . . 39
+0.4.2 Redux . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 40
+0.4.3 Altre tecnologie ausiliarie . . . . . . . . . . . . . . . . . . 40
+0.5 Codice . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 42
+0.5.1 Operazioni CRUD sulle risorse . . . . . . . . . . . . . . . 42
+0.5.2 Redux . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 48
+0.5.3 Notifiche push . . . . . . . . . . . . . . . . . . . . . . . . 48
+0.6 Test . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 50
+0.6.1 Euristiche di Nielsen . . . . . . . . . . . . . . . . . . . . . 50
+0.6.2 Test di usabilit`a . . . . . . . . . . . . . . . . . . . . . . . 51
+0.7 Deployment . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 52
+0.7.1 Setup . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 52
+0.8 Conclusioni . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 54
+0.8.1 Commenti . . . . . . . . . . . . . . . . . . . . . . . . . . . 54
+1
+Elenco delle figure
+1 Mockup registrazione . . . . . . . . . . . . . . . . . . . . . . . . . 5
+2 Mockup creazione profilo. . . . . . . . . . . . . . . . . . . . . . . 6
+3 Mockup visualizzazione di un articolo . . . . . . . . . . . . . . . 7
+4 Mockup visualizzazione di un corso . . . . . . . . . . . . . . . . . 8
+5 Mockup overlay con contatti. . . . . . . . . . . . . . . . . . . . . 8
+6 Mockup profili utente . . . . . . . . . . . . . . . . . . . . . . . . 9
+7 Mockup profilo utente . . . . . . . . . . . . . . . . . . . . . . . . 9
+8 Mockup grafico progressi peso . . . . . . . . . . . . . . . . . . . . 10
+9 Mockup calendario attivit`a . . . . . . . . . . . . . . . . . . . . . 10
+10 Mockup abilitazione profilo da esperto . . . . . . . . . . . . . . . 11
+11 Mockup creazione articolo . . . . . . . . . . . . . . . . . . . . . . 11
+12 Mockup creazione corso . . . . . . . . . . . . . . . . . . . . . . . 12
+13 Mockup menu contestuale mobile, rispettivamente in modalit`a
+ospite, cliente ed esperto. . . . . . . . . . . . . . . . . . . . . . . 12
+14 Homepage . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+15 Articolo . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+16 Possibilit`a di consultare i profili degli altri utenti . . . . . . . . . 17
+17 Visualizzazione profilo degli iscritti . . . . . . . . . . . . . . . . . 18
+18 Schermata di registrazione . . . . . . . . . . . . . . . . . . . . . . 19
+19 Schermata di login . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+20 Personalizzazione del profilo . . . . . . . . . . . . . . . . . . . . . 20
+21 Tracciamento del peso corporeo . . . . . . . . . . . . . . . . . . . 21
+22 Corsi e attivit`a disponibili per gli utenti registrati. . . . . . . . . 22
+23 Calendario dei corsi sottoscritti . . . . . . . . . . . . . . . . . . . 23
+24 Achievement ottenuti dall’utente . . . . . . . . . . . . . . . . . . 24
+25 Abilitazione del profilo da esperto. . . . . . . . . . . . . . . . . . 25
+26 Creazione e modifica di articoli e corsi . . . . . . . . . . . . . . . 26
+27 Hamburger menu per device mobili . . . . . . . . . . . . . . . . . 27
+28 Pattern flux . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 39
+29 Pattern redux . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 40
+2
+0.1 Introduzione
+Ilprogettopropostoconsistenellarealizzazionediun’applicazionewebcheper-
+mettaagliutentidifruiredicontenutiinambitowellness,coprendoambiticome
+sport, mental training, alimentazione e altro cos`ı da poter favorire il proprio
+benessere psicofisico.
+I contenuti sono disponibili in forma di articoli, approfondimenti, corsi e
+attivit`a ed `e possibile tenere traccia dei propri progressi.
+Il servizio permette anche a diversi esperti di pubblicare i loro contenuti e
+ricevere feedback dal resto della community che fruisce dell’applicazione.
+3
+0.2 Requisiti
+Requisiti funzionali:
+1. Il servizio deve supportare due tipologie di utenti:
+(a) i clienti del servizio
+(b) gli esperti che mettono a disposizione i loro contenuti
+2. I contenuti consistono in:
+(a) corsi e attivit`a: prevedono una data di inizio e fine e devono essere
+indicati in quali giorni della settimana sono previste le diverse ses-
+sioni. Sono erogati da un esperto e fruiti dai clienti che decidono di
+iscriversi.
+(b) articoli: sono redatti dagli esperti, gli altri utenti possono mettere
+like agli articoli apprezzati.
+(c) diete: sono composte dagli esperti e un utente pu`o decidere di impo-
+stare una di queste.
+3. Gli utenti dispongono di un’area personale dove poter tenere traccia dei
+loro progressi, visualizzare i corsi e le attivit`a a cui sono iscritti, tenere
+traccia dei loro progressi e modificare il loro profilo.
+4. Ad articoli, corsi e attivit`a sono associati dei tag per permetterne la
+classificazione.
+5. Gli esperti hanno un loro dominio di conoscenze e possono pubblicare
+articoli o creare corsi e attivit`a solo per i tag con cui sono abilitati.
+6. Completarediverseazioniall’internodelserviziopermettediotteneredegli
+achievement.
+7. Nel caso in cui ci si trovi in prossimit`a di una sessione di un corso o
+attivit`a, venga pubblicato un articolo per un tag per cui si `e specificato
+l’interesse o venga sbloccato un achievement l’utente viene avvisato con
+notifiche real-time e una mail.
+Requisiti non funzionali:
+1. L’interfaccia utente deve essere accessibile, semplice, pulita, visivamente
+gradevole e facilmente interpretabile.
+4
+0.3 Design
+Il modello di design adottato in fase di realizzazione del progetto`e stato UCD
+(User Centered Design). Gli utenti dell’applicazione in questione sono stati
+inquadrati realizzando delle personas, cos`ı da individuare le necessit`a e le abi-
+tudini che caratterizzano gli utenti. Il modello di sviluppo adottato`e stata una
+metodologia simil-agile, dove si sono frequentemente discussi task da realizza-
+re e relative priorit`a, carico di lavoro assegnato e feedback su quanto prodotto.
+Data la facilit`a di deployment `e stato possibile ricevere feedback periodici dal
+committente (fittizio), sempre portando un prodotto dimostrativo aderente al
+principio di Minimum Viable Product. Le interfacce utente sono state svilup-
+pate aderendo ai principi KISS (Keep It Simple, Stupid), cos`ı da ridurre al
+minimolapossibilit`aperl’utentedicommettereerrorioperdersinavigandoper
+l’applicazione, e Mobile First, per rendere l’interfaccia facilmente utilizzabile
+su qualsiasi dispositivo.
+0.3.1 Mockup
+Figura 1: Mockup registrazione
+5
+Figura 2: Mockup creazione profilo
+6
+Figura 3: Mockup visualizzazione di un articolo
+7
+Figura 4: Mockup visualizzazione di un corso
+Figura 5: Mockup overlay con contatti
+8
+Figura 6: Mockup profili utente
+Figura 7: Mockup profilo utente
+9
+Figura 8: Mockup grafico progressi peso
+Figura 9: Mockup calendario attivit`a
+10
+Figura 10: Mockup abilitazione profilo da esperto
+Figura 11: Mockup creazione articolo
+11
+Figura 12: Mockup creazione corso
+Figura 13: Mockup menu contestuale mobile, rispettivamente in modalit`a
+ospite, cliente ed esperto.
+12
+0.3.2 Analisi target user
+Sono state inquadrate due tipologie di utente: cliente ed esperto. Sono state
+costruite diverse Personas su questi due profili.
+Personas: Aldo
+Aldo `e uno studente dell’Universit`a di Bologna. Ha iniziato ad avvicinar-
+si al mondo del benessere durante la quarantena della primavera 2020, ed `e
+intenzionato ad approfondire l’argomento.
+Aldo frequenta sporadicamente il sito, leggendo le ultime pubblicazioni
+•
+disponibili;
+Aldo non ha un account sulla piattaforma, si limita a consultare la home-
+•
+page.
+Personas: Silvana
+Silvana `e una assistente di vendita in un negozio di elettronica della sua citt`a.
+Approfittadellachiusuratemporaneadelsuonegoziodurantelaquarantenaper
+provare a mettersi in forma.
+Silvanaleggegliarticolipubblicatisulsitoeamaconfrontarsiconglialtri
+•
+sui suoi argomenti di interesse attraverso i commenti;
+Silvana si `e iscritta ad un paio di corsi, e tiene traccia giornalmente dei
+•
+suoi progressi nella sua area personale.
+Personas: Giovanni
+Giovanni `e un anziano signore che cerca dopo l’emergenza sanitaria una valida
+alternativaaisuoiincontridigrupposulricondizionamentoneuromuscolare,che
+ha fino ad ora frequentato come consigliatogli dal medico.
+Giovanni seleziona i corsi e le sue attivit`a di interesse agilmente;
+•
+Giovanni grazie al calendario e alle notifiche che glielo ricordano non si
+•
+perde un singolo incontro;
+Personas: Giacomo
+Giacomo`e un personal trainer abilitato, dopo la chiusura temporanea della sua
+palestra cerca una piattaforma dove poter fare coaching online.
+Giacomo ha ricreato i suoi programmi di allenamento in via telematica e
+•
+ha pubblicato giorni di disponibilit`a;
+Giacomo coordina i suoi corsi e singole attivit`a tenendole aggiornate.
+•
+13
+Personas: Marina
+Marina `e una giovane neolaureata in scienze motorie con la passione per la
+scrittura e divulgazione scientifica. Non potendo entrare immediatamente nel
+mondo del lavoro a causa del blocco temporaneo del suo settore, decide di fare
+esperienza condividendo le sue conoscenze e approfondendo i piu` disparati ar-
+gomenti in ambito wellness, collaborando alla realizzazione di articoli fruibili al
+pubblico generalista.
+Marina scrive frequentemente articoli e approfondimenti in ambito well-
+•
+ness;
+Marina riceve feedback sia dai fruitori del sito che dai suoi colleghi.
+•
+0.3.3 Storyboard
+Accedendo alla piattaforma `e gi`a possibile visualizzare le ultime pubblicazioni.
+Una barra di ricerca permette di filtrare per parole chiave.
+14
+Figura 14: Homepage
+E` possibile aggiungere e rimuovere like sui post oltre che commentare, tut-
+tavia per questo tipo di operazioni `e necessario essere registrati con un profilo
+utente.
+15
+Figura 15: Articolo
+Si pu`o visualizzare una lista degli utenti iscritti alla piattaforma.
+16
+Figura 16: Possibilit`a di consultare i profili degli altri utenti
+Per ogni utente `e possibile visualizzare informazioni sui loro progressi, in-
+teressi e altre informazioni. Gli esperti possono anche mostrare un breve testo
+17
+che pu`o fungere da biografia.
+Figura 17: Visualizzazione profilo degli iscritti
+Gli ospiti possono creare un profilo personale tramite apposito form.
+18
+Figura 18: Schermata di registrazione
+Una volta creato un profilo `e possibile accedere con le credenziali fornite.
+Figura 19: Schermata di login
+Il profilo pu`o essere arricchito con interessi e obiettivi, che rispettivamente
+permetteranno all’utente di ricevere notifiche o mail qualora venisse pubblicato
+un articolo o istituito un corso conforme a quanto specificato dall’utente. E`
+19
+anche possibile indicare il regime alimentare che si intende seguire, `e mostrata
+una breve descrizione della dieta e un grafico che ne indica la composizione.
+Figura 20: Personalizzazione del profilo
+Gli utenti possono tenere traccia del loro peso giornalmente e consultarne
+l’andamento nel tempo.
+20
+Figura 21: Tracciamento del peso corporeo
+Lista dei corsi disponibili per gli utenti registrati, sono indicati periodo di
+attivazione del corso e i giorni settimanali in cui avvengono, nonch´e una breve
+descrizione.
+21
+Figura 22: Corsi e attivit`a disponibili per gli utenti registrati
+Una volta iscritti ai corsi e alle attivit`a questi figureranno nel calendario
+personale dell’utente nei giorni indicati. Inoltre riceveranno una notifica o un
+messaggio di posta elettronica poco prima dell’inizio come promemoria.
+22
+Figura 23: Calendario dei corsi sottoscritti
+Perstimolareleinterazionidegliutenti`epresenteunsistemadigamification
+cheforniscebadgeachicompiedeterminateazioni,ed`epossibilevisionarequelli
+ottenuti.
+23
+Figura 24: Achievement ottenuti dall’utente
+E` possibile abilitare un profilo da utente esperto, che richiede di dichia-
+rare i campi di conoscenza e competenza per poter fare pubblicazioni in un
+determinato ambito.
+24
+Figura 25: Abilitazione del profilo da esperto
+Gli esperti possono creare e modificare articoli, corsi e attivit`a. Ogni volta
+cheunutentepubblicauncommentol’autorericeveunanotificaeunamailcon
+un collegamento diretto al post.
+25
+Figura 26: Creazione e modifica di articoli e corsi
+Peridevicemobililanavigazione`esupportatadaunconsuentoburgermenu.
+26
+Figura 27: Hamburger menu per device mobili
+0.3.4 Back-end
+Ilservervieneavviatolanciandoilfileserver.js,attraversoilqualevienecreata
+un’istanza Express, viene stabilita una connessione col database MongoDB e
+vengono definite le diverse route utilizzate dall’applicazione.
+Leroutesonosuddiviseneiseguentimoduli,ciascunodeiqualifariferimento
+a uno schema Mongoose utilizzato nel database:
+users
+•
+– /register (post): carica nel database un nuovo utente utilizzando
+le informazioni del corpo dell’oggetto richiesta e e↵ettua il login di
+quest’ultimo assegnandogli un token
+– /subscriptions/:id(post): registraneldatabaseunasottoscrizione
+pushassociataall’utenteconl’idspecificato,utilizzatadaaltreroute
+per l’invio di notifiche push al verificarsi di determinati eventi;
+– /subscriptions/:id(delete): eliminal’eventualesottoscrizionepush
+associata all’utente con l’id specificato
+auth
+•
+– / (get): restituisce le informazioni relative all’utente loggato
+– /(post): e↵ettuaillogindell’utenteconemailepasswordsottomesse
+generando un token
+clients
+•
+– /me (get): restituisce le informazioni del client loggato
+– / (post): aggiorna i valori del client loggato
+27
+– / (get): restituisce i dati di tutti i client registrati nel database
+– /:id (get): restituisce i dati del client con l’id utente specificato
+– / (delete): elimina dal database il client e altre informazioni a esso
+associate memorizzate
+– /interest(put): aggiungeunnuovointeressenell’arraydedicatoper
+il client loggato
+– /interest/:id (delete): rimuove l’interesse con l’id specificato dal-
+l’array degli interessi del client loggato
+– /objective (put): aggiunge un nuovo obiettivo nell’array dedicato
+per il client loggato
+– /objective/:id (delete): rimuove l’obiettivo con l’id specificato
+dall’array degli interessi del client loggato
+– /weightProgress(put): aggiungeundatoaldiariodelpesocorporeo
+nell’array dedicato per il client loggato
+– /weightProgress/:id (delete): rimuove il dato di peso corpore con
+l’id specificato dall’array relativo del client loggato
+experts
+•
+– / (get): restituisce i dati di tutti gli esperti registrati nel database
+– /:id (get): restituisce i dati dell’esperto con l’id utente specificato
+– / (post): aggiorna i valori dell’esperto loggato
+– / (delete): elimina dal database i dati di esperto associati all’utente
+loggato
+– /knowledge (put): aggiunge un nuovo tag nell’array dei campi di
+conoscenza per l’esperto loggato
+– /knowledge/:id (delete): rimuove il tag con l’id specificato dall’ar-
+ray dei campi di conoscenza dell’esperto loggato
+– /objective/:id (put): aggiunge un nuovo obiettivi nell’array degli
+obiettivi di competenza dell’esperto loggato
+– /objective/:id (delete): rimuove l’obiettivo con l’id specificato
+dall’array degli obiettivi di competenza dell’esperto loggato
+articles:
+•
+– / (get): restituisce i dati di tutti gli articoli registrati nel database
+– /:id (get): restituisce i dati dell’articolo con l’id specificato
+– / (post): registra nel database un nuovo articolo se l’utente loggato
+`e un esperto
+– /:id (post): aggiorna i valori dell’articolo con l’id specificato se
+l’utente loggato `e il suo autore
+28
+– /:id (delete): viene rimosso l’articolo con l’id specificato dal data-
+base se l’utente loggato `e il suo autore
+– /tag/:id/:tag id (put): viene aggiunto un tag all’articolo con l’id
+specificato se l’utente loggato `e il suo autore
+– /tag/:id/:tag id (delete): viene rimosso un tag dall’articolo con
+l’id specificato se l’utente loggato `e il suo autore
+– /like/:id (put): viene aggiunto un like all’articolo con l’id specifi-
+cato
+– /unlike/:id(put): sepresente,vienerimossoillikedall’articolocon
+l’id specificato
+– /comments/:id (post): viene aggiunto un commento dell’utente log-
+gato all’articolo con l’id specificato
+– /comments/:id/:comment id (delete): viene rimosso il commento
+specificato dell’utente loggato dall’articolo con l’id specificato
+– /comments/:id (get): restituisce il numero di commenti associati
+all’utente con l’id specificato
+courses
+•
+– / (get): restituisce i dati di tutti i corsi registrati nel database
+– /:id (get): restituisce i dati del corso con l’id specificato
+– / (post): registra nel database un nuovo corso se l’utente loggato `e
+un esperto
+– /:id(post): aggiornaivaloridelcorsoconl’idspecificatosel’utente
+loggato `e il suo autore
+– /:id (delete): viene rimosso il corso con l’id specificato dal database
+se l’utente loggato `e il suo autore
+– /subscribe/:id (put): viene aggiunto un riferimento all’utente log-
+gato alle sottoscrizioni del corso con l’id specificato
+– /subscribe/:id (delete): viene rimosso un eventuale riferimento
+all’utente loggato dalle sottoscrizioni del corso con l’id specificato
+– /objectives/:id/:objective id (put): viene aggiunto un obietti-
+vo al corso con l’id specificato se l’utente loggato `e il suo autore
+– /objectives/:id/:objective id(delete): vienerimossol’obiettivo
+specificato dal corso con l’id specificato se l’utente loggato `e il suo
+autore
+diets
+•
+– / (get): restituisce i dati di tutte le diete registrate nel database
+– /:id (get): restituisce i dati della dieta con l’id specificato
+29
+– / (post): registra nel database una nuova dieta se l’utente loggato `e
+un esperto
+– /:id (post): aggiorna i valori della dieta con l’id specificato se l’u-
+tente loggato `e il suo autore
+– /:id(delete): vienerimossaladietaconl’idspecificatodaldatabase
+se l’utente loggato `e il suo autore
+– /:id/meal (put): viene aggiunto un pasto alla dieta con l’id specifi-
+cato se l’utente loggato `e il suo autore
+– /:id/meal/:meal id (delete): viene rimosso il pasto specificato del-
+l’utente loggato dalla dieta con l’id specificato
+– /:id/meal/:meal id (put): viene aggiunta una portata a un deter-
+minato pasto della dieta con l’id specificato se l’utente loggato `e il
+suo autore
+– /:id/meal/:meal id/intake/:intake id(delete): vienerimossala
+portata specificata da un determinato pasto della dieta con l’id spe-
+cificato se l’utente loggato `e il suo autore
+tags
+•
+– / (get): restituisce i dati di tutti gli interessi registrati nel database
+– / (post): registra un nuovo interesse nel database
+– /:id (delete): rimuove l’eventuale interesse con l’id specificato me-
+morizzato nel database
+objectives
+•
+– / (get): restituisce i dati di tutti gli obiettivi registrati nel database
+– / (post): registra un nuovo obiettivo nel database
+– /:id (delete): rimuove l’eventuale obiettivo con l’id specificato me-
+morizzato nel database
+subscriptions
+•
+– /article/:id (get): invia una notifica push e un’email agli utenti
+che hanno tra gli interessi almeno un tag associato all’articolo con
+l’id specificato
+– /course/:id(get): inviaunanotificapusheun’emailagliutentiche
+hanno tra gli interessi almeno un obiettivo associato al corso con l’id
+specificato
+– /course-subscribe (post): invia una notifica push e un’email a un
+determinato riguardo all’inizio del corso con l’id specificato;
+– /comment/:id (get): dato l’id di un articolo, vengono inviate una
+notifica push e un’email al suo autore per segnalare la pubblicazione
+di un nuovo commento sull’articolo
+30
+– /achievement/:id (post): date le informazioni relative a un achie-
+vement, vengono inviate una notifica push e un’email al client con id
+utente specificato
+achievements
+•
+– / (get): restituisce i dati di tutti gli achievement registrati nel data-
+base
+– /:id (get): restituisce i dati dell’achievement con l’id specificato
+0.3.5 Front-end
+L’UI `e stata realizzata con React, suddividendola in piu` componenti di cui i
+principali sono i seguenti:
+Register e Login: form per la registrazione e il login di un utente;
+•
+Articles,Courses,Clients,Experts: visualizzanorispettivamentel’an-
+•
+teprima degli articoli, corsi, client e esperti presenti;
+Article, Course, Client, Expert: visualizzano rispettivamente le infor-
+•
+mazioni relative a un singolo articolo, corso, client, esperto;
+ManageArticles, ManageCourses, EditClient, EditExpert: utilizzati
+•
+rispettivamenteperlamodificadelleinformazionidiunarticolo,uncorso,
+un client, un esperto;
+CreateArticle, CreateCourse, CreateClient, CreateExpert: conten-
+•
+gonorispettivamenteunformperlacreazionediunarticolo, uncorso, un
+client, un esperto;
+Dashboard: entry point per l’accesso a componenti relativi alla modifica
+•
+dei dati associati all’utente loggato;
+Navbar: navbar visualizzata in tutte le pagine del sito, presentando link
+•
+diversi se si `e e↵ettuato un login come cliente e esperto;
+Footer: footer generico visualizzato in fondo alle pagine.
+•
+E` stato fatto uso del componente Route per visualizzare componenti diversi
+in base al percorso URL specificato.
+Per aggiornare l’interfaccia sulla base dei dati memorizzati nel database, al
+caricamento dei componenti vengono invocati dei task detti Actions Creators
+cheprovvedonoainoltrarealreducerdeterminateazionipermodificarelostato
+condiviso dai diversi componenti dell’applicazione:
+achievement:
+•
+– getAchievements: e↵ettua get /achievements, dispatch
+GET ACHIEVEMENTS o ACHIEVEMENTS ERROR in caso di errori;
+31
+alert:
+•
+– setAlert: dispatch SET ALERT e REMOVE ALERT allo scadere di un
+timeout;
+article:
+•
+– getArticles: e↵ettua get /articles, dispatch GET ARTICLES o
+ARTICLE ERROR in caso di errori;
+– getArticle: e↵ettua get /articles/$id, dispatch GET ARTICLE o
+ARTICLE ERROR in caso di errori;
+– addLike: e↵ettuaput/articles/like/$id,dispatchUPDATE LIKES
+o ARTICLE ERROR in caso di errori;
+– removeLike: e↵ettuaput/articles/unlike/$id,dispatchUPDATE LIKES
+o ARTICLE ERROR in caso di errori;
+– deleteArticle: e↵ettuadelete/articles/$id,dispatchDELETE ARTICLE
+o ARTICLE ERROR in caso di errori;
+– addArticle: e↵ettua post /articles, dispatch ADD ARTICLE e get
+/subscriptions/article/$articleId o ARTICLE ERROR in caso di
+errori;
+– updateArticle: e↵ettua post /articles, dispatch UPDATE ARTICLE
+e get /subscriptions/article/$articleId o ARTICLE ERROR in
+caso di errori;
+– addComment: e↵ettua post /articles/comments/$articleId, di-
+spatch ADD COMMENT e get /subscriptions/comment/$articleId o
+ARTICLE ERROR in caso di errori;
+– deleteComment: e↵ettua delete /articles/comments/
+$articleId/$commentId,dispatchREMOVE COMMENToARTICLE ERROR
+in caso di errori;
+– addArticleTag: e↵ettua put /articles/tag/$articleId/$tagId,
+dispatch ADD ARTICLE TAG o ARTICLE ERROR in caso di errori;
+– removeArticleTag: e↵ettuadelete/articles/tag/$articleId/$tagId,
+dispatch REMOVE ARTICLE TAG o ARTICLE ERROR in caso di errori;
+– clearArticle: e↵ettua dispatch CLEAR ARTICLE.
+auth:
+•
+– loadUser: e↵ettua get /auth, dispatch USER LOADED o AUTH ERROR
+in caso di errori;
+– register: e↵ettuapost/users/register,dispatchREGISTER SUCCESS
+e loadUser() o REGISTER FAIL in caso di errori;
+– login: e↵ettua post /auth, dispatch LOGIN SUCCESS e loadUser()
+o LOGIN FAIL in caso di errori;
+32
+– logout: e↵ettua dispatch CLEAR CLIENT, CLEAR EXPERT, LOGOUT.
+client:
+•
+– getClient: e↵ettua get /clients/$userId, dispatch GET CLIENT o
+CLIENT ERROR in caso di errori;
+– getClients: e↵ettuaget/clients,dispatchGET CLIENTSoCLIENT ERROR
+in caso di errori;
+– getCurrentClient: e↵ettua /clients/me, dispatch GET CLIENT o
+CLIENT ERROR in caso di errori;
+– createClient: e↵ettuapost/clients,dispatchGET CLIENToCLIENT ERROR
+in caso di errori;
+– addObjective: e↵ettuaput/clients/objective,dispatchUPDATE CLIENT
+o CLIENT ERROR in caso di errori;
+– addInterest: e↵ettuaput/clients/interest,dispatchUPDATE CLIENT
+o CLIENT ERROR in caso di errori;
+– addWeightProgress: e↵ettua put /clients/weightProgress, di-
+spatch UPDATE CLIENT o CLIENT ERROR in caso di errori;
+– deleteInterest: e↵ettua delete /clients/interest/$id, dispatch
+UPDATE CLIENT o CLIENT ERROR in caso di errori;
+– deleteObjective: e↵ettuadelete/clients/objective/$id,dispatch
+UPDATE CLIENT o CLIENT ERROR in caso di errori;
+– deleteWeightProgress: e↵ettuadelete/clients/weightProgress/$id,
+dispatch UPDATE CLIENT o CLIENT ERROR in caso di errori;
+– deleteAccount: e↵ettua delete /clients, dispatch CLEAR CLIENT e
+ACCOUNT DELETE o CLIENT ERROR in caso di errori;
+course:
+•
+– getCourses: e↵ettuaget/courses,dispatchGET COURSESoCOURSE ERROR
+in caso di errori;
+– getCourse: e↵ettuaget/courses/$id,dispatchGET COURSEoCOURSE ERROR
+in caso di errori;
+– deleteCourse: e↵ettuadelete/courses/$id,dispatchDELETE COURSE
+o COURSE ERROR in caso di errori;
+– addCourse: e↵ettua post /courses, dispatch ADD COURSE e get
+/subscriptions/course/$courseId o COURSE ERROR in caso di er-
+rori;
+– updateCourse: e↵ettua post /courses, dispatch UPDATE COURSE e
+get /subscriptions/course/$courseId o COURSE ERROR in caso di
+errori;
+33
+– subscribe: e↵ettua put /courses/subscribe/$courseId, dispatch
+SUBSCRIBEepostsubscriptions/course-subscribeoCOURSE ERROR
+in caso di errori;
+– unsubscribe: e↵ettua delete /courses/subscribe/$courseId, di-
+spatch UNSUBSCRIBE o COURSE ERROR in caso di errori;
+– addCourseObjective: e↵ettua put
+/courses/objectives/$courseId/$objectiveId, dispatch
+ADD COURSE OBJECTIVE o COURSE ERROR in caso di errori;
+– removeCourseObjective: e↵ettua delete
+/courses/objectives/$courseId/$objectiveId, dispatch
+REMOVE COURSE OBJECTIVE o COURSE ERROR in caso di errori;
+– clearCourse: e↵ettua dispatch CLEAR COURSE.
+diet:
+•
+– getDiets: e↵ettua get /diets, dispatch GET DIETS o DIETS ERROR
+in caso di errori;
+expert:
+•
+– getExpert: e↵ettua get /experts/$userId, dispatch GET EXPERT o
+EXPERT ERROR in caso di errori;
+– getExperts: e↵ettuaget/experts,dispatchGET EXPERTSoEXPERT ERROR
+in caso di errori;
+– getCurrentExpert: e↵ettua get /experts/me, dispatch GET EXPERT
+o EXPERT ERROR in caso di errori;
+– createExpert: e↵ettuapost/experts,dispatchGET EXPERToEXPERT ERROR
+in caso di errori;
+– addKnowledge: e↵ettuaput/experts/knowledge,dispatchUPDATE EXPERT
+o EXPERT ERROR in caso di errori;
+– deleteKnowledge: e↵ettuadelete/experts/knowledge/$id,dispatch
+UPDATE EXPERT o EXPERT ERROR in caso di errori;
+– deleteExpert: e↵ettua delete /experts, dispatch CLEAR EXPERT e
+EXPERT DELETE o EXPERT ERROR in caso di errori.
+objective:
+•
+– getObjectives: e↵ettuaget/objectives,dispatchGET OBJECTIVES
+o OBJECTIVES ERROR in caso di errori;
+tag:
+•
+– getInterests: e↵ettuaget/interests,dispatchGET TAGSoTAGS ERROR
+in caso di errori.
+Stato iniziale dell’applicazione:
+34
+{
+alert: [],
+auth: {
+token: localStorage.getItem(’token’),
+isAuthenticated: false,
+loading: true,
+user: null
+},
+client: {
+client: null,
+clients: [],
+loading: true,
+error: {}
+},
+expert: {
+expert: null,
+experts: []
+loading: true,
+error: {}
+},
+article: {
+article: null,
+articles: [],
+loading: true,
+error: {}
+}
+course: {
+courses: []
+course: null,
+loading: true,
+error: {}
+},
+tags: {
+tags: [],
+loading: true,
+error: {}
+},
+objectives: {
+objectives: [],
+loading: true,
+error: {}
+},
+diet: {
+diets: [],
+loading: true,
+error: {}
+35
+},
+achievement: {
+achievements: [],
+loading: true,
+error: {}
+}
+}
+Di seguito viene riportato come viene modificato lo stato a seguito della
+ricezione delle diverse azioni:
+achievements:
+•
+– GET ACHIEVEMENTS: aggiorna achievements e imposta loading a
+false;
+– ACHIEVEMENTS ERROR: aggiorna error e imposta loading a false.
+alert:
+•
+– SET ALERT: aggiunge un elemento all’array nello stato, utilizzato per
+mostrare eventuali messaggi relativi ad azioni compiute dall’utente;
+– REMOVE ALERT: rimuove l’elemento con id specificato dall’array nello
+stato, utilizzato allo scadere del timeout di un messaggio di alert.
+article:
+•
+– GET ARTICLES: aggiorna articles e imposta loading a false;
+– GET ARTICLE: aggiorna article e imposta loading a false;
+– ADD ARTICLE: aggiunge un elemento all’array articles e imposta
+loading a false;
+– UPDATE ARTICLE: modifica l’elemento con un determinato id nell’ar-
+ray articles e imposta loading a false;
+– DELETE ARTICLE:eliminal’elementoconundeterminatoidnell’array
+articles e imposta loading a false;
+– ARTICLE ERROR: aggiorna error e imposta loading a false;
+– UPDATE LIKES:aggiornailnumerodeilikediundeterminatoarticolo
+nell’array articles e imposta loading a false;
+– ADD COMMENT: aggiunge un commento nell’array article comments
+(campo di article) e imposta loading a false;
+– REMOVE COMMENT: rimuove un determinato commento dall’array
+article comments(campodiarticle)eimpostaloadingafalse;
+– ADD ARTICLE TAG:aggiornal’arrayarticle tags(campodiarticle)
+e imposta loading a false;
+– REMOVE ARTICLE TAG: rimuove un determinato elemento dall’array
+article tags (campo di article) e imposta loading a false;
+36
+– CLEAR ARTICLE: imposta article a null e loading a false.
+auth:
+•
+– USER LOADED:aggiornauser,impostaloadingafalseeisAuthenticated
+a true;
+– REGISTER SUCCESS e LOGIN SUCCESS: aggiornano il token utilizzato
+nellasessionediaccesso,impostanoloadingafalseeisAuthenticated
+a true;
+– LOGIN FAIL,textttAUTH ERROR,REGISTER FAIL,LOGOUTeACCOUNT DELETE:
+impostanotokenanull,loadingafalse,useranulleisAuthenticated
+a true.
+client:
+•
+– GET CLIENTeUPDATE CLIENT:aggiornanoclienteimpostanoloading
+a false;
+– GET CLIENTS: aggiorna clients e imposta loading a false;
+– CLIENT ERROR: aggiorna error, imposta loading a false e client
+a null;
+– CLEAR CLIENT: imposta loading a false e client a null.
+course:
+•
+– GET COURSES: aggiorna courses e imposta loading a false;
+– GET COURSE: aggiorna course e imposta loading a false;
+– ADD COURSE:aggiungeunelementoall’arraycourseseimpostaloading
+a false;
+– UPDATE COURSE:modifical’elementoconundeterminatoidnell’array
+courses e imposta loading a false;
+– DELETE COURSE: elimina l’elemento con un determinato id nell’array
+courses e imposta loading a false;
+– COURSE ERROR: aggiorna error e imposta loading a false;
+– SUBSCRIBE:aggiornal’arraycourse subscribers(campodicourse)
+e imposta loading a false;
+– UNSUBSCRIBE:rimuoveundeterminatoelementodall’arraycourse subscribers
+(campo di course) e imposta loading a false;
+– ADD COURSE OBJECTIVE: aggiorna l’array course objectives (cam-
+po di course) e imposta loading a false;
+– REMOVE COURSE OBJECTIVE: rimuove un determinato elemento dal-
+l’array course objectives (campo di course) e imposta loading a
+false;
+– CLEAR COURSE: imposta course a null e loading a false.
+37
+diet:
+•
+– GET DIETS: aggiorna diets e imposta loading a false;
+– DIETS ERROR: aggiorna error e imposta loading a false.
+expert:
+•
+– GET EXPERTeUPDATE EXPERT:aggiornanoexperteimpostanoloading
+a false;
+– GET EXPERTS: aggiorna experts e imposta loading a false;
+– EXPERT ERROR: aggiorna error, imposta loading a false e client
+a null;
+– CLEAR EXPERT: imposta loading a false e expert a null;
+– EXPERT DELETE:rimuovedall’arrayexpertsl’elementoconundeter-
+minato id e imposta loading a false.
+objectives:
+•
+– GET OBJECTIVES: aggiorna objectives e imposta loading a false;
+– OBJECTIVES ERROR: aggiorna error e imposta loading a false.
+tags:
+•
+– GET TAGS: aggiorna tags e imposta loading a false;
+– TAGS ERROR: aggiorna error e imposta loading a false.
+Per lo stile sono stati utilizzati piu` moduli SCSS personalizzati, convertiti
+in normale CSS attraverso un apposito script:
+style.scss: presenta gli stili principali utilizzati dall’applicazione;
+•
+mobile.scss: presentaglistiliutilizzatinelcasosiutilizziunarisoluzione
+•
+mobile;
+config.scss: definisce le propriet`a SCSS relative ai colori e ai valori di
+•
+spacing su margini e padding;
+form.scss: stili dei componenti associati ai form;
+•
+utilities.scss: stili di utilit`a generale, utilizzati principalmente per
+•
+sovrascrivere gli stili Bootstrap.
+E` statoinoltrefattousodiBootstrap,inmodoparticolareperl’implementa-
+zionedelgridsystemutilizzandoFlexboxperrappresentareinmodoresponsivo
+informazioni con struttura tabulare.
+38
+0.4 Tecnologie
+0.4.1 Stack MERN
+Perildesigndell’applicazionesi`edecisodiadottareMERNcomesolutionstack.
+MERNo↵reunapiattaformacompletabasatasuarchitetturaa3livelli,fornen-
+do tutto il minimo indispensabile allo sviluppo di un applicazione, `e inoltre
+indipendente rispetto al sistema operativo utilizzato. React, a di↵erenza di al-
+tre soluzioni che si appoggiano su pattern MVVM, si basa sul pattern Flux,
+nel quale esiste una singola ”source of truth” composta da piu` store che posso-
+no essere aggiornati soltanto attraverso determinate azioni. Queste azioni sono
+responsabili per le chiamate ad un dispatcher, al quale gli store possono iscri-
+versiperintercettareicambiamentieaggiornareipropridati(acuilaviewfar`a
+riferimento). Lacatenadiquesticomponenticreaundataflowunidirezionale[2].
+Figura 28: Pattern flux
+Fra i vantaggi considerati utilizzando MERN vi sono:
+La possibilit`a di poter lavorare col paradigma ”JavaScript everywhere”,
+•
+disinnescando alla radice possibili problemi di integrazione fra diversi lin-
+guaggi. Questo va inoltre a beneficio degli sviluppatori che possono dedi-
+care piu` tempo alla logica applicativa senza particolari preoccupazioni in
+merito alle tecnologie che ne stanno alla base;
+L’impiego di database non relazionali permette una piu` facile ed agevole
+•
+manutenzione. Le relazioni tra i dati utilizzati dall’applicazione sono ab-
+bastanza elementari da permettere di sacrificare una struttura piu` solida
+in cambio di piu` facilit`a di gestione da parte degli sviluppatori, spostan-
+do la responsabilit`a della consistenza dei dati all’interno delle operazioni
+CRUD che avvengono nella logica applicativa;
+39
+La natura in quanto libreria di MERN aumenta il grado di libert`a di svi-
+•
+luppo dell’applicazione, permettendo un’organizzazione del codice molto
+meno vincolata (rispetto ad esempio ad Angular che `e un vero e proprio
+framework).
+Figura 29: Pattern redux
+0.4.2 Redux
+Anzich´e sfruttare la context API gi`a presente in React si`e optato per l’utilizzo
+di Redux. Redux sfrutta un pattern molto simile al pattern Flux ma con due
+sostanziali di↵erenze:
+Reducer al post del dispatcher: funzione che prende in input uno stato e
+•
+un’azione, restituendo lo stato aggiornato basandosi sull’azione passata;
+Unico store centralizzato al posto di uno o piu` store indipendenti.
+•
+Fraibeneficiottenuti,oltreaglistessidelpatternFlux(registrazioneereplaydi
+azioni, data flow unidirezionale, e altri) permette facilmente di fare undo-redo,
+fare hot reloading e di attingere dai dati da qualsiasi punto del codice senza
+bisogno di passarli come parametri[3].
+0.4.3 Altre tecnologie ausiliarie
+Nota: alcuni dei pacchetti utlizzati sono divisi in piu` parti. Nelle seguenti liste
+sono stati condensati in un singolo punto sotto una denominazione comune.
+Backend:
+nodemonpersviluppareapplicazioninode.jsriavviandoautomaticamen-
+•
+te l’esecuzione ogni qualvolta i file sorgenti vengono modificati;
+40
+bcryptjs per la funzione di hashing delle password;
+•
+body-parserperfareparsingdeibodydellerichiesteiningressoattraver-
+•
+so un apposito middleware prima che lo facciano gli handler predisposti;
+corsperfornireunmiddlewareConnect/Expresschepu`oessereusatoper
+•
+abilitare CORS con diverse opzioni;
+express-validator che e↵ettua validazione per applicazioni express;
+•
+gmail-send per l’invio automatizzato di posta elettronica;
+•
+gravatar per l’utilizzo degli URL gravatar in node per gli avatar utente;
+•
+jsonwebtoken che funge da implementazione per gli omonimi token;
+•
+mongoose per l’interfacciamento al database MongoDB;
+•
+web-push per le notifiche push mediante il Web Push Protocol.
+•
+Frontend:
+fullcalendarperlarappresentazionediuncalendarioeglieventiassociati
+•
+ai giorni;
+testing-library per testing su React DOM per incoraggiare all’utilizzo
+•
+delle giuste prassi di scrittura;
+tinymcepermettereadisposizioneunsempliceeditorHTMLperscrivere
+•
+gli articoli;
+axios per lavorare su richieste promise-based;
+•
+bootstrap come tool di sviluppo front-end;
+•
+canvasjs per il disegno di grafici;
+•
+jquery per semplificare la manipolazione del DOM;
+•
+jwt-decode per decoding web token JSON;
+•
+momentperparsing,validazione,manipolazioneeformattazionedidate;
+•
+popper per l’utilizzo di popper (particolari elementi grafici utilizzati per
+•
+i tag);
+prop-types per avere a runtime un type checking delle propriet`a React e
+•
+oggetti simili. Viene usato per documentare i tipi di propriet`a passati ai
+componenti cos`ı come sono stati intesi.
+41
+0.5 Codice
+0.5.1 Operazioni CRUD sulle risorse
+La risorsa rappresentativa presa come riferimento `e quella dei tag (etichette,
+nel dominio dell’applicazione sono relative agli interessi). Tutte le altre sono
+state sviluppate in maniera molto simile. La risorsa a lato frontend sfrutta
+una implementazione che fa uso di Redux, ma il codice alla base di questa
+implementazione`emostratosuccessivamente. Diseguitoilmodellodellarisorsa:
+const mongoose = require(’mongoose ’);
+const Schema = mongoose.Schema;
+let Tag = new Schema(
+{
+tag name:
+{
+type: String ,
+required: true ,
+unique: true
+}
+);
+}
+module.exports = mongoose.model(’Tag’ , Tag);
+API per la manipolazione della risorsa:
+const express = require(’express ’);
+const router = express.Router();
+const auth = require ( ’../../middleware/auth ’);
+const check , validationResult =
+{ }
+require(’express validator ’);
+ 
+const Tag = require ( ’../../model/tag.model ’);
+router.get(
+’/’,
+async (req , res) =>
+{
+try
+{
+const tags = await Tag. find ();
+res .json(tags );
+catch(err)
+} {
+console. error(err .message);
+res . status(500).send(err .message);
+}
+}
+);
+router.post(
+’/’,
+42
+[ auth,
+[
+check(’tag name ’ , ’Name is required ’)
+.not()
+.isEmpty()
+]
+] ,
+async (req , res) =>
+{
+const errors = validationResult(req);
+if (! errors .isEmpty())
+{
+return res . status(400).json( errors : errors .array() );
+{ }
+}
+try
+{
+const newTag = new Tag(
+{
+tag name: req.body.tag name
+);
+}
+const tag = await newTag.save();
+res .json(tag);
+catch(err)
+} {
+console. error(err .message);
+res . status(500).send(err .message);
+}
+}
+);
+router. delete(
+’/:id ’ ,
+auth,
+async (req , res) =>
+{
+try
+{
+const tag = await Tag.findById(req.params.id);
+if (!tag)
+{
+return res . status(400).json( msg: ’Tag not found ’ );
+{ }
+}
+await tag.remove();
+res .json( msg: ”Tag removed” );
+{ }
+catch(err)
+} {
+console. error(err .message);
+if (err .kind === ’ObjectId ’)
+{
+return res . status(400).json( msg: ’Tag not found ’ );
+{ }
+}
+res . status(500).send(err .message);
+}
+}
+);
+43
+module.exports = router;
+Azioni performabili lato frontend sulle risorse interagendo con l’API mo-
+strata (il risultato determina un camnbiamento di stato propagato tramite la
+funzione dispatch):
+import api from ’../ utils/api ’;
+import
+{
+GETTAGS,
+TAGSERROR
+from ’./types ’;
+}
+const address = ’http://localhost :4000 ’;
+export const getInterests = () => async dispatch =>
+{
+try
+{
+const res = await api.get(address + ’/tags ’);
+dispatch(
+{
+type: GETTAGS,
+payload: res .data
+);
+}
+catch(err)
+} {
+dispatch(
+{
+type: TAGSERROR,
+payload: msg: err .response && err .response.statusText ,
+{
+status : err .response && err .response. status
+}
+);
+}
+}
+;
+}
+Reducer:
+import
+{
+GETTAGS,
+TAGSERROR
+from ’../ actions/types ’;
+}
+const initialState =
+{
+tags: [] ,
+loading: true ,
+error :
+{}
+;
+}
+const tagsReducer = (state = initialState , action) =>
+{
+const type , payload = action;
+{ }
+switch(type)
+{
+case GETTAGS:
+return
+{
+... state ,
+44
+tags: payload ,
+loading: false
+;
+}
+case TAGSERROR:
+return
+{
+... state ,
+error : payload ,
+loading: false
+;
+}
+default :
+return state ;
+}
+}
+export default tagsReducer;
+View utente per la gestione degli interessi:
+import React, Fragment, useEffect , useState from ’react ’;
+{ }
+import withRouter from ’react router dom’;
+{ }    
+import PropTypes from ’prop types ’;
+ 
+import connect from ’react redux ’;
+{ }  
+import addInterest , getCurrentClient ,
+{
+getClients from ’../../ actions/client ’
+}
+import getInterests from ’../../ actions/tag ’;
+{ }
+const EditClientInterests = (
+{
+getInterests ,
+addInterest ,
+getCurrentClient ,
+getClients ,
+auth: user , isAuthenticated ,
+{ }
+history ,
+tags: tags ,
+{ }
+client : client , clients ) =>
+{ } } {
+const [formData, setFormData] = useState(
+{
+client interests :
+{}
+);
+}
+const
+{
+client interests
+= formData;
+}
+useEffect (() =>
+{
+getClients ();
+, [ getClients ])
+}
+45
+useEffect (() =>
+{
+if (isAuthenticated && user && clients &&
+clients . find(e => e. client user &&
+e. client user . id === user. id))
+{
+getCurrentClient ();
+}
+getInterests ();
+, [ getInterests , getCurrentClient , isAuthenticated , user , clients ])
+}
+const handleSelect = (e, tag) =>
+{
+const checked = e. target
+{ }
+setFormData(state => (
+{
+... state ,
+client interests :
+{
+... state . client interests ,
+[tag. id ]: checked
+}
+))
+}
+}
+const onSubmit = async e =>
+{
+e.preventDefault ();
+for (var key in client interests)
+{
+if (client interests [key])
+{
+await addInterest( client interest : key , history );
+{ }
+// put request per ogni interesse
+;
+}
+}
+}
+return (
+<Fragment>
+<p className=”lead”>
+<i className=”fas fa exclamation”></i>
+ 
+Indica quali sono i tuoi interessi
+in modo da essere sempre aggiornato in
+tempo reale sui tuoi contenuti
+</p>
+<form className=”form” onSubmit= e => onSubmit(e) >
+{ }
+{
+client &&
+tags
+. filter (e => ! client . client interests .map(f =>
+f .tag.toString ()). includes(e. id .toString ()))
+. sort()
+.map((tag , id) =>
+{
+46
+const tagCheck = client interests [tag. id ]
+return (
+<label className=”m 1 cb item” key= id >
+    { }
+tag.tag name
+{ }
+<input
+name= tag.tag name
+{ }
+type=”checkbox”
+checked= tagCheck ? tagCheck : false
+{ }
+onChange= e => handleSelect(e, tag)
+{ }
+className=”mx 3”
+ 
+/></label>
+);
+)
+}
+}
+<small className=”form text”>
+ 
+Ogni volta che viene pubblicato un contenuto
+inerente sarai notificato in tempo reale
+</small>
+<input type=”submit” className=”btn btn primary my 1”
+   
+value=”Aggiungi” />
+</form>
+</Fragment>
+)
+}
+EditClientInterests .propTypes =
+{
+getInterests : PropTypes.func.isRequired ,
+addInterest: PropTypes.func.isRequired ,
+getCurrentClient: PropTypes.func.isRequired ,
+getClients : PropTypes.func.isRequired ,
+tags: PropTypes.object.isRequired ,
+client : PropTypes.object.isRequired
+}
+const mapStateToProps = state => (
+{
+auth: state .auth,
+tags: state .tags ,
+client : state . client
+);
+}
+export default connect(mapStateToProps, getInterests ,
+{
+addInterest , getCurrentClient , getClients )
+}
+(withRouter(EditClientInterests))
+47
+0.5.2 Redux
+Store centralizzato:
+import createStore , applyMiddleware from ’redux ’;
+{ }
+import composeWithDevTools from ’redux devtools extension ’;
+{ }    
+import thunk from ’redux thunk ’;
+ 
+import rootReducer from ’./reducers ’;
+import setAuthToken from ’./ utils/setAuthToken ’;
+const initialState = ;
+{}
+const middleware = [thunk];
+const store = createStore(
+rootReducer ,
+initialState ,
+composeWithDevTools(applyMiddleware (... middleware))
+);
+let currentState = store .getState ();
+store .subscribe(() =>
+{
+let previousState = currentState;
+currentState = store .getState ();
+if (previousState.auth.token !== currentState.auth.token)
+{
+const token = currentState.auth.token;
+setAuthToken(token);
+}
+);
+}
+export default store ;
+Non `e mostrato in questa sezione ma i vari reducer sono combinati tra di
+loro in uno solo mediante l’apposita funzione di libreria. Inoltre esiste la lista
+delle costanti che determinano i cambiamenti di stato all’interno dello store
+centralizzato.
+0.5.3 Notifiche push
+Worker:
+const logo = ”./logo.png”;
+const showNotification = (data) =>
+{
+const body = data.message;
+self . registration .showNotification(data. title ,
+{
+body: body,
+48
+icon: logo ,
+data:
+{
+url : data. url
+,
+}
+actions : [ action: ”open url”, title : ”Clicca qui” ]
+{ }
+);
+}
+;
+}
+self .addEventListener(’push’ , e =>
+{
+const data = e.data.json ();
+if (!data.timestamp)
+{
+showNotification(data);
+else
+} {
+e.waitUntil(new Promise(resolve =>
+{
+setTimeout(() =>
+{
+showNotification(data);
+resolve ();
+, data.timestamp);
+}
+));
+}
+}
+);
+}
+self .addEventListener(’ notificationclick ’ , e =>
+{
+switch (e.action)
+{
+case ’open url ’:
+self . clients .openWindow(e. notification .data. url );
+break;
+}
+);
+}
+Quando un browser che supporta messaggi push riceve un messaggio, invia
+un evento push al service worker. Quando`e associato un timestamp al messag-
+gio,ilmetodoshowNotification`ewrappatoinunmetodowaitUntil. Questo
+permette di estendere la durata dell’evento push finch´e la promise non viene ri-
+solta, e garantisce che il worker non termini prima che un’operazione asincrona
+sia completata.
+L’invio delle notifiche push avviene nel backend, prendendo in input la sub-
+scription dell’utente destinatario memorizzata nel database e il payload del
+messaggio:
+webpush. sendNotification(user. user subscription ,
+payload).catch(err => console. error(err .message));
+49
+0.6 Test
+Ilsistema, mediantel’appositoclient,`estatotestatoinprimissumobile(appli-
+cazionebrowserGoogleChromesudeviceOnePlus5),einseguitosiainversione
+desktopchemobile(medianteitooldisviluppointegratinelbrowser)utilizzando
+Google Chrome,Mozilla Firefox eMicrosoft Edge. Si`ecercatodiminimizzareil
+piu` possibile errori e warning nel complesso, massimizzare il numero di principi
+di design accessibile (usando AChecker) e valido (usando W3C Validation
+Service). Anche la web-api `e stata testata come singola unit`a, interagendovi
+mediante richieste dirette (usando Postman) per verificarne la conformit`a con
+gli standard convenzionali.
+0.6.1 Euristiche di Nielsen
+Pero↵rireusabilit`aeuserexperiencedellamassimaqualit`apossibilesi`ecercato
+di applicare quanto enunciato dalle euristiche di Nielsen[1]:
+1. Visibilit`a dello stato del sistema: i link sono stati ridotti allo stretto
+essenziale per rendere il meno ambigua e dispersiva possibile l’applica-
+zione. Per segnalare che ci sono attivit`a in corso di esecuzione e non
+terminate si ha un feedback visivo rappresentato da una icona animata di
+caricamento;
+2. Corrispondenza tra sistema e mondo reale: la terminologia usata
+dalsistemaperinterfacciarsiconl’utente`eilmenotecnicaepiu` ”gergale”
+possibile. Le icone sono intuitive e convenzionali;
+3. Controllo e libert`a per l’utente: l’applicazione non presenta percorsi
+”binari” per l’utente lungo cui muoversi,`e l’utente stesso a decidere come
+muoversi ed interagire con l’applicazione. Sono presenti scorciatoie per
+saltare da parte a parte della piattaforma senza dover ricorrere a vere e
+proprie ricerche. E` sostanzialmente impossibile commettere azioni non
+volute accidentalmente;
+4. Consistenza e standard: l’applicazione ha una propria consistenza in
+termini di ”linguaggio visivo”. A stesse funzioni corrispondono stessi
+colori, stesse forme, stessa formattazione;
+5. Prevenzione dall’errore: non esistono ”vicoli ciechi” all’interno del-
+l’applicazione, l’utente non ha pressoch´e modo di sbagliarsi a causa di
+induzioni all’errore da parte della piattaforma;
+6. Riconoscimento piu` che ricordo: i layout sono semplici e schematici.
+L’utente non ha bisogno di adattarsi per orientarsi;
+7. Flessibilit`a ed e cienza: il diverso livello di esperienza dell’utente
+garantisce una navigazione di↵erenziata senza di colt`a;
+50
+8. Estetica e progettazione minimalista: il design `e minimale e non
+emerge nulla di superfluo;
+9. Facilit`a di riconoscimento, diagnosi e risoluzione dalle situazioni
+di errore: imessaggidierroresonodescrittiviinmodotaledaesplicitare
+il tipo di errore commesso e possibili soluzioni. La commissione di errori
+non compromette le operazioni, bens`ı permette di e↵ettuare le correzioni
+al volo senza impedimenti;
+10. Documentazione: l’utente non ha bisogno di documentazione per la
+fruizione dell’applicazione, tuttavia nel caso si trovi in di colt`a il sistema
+`e attrezzato per guidare l’utente.
+0.6.2 Test di usabilit`a
+Uno stretto campione di utenti che`e prestato alla verifica dell’utilizzo del siste-
+mahafornitofeedbacksuquantoprodottoiterativamentecos`ıdapoterdecidere
+quali aspetti assumere come definitivi e quali come aspetti da rielaborare. Gli
+utenti sono stati incaricati di e↵ettuare un certo insieme di task a seconda del
+ruolo che hanno assunto. Ai soggetti del test non `e stata fornita nessuna linea
+guida, ci si `e limitati al fornire la singola richiesta, al fine di osservare come
+gli utenti avrebbero cercato di eseguire i compiti richiesti vedendo per la prima
+volta il sistema.
+Esperti: fra i loro compiti hanno figurato la creazione di post mediante
+•
+apposito editor HTML, che si `e rivelato semplice ed intuitivo anche per i
+”nonaddettiailavori”. Similmente`estatorichiestodicrearediversicorsi
+ed attivit`a. Poi `e stato chiesto di provare a modificare il proprio profilo;
+Clienti: fra i loro compiti figurava la navigazione dei post, commentare e
+• votare quelli che ritenevano degni di attenzione. E` stato anche assegnato
+il compito di iscriversi ai corsi di interesse, e aggiornare il proprio profilo
+con elementi fra cui interessi, obiettivi e progressi. Gli utenti sono anche
+stati interrogati su quanto chiari fossero i vari indicatori per monitorare
+i propri progressi o consultare il calendario dei corsi a cui ci si `e iscritti,
+oltre che verificare le diete.
+Ingeneralegliutentihannotrovatoladisposizionedeivarielementisempreade-
+guata. Le osservazioni sollevate dagli utenti erano perlopiu` su aspetti stilistici.
+51
+0.7 Deployment
+Rilascio, installazione e messa in funzione.
+L’applicazione `e stata strutturata in tre container, rispettivamente conte-
+nenti la web-api, il client e il database MongoDB.
+Perfarcomunicareiduecontainervieneutilizzataunaretevirtualechiama-
+ta internal-bridge. la web-api e il database possono comunicare usando i nomi
+dei container come i rispettivi nomi di host, la risoluzione in indirizzi IP av-
+viene implicitamente dal DNS di Docker realizzato automaticamente nella rete
+virtuale.
+0.7.1 Setup
+1. Scaricare da questo repository le immagini di web-api, client e database;
+2. Opzionale: `epossibilescaricaredalmedesimolinkl’interocodicesorgente
+nel caso si voglia creare una propria build. Eseguire da linea di comando
+la seguente istruzione per compilare le immagini necessarie:
+docker compose build
+ 
+3. Eseguire da linea di comando la seguente istruzione per creare i container
+ottenuti per mettere in esecuzione i servizi negli appositi container:
+docker compose up
+ 
+4. Eseguire da linea di comando la seguente istruzione per utilizzare la bash
+del container MongoDB:
+docker exec it ”stay healthy mongodb 1” bash
+   
+5. Eseguireinordineleseguentiistruzioniperpopolareildatabasestayhealthy
+con le collections predefinite:
+mongorestore c achievements d stayhealthy achievements.bson
+   
+mongorestore c articles d stayhealthy articles .bson
+   
+mongorestore c clients d stayhealthy clients .bson
+   
+mongorestore c courses d stayhealthy courses.bson
+   
+mongorestore c diets d stayhealthy diets .bson
+   
+mongorestore c experts d stayhealthy experts.bson
+   
+mongorestore c objectives d stayhealthy objectives .bson
+   
+mongorestore c tags d stayhealthy tags.bson
+   
+mongorestore c users d stayhealthy users.bson
+   
+6. Il deployment andr`a a buon fine e si aprir`a automaticamente sul browser
+predefinito la pagina principale del client. Nel caso ci`o non avvenisse,
+bisogner`a connettersi manualmente al seguente indirizzo:
+https://localhost:3000
+52
+7. E` possibile interagire direttamente con la web-api inoltrando le richieste
+al seguente indirizzo:
+https://localhost:4000
+53
+0.8 Conclusioni
+La soluzione proposta `e stata progettata per essere potenzialmente estendibile
+agilmente in futuro. In fase di testing si `e potuto constatare che le interfacce
+utente disegnate sono su cientemente intuitive per entrambe le tipologie di
+utenti. Moltefunzionalit`adibasecomeilpoterembeddarelostreamingdeicorsi
+direttamente sul sito e aggiungere un qualche tipo di interazione con l’esperto,
+unmaggiornumerodistatisticheadunlivellopiu`dettagliatoeulteriorimetriche
+permisurareiprogressidell’utente(siasulfrontegamificationcheteneretraccia
+dei progressi psico-fisici) possono essere facilmente implementabili a partire da
+quanto gi`a presente.
+0.8.1 Commenti
+Acausadilimitazionitemporaliilprogetto`estatoridimensionatonotevolmente
+rispettoaquantoinizialmenteprevisto,dandomaggiorepriorit`aallaproduzione
+dicodicediqualit`aanzich´eadunnumeromaggioredifunzionalit`a. Inizialmente
+sieraprevistounmaggiorecoinvolgimentoditerziperquantoriguardalaprima
+fase di design e di test, ma ci`o non `e stato possibile a causa dell’emergenza
+sanitaria. Nonostantequestiimpedimentiilprogettosi`erivelatosoddisfacente,
+soprattutto avendo avuto modo di approfondire la metodologia di lavoro, a
+partiredaunaprimapropostaaldeploymentveroeproprio,vedendolosviluppo
+di un progetto di questo tipo nel complesso anzich´e porzioni circoscritte. Dal
+punto di vista delle tecnologie `e stato di grande valore formativo poter vedere
+e sperimentare le diverse teconologie di supporto allo sviluppo di applicazioni e
+serviziviawebepoterlimettereaconfronto,inmododatrovarelacombinazione
+di tecnologie piu` congeniale al tipo di progetto pianificato.
+54
+Bibliografia
+[1] JakobNielsen.UsabilityEngineering.(English).SanDiego: AcademicPress,
+1994.
+[2] React Development Team. React Docs. (Italian). reactjs.org, 2021.
+[3] Redux Development Team. Redux API Reference. (English). devdocs.io,
+2021.
+55

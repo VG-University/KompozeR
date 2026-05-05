@@ -1,0 +1,733 @@
+Flexbox
+1
+FlexBox
+• Flexbox: modalità di layout introdotta con CSS3
+• L’uso dei Flexbox garantisce un comportamento più
+predicibile e stabile degli elementi della pagina,
+sopratutto nel caso di layout liquido e responsive
+design, quando la pagina deve adattarsi a display di
+diversi device e diverse dimensioni
+• Rappresenta una innovazione ed un notevole
+miglioramento nella gestione dei layout rispetto al
+box model tradizionale
+2
+Box Model
+3
+Concetti principali dei Flexbox
+• Gli elementi alla base del modello flexbox sono:
+– Flex container: viene dichiarato impostando la
+proprietà “display” di un elemento, che potrebbe
+avere valore “flex” (reso come un elemento di
+blocco) o “inline-flex” (reso come un elemento
+inline)
+– Flex item: all’interno di un flex container possono
+essere posizionati uno o più flex item
+4
+Concetti principali
+• Gli elementi all’esterno di un flex-container e gli
+elementi all’interno di un flex-item sono resi con il box
+model tradizionale
+• Il modello flexbox definisce come i flex item si
+dispongono all’interno di un flex container
+• I flex item sono posizionati all’interno di un flex
+container lungo una flex line
+• La situazione di default consiste nell’avere una sola flex
+line per ogni flex container
+5
+Flexbox Model
+6
+Display: block; vs Display: flex;
+7
+Un esempio
+• In questo esempio vediamo 3 flex item
+• Il loro posizionamento è quello di default: lungo
+la flex line orizzontale, da sinistra a destra
+[Gli esempi di questa lezione sono raggruppati
+nello zip “ ” presente sulla
+esempi_flexbox
+piattaforma]
+• flex_item_01.html
+8
+flex_item_01.html
+body {
+<!DOCTYPE html>
+font-family: arial;
+<html>
+color: white;
+<head>
+}
+</head>
+<body>
+.flex-container {
+display: flex;
+<div class="flex-container">
+<div class="flex-item"> width: 50%;
+flex item 1 height: 250px;
+</div> background-color: grey;
+<div class="flex-item">
+}
+flex item 2
+</div>
+.flex-item {
+<div class="flex-item">
+background-color: darkred;
+flex item 3
+width: 30%;
+</div>
+height: 100px;
+</div>
+margin: 10px;
+</body> padding: 10px;
+</html> }
+9
+direction
+• E’ possibile modificare la direzione della flex
+line
+• Se impostiamo la proprietà direction a rtl
+(right-to-left), allora il testo sarà mostrato da
+destra a sinistra e la flex line cambierà
+direzione, modificando il layout della pagina
+• direction_02.html
+10
+direction_02.html
+body {
+<!DOCTYPE html>
+direction: rtl;
+<html>
+font-family: arial;
+<head>
+color: white;
+</head>
+}
+<body>
+<div class="flex-container"> .flex-container {
+<div class="flex-item"> display: flex;
+flex item 1 width: 50%;
+</div>
+height: 250px;
+<div class="flex-item">
+background-color: grey;
+flex item 2
+}
+</div>
+<div class="flex-item">
+.flex-item {
+flex item 3
+background-color: darkred;
+</div>
+</div> width: 30%;
+height: 200px;
+</body> margin: 10px;
+</html>
+padding: 10px;
+}
+11
+Flex Direction
+• La proprietà flex-direction permette di
+specificare la direzione dei flex item all’interno
+del flex container
+• Il valore di default per flex-direction è row
+(left-to-right, top-to-bottom)
+• Altri valori:
+– row-reverse
+– column
+– column-reverse
+12
+Flex Direction
+Row
+Row-reverse
+Column Column-reverse
+13
+Flex Direction: row-reverse
+• row-reverse – se la direzione della scrittura del
+testo (direction) è da sinistra a destra, allora il
+flex item sarà disposto nella direzione opposta,
+ovvero da destra a sinistra
+• Il prossimo esempio mostra il risultato dell’uso
+del valore row-reverse:
+flex_direction_03.html
+14
+flex_direction_03.html
+body {
+font-family: arial;
+<!DOCTYPE html>
+color: white;
+<html>
+}
+<head>
+</head>
+.flex-container {
+<body>
+display: flex;
+<div class="flex-container"> flex-direction: row-reverse;
+<div class="flex-item"> width: 50%;
+flex item 1 height: 250px;
+</div>
+background-color: grey;
+<div class="flex-item">
+}
+flex item 2
+</div>
+.flex-item {
+<div class="flex-item">
+background-color: darkred;
+flex item 3
+width: 20%;
+</div>
+</div> height: 100px;
+margin: 10px;
+</body> padding: 10px;
+</html>
+}
+15
+Justify-content
+• La proprietà justify-content allinea orizzontalmente gli
+elementi di un flexible container quando questi elmenti
+non utilizzano tutto lo spazio a disposizione lungo l’asse
+delle ascisse
+• Il valore di default è flex-start: gli elementi sono
+posizionati all’inizio del container
+• Altri possibili valori sono i seguenti:
+– flex-end
+– center
+– space-between
+– space-around
+– space-evenly (simile a space-around ma lo spazio tra i flex-
+item e il bordo del container è distribuito in modo
+equilibrato)
+16
+Justify-content
+Flex-start
+Flex-end
+Center
+Space-between
+Space-around
+Space-evenly
+17
+Justify-content: flex-end
+• flex-end: gli item sono posizionati alla fine del
+container
+• ll prossimo esempio mostra il risultato dell’uso
+del valore flex-end:
+justify_content_04.html
+18
+justify_content_04.html
+body {
+font-family: arial;
+<!DOCTYPE html>
+color: white;
+<html>
+<head> }
+</head>
+<body> .flex-container {
+display: flex;
+<div class="flex-container">
+justify-content: flex-end;
+<div class="flex-item">
+width: 50%;
+flex item 1
+height: 250px;
+</div>
+background-color: grey;
+<div class="flex-item">
+}
+flex item 2
+</div>
+<div class="flex-item"> .flex-item {
+flex item 3 background-color: darkred;
+</div>
+width: 20%;
+</div>
+height: 100px;
+margin: 10px;
+</body>
+padding: 10px;
+</html>
+}
+19
+Align-items
+• La proprietà align-items allinea verticalmente gli
+elementi del flex container quando gli item non
+usano tutto lo spazio disponibile lungo l’asse delle
+ordinate
+• Il valore di default è stretch: gli item vengono
+“stretchati” per riempire opportunamente il
+container
+• Gli altri valori ammessi sono i seguenti:
+– flex-start
+– flex-end
+– center
+– baseline
+20
+Align-items
+Flex-start Flex-end
+Center Baseline
+Stretch
+21
+Align-items: center
+• center: gli item sono posizionati al centro del
+container (verticalmente)
+• ll prossimo esempio mostra il risultato dell’uso
+del valore center:
+align_items_05.html
+22
+align_items_05.html
+body {
+font-family: arial;
+<!DOCTYPE html>
+color: white;
+<html>
+<head> }
+</head>
+<body> .flex-container {
+display: flex;
+<div class="flex-container">
+align-items: center;
+<div class="flex-item">
+width: 50%;
+flex item 1
+height: 250px;
+</div>
+background-color: grey;
+<div class="flex-item">
+}
+flex item 2
+</div>
+<div class="flex-item"> .flex-item {
+flex item 3 background-color: darkred;
+</div>
+width: 20%;
+</div>
+height: 100px;
+margin: 10px;
+</body>
+padding: 10px;
+</html>
+}
+23
+Flex-wrap
+• La proprietà flex-wrap specifica se il flex items debba
+andare automaticamente a capo oppure no, nel caso
+in cui non ci sia spazio sufficiente su un’unica flex line
+• Il valore di default è nowrap: e corrisponde al non
+andare a capo automaticamente, comprimendo lo
+spazio
+• Altri possibili valori sono:
+– Wrap: I flex item vengono mandati a capo
+automaticamente, se necessario (nell’esempio)
+– wrap-reverse: I flex item vanno a capo automaticamente, se
+necessario, ma in ordine inverso
+24
+Flex-wrap
+nowrap
+wrap
+Wrap-reverse
+25
+flex_wrap_06.html
+body {
+font-family: arial;
+<!DOCTYPE html>
+color: white;
+<html>
+<head> }
+</head>
+<body> .flex-container {
+display: flex;
+<div class="flex-container">
+flex-wrap: wrap;
+<div class="flex-item">
+width: 450px;
+flex item 1
+height: 400px;
+</div>
+background-color: grey;
+<div class="flex-item">
+}
+flex item 2
+</div>
+<div class="flex-item"> .flex-item {
+flex item 3 background-color: darkred;
+</div>
+width: 150px;
+</div>
+height: 100px;
+margin: 10px;
+</body>
+padding: 10px;
+</html>
+}
+26
+Align-content
+• La proprietà align-content modifica il comportamento
+della proprietà flex-wrap
+• E’ simile a align-items, ma invece di allineare i flex item,
+allinea le flex line
+• Il valore di default è stretch: le linee sono “stretchate”
+per occupare lo spazio restante
+• Gli altri possibili valori sono:
+– flex-start
+– flex-end
+– center (align_content_07.html)
+– space-between
+– space-around
+27
+Align-content
+Flex-start Center Space-around
+Space-between Stretch
+Flex-end
+28
+align_content_07.html
+body {
+font-family: arial;
+<!DOCTYPE html>
+color: white;
+<html>
+<head> }
+</head> .flex-container {
+<body> display: flex;
+flex-wrap: wrap;
+<div class="flex-container">
+align-content: center;
+<div class="flex-item">
+width: 450px;
+flex item 1
+height: 400px;
+</div>
+background-color: grey;
+<div class="flex-item">
+}
+flex item 2
+</div> .flex-item {
+<div class="flex-item"> background-color: darkred;
+flex item 3 width: 150px;
+</div>
+height: 100px;
+</div>
+margin: 10px;
+padding: 10px;
+</body>
+}
+</html>
+29
+Order
+• La proprietà order specifica l’ordine di un flex
+item relativo al resto degli altri flex item
+all’interno dello stesso container
+• Valori ammessi: interi (positivi e negativi)
+• Il prossimo esempio mostra il risultato dell’uso
+di order in un flex item:
+order_08.html
+30
+order_08.html
+body {
+<!DOCTYPE html> font-family: arial;
+<html> color: white;
+<head>
+}
+</head>
+.flex-container {
+<body>
+display: flex;
+width: 400px;
+<div class="flex-container">
+height: 250px;
+<div class="flex-item">
+background-color: grey;
+flex item 1
+</div> }
+<div class="flex-item first"> .flex-item {
+flex item 2 background-color: darkred;
+</div>
+width: 100px;
+<div class="flex-item">
+height: 100px;
+flex item 3
+margin: 10px;
+</div>
+padding: 10px;
+</div>
+}
+.first {
+</body>
+</html> order: -1;
+}
+31
+Margin
+• margin: auto;
+assorbe lo spazio extra. Può essere usato per
+spingere i flex item verso posizioni diverse
+• Nel prossimo esempio impostiamo
+margin-right: auto;
+sul primo flex item.
+Questo causerà l’assorbimento dello spazio extra
+alla destra dell’elemento:
+margin_09.html
+32
+margin_09.html
+body {
+<!DOCTYPE html> font-family: arial;
+<html> color: white;
+<head>
+}
+</head>
+.flex-container {
+<body>
+display: flex;
+width: 500px;
+<div class="flex-container">
+height: 250px;
+<div class="flex-item right">
+background-color: grey;
+flex item 1
+</div> }
+<div class="flex-item"> .flex-item {
+flex item 2 background-color: darkred;
+</div>
+width: 100px;
+<div class="flex-item">
+height: 100px;
+flex item 3
+margin: 10px;
+</div>
+padding: 10px;
+</div>
+}
+.right {
+</body>
+</html> margin: auto;
+}
+33
+Perfect Centering
+• Nel prossimo esempio vedremo come posizionare
+un elemento perfettamente al centro del suo
+elemento contenitore
+• Questa soluzione è nota come: perfect centering
+• Finalmente con i flexbox è possibile e semplice:
+margin: auto;
+• Questa regola permette di centrare perfettamente
+un elemento rispetto ad entrambi gli assi
+(centering_10.html)
+34
+centering_10.html
+body {
+<!DOCTYPE html> font-family: arial;
+<html> color: white;
+<head> }
+</head>
+.flex-container {
+<body>
+display: flex;
+width: 400px;
+<div class="flex-container">
+height: 250px;
+<div class="flex-item">
+background-color: grey;
+flex item (perfect centering)
+}
+</div>
+</div> .flex-item {
+background-color: darkred;
+</body> width: 100px;
+</html>
+height: 100px;
+margin: auto;
+padding: 10px;
+}
+35
+Align-self
+• La proprietà align-self di un flex item
+sovrascrive la proprietà align-items del flex
+container per quell particolare item
+• Ammette gli stessi possibili valori della
+proprietà align-items (stretch, flex-start,
+flex-end, center, baseline)
+• ll prossimo esempio mostra il risultato di
+differenti valori di align-self assegnati ad ogni
+flex item (align_self_11.html)
+36
+align_self_11.html
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<div class="flex-container">
+<div class="flex-item item1">flex-start</div>
+<div class="flex-item item2">flex-end</div>
+<div class="flex-item item3">center</div>
+<div class="flex-item item4">baseline</div>
+<div class="flex-item item5">stretch</div>
+</div>
+</body>
+</html>
+37
+align_self_11.html
+body {
+font-family: arial;
+.item1 {
+color: white;
+align-self: flex-start;
+}
+}
+.flex-container {
+.item2 {
+display: flex;
+align-self: flex-end;
+width: 600px;
+}
+height: 250px;
+.item3 {
+background-color: grey;
+align-self: center;
+}
+}
+.flex-item {
+.item4 {
+background-color: darkred;
+align-self: baseline;
+width: 100px;
+}
+min-height: 100px;
+.item5 {
+margin: 10px;
+align-self: stretch;
+padding: 10px;
+}
+text-align: center;
+}
+38
+Flex-grow
+• La proprietà flex-grow definisce la capacità di un
+elemento di crescere, specificando la lunghezza del flex
+item relativa agli altri flex item all’interno dello stesso
+container
+• Si può specificare un valore unitario per alcuni elementi
+e un valore più elevato per altri
+• Così se su tre elementi due hanno valore unitario 1 e
+uno ha valore 2, quest'ultimo cercherà di occupare il
+doppio dello spazio rispetto agli altri elementi
+• Nel prossimo esempio, il primo flex item occuperà la
+metà dello spazio libero, mentre gli altri due flex item
+occuperanno 1/4 dello spazio libero ciascuno:
+flex_grow_12.html
+39
+flex_grow_12.html
+<!DOCTYPE html>
+<html>
+body {
+<head>
+</head> font-family: arial;
+<body> color: white;}
+.flex-container {
+<div class="flex-container"> display: flex;
+<div class="flex-item double">
+width: 600px;
+flex item 1
+height: 250px;
+</div>
+background-color: grey;}
+<div class="flex-item single">
+.flex-item {
+flex item 2
+background-color: darkred;
+</div>
+margin: 10px;
+<div class="flex-item single">
+text-align: center;}
+flex item 3
+.double {
+</div>
+flex-grow: 2;}
+</div>
+.single {
+flex-grow: 1;}
+</body>
+</html>
+40
+Flex-shrink
+• La proprietà flex-shrink definisce l'abilità di un
+elemento di contrarsi se necessario.
+• Si applica ai flex item, ed è relativa agli altri
+flex item all’interno dello stesso container
+• Nel prossimo esempio, il secondo flex item
+occuperà la metà della larghezza occupata di
+default dagli altri flex item:
+flex_shrink_13.html
+41
+Flex_shrink_13.html
+<!DOCTYPE html>
+<html> body {
+<head> font-family: arial;
+</head> color: white;}
+<body>
+.flex-container {
+display: flex;
+<div class="flex-container">
+width: 600px;
+<div class="flex-item">
+height: 250px;
+flex item 1
+background-color: grey;}
+</div>
+.flex-item {
+<div class="flex-item shrink">
+background-color: darkred;
+flex item 2
+margin: 10px;
+</div>
+text-align: center;
+<div class="flex-item">
+width: 300px;
+flex item 3
+</div> }
+.shrink {
+</div>
+flex-shrink: 3;}
+</body>
+</html>
+42
+Responsive flexbox
+• Questo è un esempio di un layout responsive in
+cui vogliamo usare i flexbox per gli elementi:
+– <header>
+– <main>
+– <nav>
+– <aside>
+– <footer>
+• Esempio.html
+43
+No CSS
+Header
+Nav
+Aside
+Main
+Footer
+44
+Risultato che vogliamo ottenere
+45
+Responsive flexbox
+• Lavoriamo insieme aggiungendo il foglio di stile
+interno per ottenere il risultato mostrato nella
+slide precedente e che troverete nel file
+su Virtuale
+esempio_completo.html
+46
+Riferimenti
+• Risorse online sulla piattaforma
+• Standard completi:
+– CSS1, http://www.w3.org/TR/CSS1
+– CSS2, http://www.w3.org/TR/CSS2
+• https://www.w3.org/TR/css-flexbox-1/
+• Approfondimenti su «CSS3 Guida completa per lo
+sviluppatore», Peter Gasston, 2011. Disponibile
+in biblioteca
+47
+Risorse online
+• http://www.cssauthor.com/css-flexbox/
+• https://css-tricks.com/snippets/css/a-guide-to-
+flexbox/
+• http://learnlayout.com/flexbox.html
+• Edutainment:
+– http://flexboxfroggy.com/
+– http://www.flexboxdefense.com/
+48
