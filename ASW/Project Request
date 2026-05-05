@@ -1,11 +1,14 @@
-Oggetto: Proposta progetto ASW – KompozeR
+
 
 Scrivo per sottoporre alla sua approvazione la proposta di progetto per il corso di Applicazioni e Servizi Web.
+
+Il progetto vuole soddisfare i requisiti di 2 esami (Applicazioni e servizi web e Distributed System), per fare ciò sono state individuate ed eventualmente estese le funzionalità di modo da rispettare entrambi i corsi.
 
 Membro del gruppo
 Valerio Giannini (valerio.giannini@studio.unibo.it)
 
 Obiettivo
+
 KompozeR è una web application che estende le funzionalità dell'e-commerce di Kompo (www.soluzionekompo.com), azienda specializzata in mobili componibili personalizzabili. L'applicazione permette all'utente di progettare la propria scaffalatura tramite un configuratore visuale interattivo, ottenendo un'anteprima del risultato finale e popolando automaticamente il carrello con i componenti selezionati. Un chatbot assistente in tempo reale guida l'utente durante la configurazione, rispondendo a domande su dimensioni, compatibilità e prezzi. Il sistema notifica inoltre l'utente in tempo reale in caso di variazioni di disponibilità o prezzo dei componenti inseriti nella propria configurazione.
 
 Requisiti
@@ -22,5 +25,3 @@ Utilizzeremo lo stack MEVN (MongoDB, Express, Vue.js, Node.js) con TypeScript su
 
 Resto a disposizione per qualsiasi chiarimento.
 
-Cordiali saluti,
-Valerio Giannini
