@@ -1,58 +1,16 @@
-# Gestionale
-Progetto di un gestionale per PACI, da usare anche come progetto combinato di Distributed System e ASW.
+# KompozeR
 
-# Flusso di pensieri iniziale
+## Descrizione del prodotto
+Progetto di un servizio che estende le funzionalità di un e-commerce già esistente. 
 
-> Server centralizzato \
-> Ci serve per unificare tutte le informazioni, deve essere grande! \
-> Contiene tutto
+>www.soluzionekompo.com 
 
-> Ogni utente viene considerato come ATTORE \
-> Ogni attore ha un suo DB che contiene tutte e sole le sue informazioni. \
-> Ogni attore ha un DB per ogni Microservizio. \
+Kompo è un'azienda che vende mobili componibili la cui struttura è completamente personalizzabile in base alle esigenze del singolo individuo.  \
+Questa estensione ha il compito di facilitare l'esperienza di acquisto per l'utente, dando la possibilità di progettare la propria scaffalatura in modo semplice e veloce, avendo anche un impatto visuale sul risultato finale.  \
+Con la progettazione viene anche "popolato il carrello" in modo automatico, essendo così pronti ad ordinare il prodotto finale. 
 
-> Il DB centralizzato si sincronizza ad ogni evento con quello distribuito: \
-> 1. Evento dell'attore => Aggiorna il suo DB e successivamente si sincronizza a quello centralizzato. 
-> 2. Evento centralizzato => Pusha l'evento all'Attore, che reagisce aggiornando il suo DB personale e solo dopo si sincronizza a quello centralizzato.
+## Punti Chiave per i corsi d'esame
 
-> La struttura del DB è da verificare, potrebbe aver senso sfruttare qualcosa di più "strutturato" rispetto al bellissimo MongoDB. -> Da VALUTARE le opzioni.
+### ASW
 
-> Bisogna realizzare più VISTE:
-> 1. Vista base dell'utente
-> 2. Vista dell'admin
-> 3. Vista di gestione del DB per l'utente
-> 4. Vista di gestione del DB per l'admin
-> 5. altro?
-
-# PLAN
-
-> Per fare in modo di strutturare il progetto in modo ordinato e funzionale, verrà eseguito il flusso di progettazione identificato dal DDD. \
-> Solo dopo aver definito TUTTO si passerà all'implementazione. 
-
-## Report LaTeX
-
-Il report è nella cartella `Report/` ed è strutturato in:
-
-- `Report.tex`: file principale
-- `style.sty`: stile (font, spaziature, impaginazione)
-- `chapters/*.tex`: capitoli separati
-
-### Compilazione (PDF)
-
-Da root progetto:
-
-```powershell
-cd Report
-pdflatex Report.tex
-pdflatex Report.tex
-```
-
-Oppure, se disponibile:
-
-```powershell
-cd Report
-latexmk -pdf Report.tex
-```
-
-
-
+### DS
