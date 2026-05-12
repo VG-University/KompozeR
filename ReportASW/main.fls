@@ -71,12 +71,6 @@ INPUT .\sections\design.tex
 INPUT .\sections\design.tex
 INPUT .\sections\design.tex
 INPUT sections\design.tex
-INPUT .\images\deathStar2.jpg
-INPUT .\images\deathStar2.jpg
-INPUT .\images\deathStar2.jpg
-INPUT .\images\deathStar2.jpg
-INPUT .\images\deathStar2.jpg
-INPUT .\images\deathStar2.jpg
 INPUT .\sections\tecnologie.tex
 INPUT .\sections\tecnologie.tex
 INPUT .\sections\tecnologie.tex
@@ -102,12 +96,6 @@ INPUT .\sections\conclusioni.tex
 INPUT .\sections\conclusioni.tex
 INPUT .\sections\conclusioni.tex
 INPUT sections\conclusioni.tex
-INPUT .\main.bbl
-INPUT .\main.bbl
-INPUT main.bbl
-INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmr17.tfm
-INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmbx12.tfm
-INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmti10.tfm
 INPUT main.aux
 INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmbx12.pfb
 INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmbx12.pfb
@@ -119,5 +107,3 @@ INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\c
 INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmr17.pfb
 INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy10.pfb
 INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy10.pfb
-INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmti10.pfb
-INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmti10.pfb

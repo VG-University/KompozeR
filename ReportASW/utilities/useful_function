@@ -1,0 +1,9 @@
+inserimento figura esempio
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.44]{deathStar2.jpg}
+\caption{Death Star}
+\label{fig:deathstar}
+\end{figure}
+____________________________________
