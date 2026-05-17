@@ -2,19 +2,49 @@
 
 La definizione dei requisiti di KompozeR e' stata costruita seguendo un approccio orientato all'utente. In particolare, la fase di analisi e' stata articolata a partire dall'individuazione degli stakeholder principali, dalla costruzione di personas rappresentative e dalla descrizione di scenari e casi d'uso centrali. Questo consente di giustificare i requisiti di business, funzionali e non funzionali come derivazione diretta di esigenze concrete del dominio applicativo.
 
-Nel dominio di KompozeR il catalogo e' organizzato in tre categorie di prodotto, Tondo, Quuadro e Qube. Le tre categorie presentano finalita' simili, ma non sono compatibili tra loro; di conseguenza, il configuratore deve operare su una categoria alla volta e impedire la combinazione di componenti appartenenti a categorie diverse.
-
 \subsection{Stakeholder}
 
-Gli stakeholder principali del sistema sono i seguenti:
+L'identificazione degli stakeholder consente di chiarire chi trae valore dal sistema, chi lo utilizza direttamente e chi influenza i vincoli progettuali.
 
-\begin{itemize}
-	\item il \textbf{cliente finale}, che vuole configurare e acquistare una scaffalatura personalizzata in modo intuitivo e senza errori;
-	\item il \textbf{cliente registrato ricorrente}, che desidera salvare, recuperare e modificare configurazioni in tempi diversi;
-	\item l'\textbf{amministratore del catalogo}, che aggiorna prezzi e disponibilita' dei componenti e deve mantenere la coerenza tra dati commerciali e configurazioni acquistabili.
-\end{itemize}
+\subsubsection{Stakeholder primari}
 
-Tra gli stakeholder secondari rientrano inoltre l'azienda Kompo, interessata a migliorare il canale e-commerce, il servizio clienti, che beneficia della riduzione delle richieste ripetitive, e il responsabile della reportistica, che necessita di una vista sintetica sull'andamento di ordini e vendite.
+{\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{center}
+\begin{tabular}{|p{2.2cm}|p{2.4cm}|p{2.7cm}|p{2.5cm}|}
+\hline
+\textbf{Stakeholder} & \textbf{Descrizione} & \textbf{Obiettivi principali} & \textbf{Bisogni critici} \\
+\hline
+Cliente finale & Utente che desidera progettare e acquistare una scaffalatura personalizzata & Configurare rapidamente il prodotto corretto, capire prezzo e compatibilita', completare l'acquisto senza errori & Configuratore chiaro, anteprima affidabile, salvataggio configurazioni \\
+\hline
+Cliente registrato ricorrente & Utente che torna sul sito per modificare o riordinare una configurazione & Riutilizzare o modificare configurazioni salvate & Storico configurazioni, accesso rapido \\
+\hline
+Amministratore catalogo & Operatore che gestisce prodotti, componenti, disponibilita' e prezzi & Mantenere coerente il catalogo e rendere acquistabili solo combinazioni valide & Interfacce di gestione chiare, aggiornamenti rapidi, controllo consistenza dati \\
+\hline
+\end{tabular}
+\end{center}
+}
+
+\subsubsection{Stakeholder secondari}
+
+{\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{center}
+\begin{tabular}{|p{2.6cm}|p{3.1cm}|p{3.4cm}|}
+\hline
+\textbf{Stakeholder} & \textbf{Ruolo nel progetto} & \textbf{Interesse principale} \\
+\hline
+Azienda Kompo & Committente del prodotto & Aumentare conversione, ridurre abbandono, migliorare esperienza d'acquisto \\
+\hline
+Team di sviluppo & Realizza e mantiene il sistema & Requisiti chiari, comportamento verificabile, architettura evolvibile \\
+\hline
+Servizio clienti & Supporta utenti con dubbi o problemi & Ridurre richieste ripetitive grazie a configuratore e assistenza automatizzata \\
+\hline
+Responsabile business/reportistica & Analizza andamento vendite e utilizzo del sistema & Ottenere insight utili su trend di vendita e utilizzo delle funzionalita' \\
+\hline
+\end{tabular}
+\end{center}
+}
 
 \subsection{Personas}
 
