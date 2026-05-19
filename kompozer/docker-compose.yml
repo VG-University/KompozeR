@@ -1,0 +1,106 @@
+services:
+
+  # ── Infrastructure ─────────────────────────────────────────────
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  mongo-auth:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: authdb
+
+  mongo-cad:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: caddb
+
+  mongo-cart:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: cartdb
+
+  mongo-catalog:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: catalogdb
+
+  mongo-chat:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: chatdb
+
+  mongo-notification:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: notificationdb
+
+  mongo-reporting:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: reportingdb
+
+  # ── Backend services ───────────────────────────────────────────
+
+  api-gateway:
+    build: ./backend/apiGateway
+    ports: ["${GATEWAY_PORT}:${GATEWAY_PORT}"]
+    env_file: .env
+    depends_on: [auth-service, cad-service, cart-service, catalog-service, reporting-service]
+
+  auth-service:
+    build: ./backend/authenticationService
+    env_file: .env
+    depends_on: [mongo-auth]
+
+  cad-service:
+    build: ./backend/cadService
+    env_file: .env
+    depends_on: [mongo-cad, redis]
+
+  cart-service:
+    build: ./backend/cartService
+    env_file: .env
+    depends_on: [mongo-cart, redis, catalog-service]
+
+  catalog-service:
+    build: ./backend/catalogService
+    env_file: .env
+    depends_on: [mongo-catalog, redis]
+
+  chatbot-service:
+    build: ./backend/chatbotService
+    env_file: .env
+    depends_on: [mongo-chat, catalog-service]
+
+  notification-service:
+    build: ./backend/notificationService
+    env_file: .env
+    depends_on: [mongo-notification, redis]
+
+  reporting-service:
+    build: ./backend/reportingService
+    env_file: .env
+    depends_on: [mongo-reporting, cart-service, catalog-service]
+
+  # ── Frontend ───────────────────────────────────────────────────
+
+  frontend:
+    build: ./frontend
+    ports: ["5173:5173"]
+    depends_on: [api-gateway]
