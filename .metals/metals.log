@@ -188,3 +188,5 @@ C:\Users\giann\Documents\GitHub\KompozeR\smartparking\backend\auth-service\src\m
 2026.05.19 11:35:50 INFO  no build target found for C:\Users\giann\Documents\GitHub\KompozeR\smartparking\backend\auth-service\src\main\java\com\smartparking\authservice\application\ports\AuthRepository.java. Using fallback presentation compiler.
 mag 19, 2026 12:38:12 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
 INFORMAZIONI: Unsupported notification method: $/setTrace
+mag 19, 2026 6:27:07 PM org.eclipse.lsp4j.jsonrpc.services.GenericEndpoint notify
+INFORMAZIONI: Unsupported notification method: $/setTrace
