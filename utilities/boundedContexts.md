@@ -135,8 +135,8 @@ Per semplificare il modello iniziale, si distinguono:
 
 #### `Product`
 
-- Campi minimi: `id`, `systemType`, `componentType`, `name`, `description`, `dimensions`, `material`, `finish`, `price`, `stockQuantity`, `isActive`
-- Value Object associati: `ProductId`, `SystemType`, `ComponentType`, `Dimensions`, `Money`, `StockQuantity`
+- Campi minimi: `id`, `systemType`, `componentType`, `name`, `description`, `dimensions`, `price`, `availability`, `isActive`
+- Value Object associati: `ProductId`, `SystemType`, `ComponentType`, `Dimensions`, `Money`, `Availability`
 - Note: `Product` e' un'entita' unica. `Tondo`, `Quadro` e `Kube` non vengono modellati come aggregati separati, ma come varianti del value object `SystemType`.
 
 #### `Configuration`
@@ -156,13 +156,13 @@ Per semplificare il modello iniziale, si distinguono:
 | Value Object | Significato |
 |---|---|
 | `UserId` | Identificatore logico di un utente |
-| `Role` | Ruolo dell'utente, ad esempio `GUEST`, `USER`, `ADMIN` |
+| `Role` | Ruolo dell'utente, ad esempio `GUEST`, `BASE`, `ADMIN` |
 | `ProductId` | Identificatore logico di un prodotto |
 | `SystemType` | Famiglia/configurazione del sistema: `TONDO`, `QUADRO`, `KUBE` |
 | `ComponentType` | Tipo di pezzo: `PIEDINO`, `TERMINALE`, `MONTANTE`, `RIPIANO`, `MENSOLA` |
 | `Dimensions` | Misure rilevanti di un prodotto o componente |
 | `Money` | Valore monetario usato per prezzi e snapshot economici |
-| `StockQuantity` | Quantita' disponibile a magazzino |
+| `Availability` | Booleano che segna la disponibilità in magazzino |
 | `ConfigurationStatus` | Stato di una configurazione, ad esempio `DRAFT`, `SAVED`, `FINALIZED` |
 | `PlacedComponent` | Riferimento a un prodotto posizionato dentro una configurazione |
 | `GridCell` | Posizione logica del componente nella griglia CAD |
@@ -212,7 +212,7 @@ con `Product` come riferimento centrale condiviso tra CAD, Catalog e Cart.
 - `ItemAddedToCart`
 - `ItemRemovedFromCart`
 - `CartUpdatedFromConfiguration`
-- `OrderSubmitted`
+- `OrderRequestSubmitted`
 - `OrderConfirmationRequested`
 
 ### Catalog
@@ -220,7 +220,7 @@ con `Product` come riferimento centrale condiviso tra CAD, Catalog e Cart.
 - `ProductCreated`
 - `ProductUpdated`
 - `PriceChanged`
-- `StockChanged`
+- `AvailabilityChanged`
 - `ProductDisabled`
 
 ### Chatbot

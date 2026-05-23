@@ -45,3 +45,35 @@ Linguaggio: **TypeScript** sul backend.
 
 
 ### DS
+
+| Feature | Capitolo dispense |
+|---|---|
+| Architettura client-server con coordinatore centrale | M4, M8 |
+| Comunicazione event-based per collaborazione real-time | M8, LAB 2 |
+| Collaborative editing della stessa configurazione | M0, M4 |
+| Causal ordering degli aggiornamenti concorrenti | M3, C5 |
+| Replica della persistenza con MongoDB Replica Set | M3, C1 |
+| Trade-off consistenza/disponibilità configurabile | M3, C1 |
+| Checkpointing e recovery dello stato collaborativo | C2 |
+| Fault tolerance in caso di crash del backend | M1, C2 |
+| Gestione della concorrenza su configurazioni, carrelli e catalogo | M2, M3 |
+| Container orchestration locale con Docker Compose | M8 |
+| Deployment production-oriented con Kubernetes/Minikube | CX |
+
+#### Stack Tecnologico
+**Node.js + Express** per backend REST e coordinamento delle sessioni collaborative.  
+**Vue.js + TypeScript** per la SPA con configuratore visuale.  
+**Socket.io** per la comunicazione bidirezionale real-time.  
+**MongoDB Replica Set** per la persistenza replicata.  
+Deployment locale con **Docker Compose** e deployment production-oriented con **Kubernetes (Minikube)**.
+
+#### Funzionalità Core
+
+1. **Collaborative editing** — più utenti autenticati possono lavorare sulla stessa configurazione in tempo reale
+2. **Session coordinator** — il backend centrale coordina le sessioni collaborative e mantiene uno stato condiviso consistente
+3. **Aggiornamenti incrementali via WebSocket** — ogni modifica viene propagata agli altri partecipanti senza ricaricare l'intera configurazione
+4. **Causal ordering** — gli aggiornamenti concorrenti vengono ordinati secondo relazioni causali, senza dipendere da un clock globale
+5. **Replica della persistenza** — i dati del sistema, in particolare quelli del CAD collaborativo, sono mantenuti su storage replicato
+6. **Checkpointing e recovery** — lo stato delle sessioni collaborative viene salvato periodicamente per poter recuperare dopo un crash
+7. **Gestione dei fault** — in caso di failure del backend o del nodo primario MongoDB, il sistema deve riprendere il servizio in modo controllato
+8. **Consistenza applicativa esplicita** — il progetto rende evidente il compromesso tra consistenza e disponibilita', soprattutto nelle operazioni concorrenti
