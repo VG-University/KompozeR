@@ -1,2 +1,70 @@
 \section{Test}
-Test effettuati sul codice e test con utenti.
+
+Questa sezione descrive la strategia di verifica del progetto, con l'obiettivo di mostrare come il sistema sia stato controllato dal punto di vista funzionale, applicativo e, dove possibile, dell'esperienza utente.
+
+\subsection{Obiettivi della fase di test}
+
+La fase di test ha lo scopo di verificare:
+
+\begin{itemize}
+	\item correttezza dei flussi applicativi principali;
+	\item coerenza delle API esposte dai servizi;
+	\item corretto comportamento dell'interfaccia nei casi d'uso principali;
+	\item adeguatezza generale dell'esperienza utente.
+\end{itemize}
+
+\subsection{Test backend}
+
+In questa sottosezione si possono riportare i test svolti o pianificati sui servizi backend, distinguendo se necessario tra:
+
+\begin{itemize}
+	\item test unitari della logica applicativa;
+	\item test di integrazione degli endpoint REST;
+	\item verifica dei controlli di autorizzazione;
+	\item verifica della correttezza dei payload in ingresso e in uscita.
+\end{itemize}
+
+Se una parte dei test non e' ancora stata completata, conviene dichiararlo in modo esplicito, indicando quali verifiche risultano gia' disponibili e quali rappresentano lavoro futuro.
+
+\subsection{Test frontend}
+
+Questa sottosezione puo' descrivere le verifiche effettuate sull'interfaccia, ad esempio:
+
+\begin{itemize}
+	\item corretto rendering delle viste principali;
+	\item aggiornamento dei dati a seguito delle azioni dell'utente;
+	\item comportamento delle componenti di configurazione, chatbot e notifiche;
+	\item fruibilita' su viewport differenti.
+\end{itemize}
+
+\subsection{Test end-to-end dei flussi principali}
+
+E' utile riportare almeno alcuni scenari completi, come:
+
+\begin{itemize}
+	\item registrazione o login e accesso alle funzionalita' protette;
+	\item creazione di una configurazione e salvataggio;
+	\item popolamento del carrello a partire da una configurazione;
+	\item aggiornamento del catalogo da parte dell'amministratore e osservazione degli effetti sul sistema.
+\end{itemize}
+
+Per ciascuno scenario si possono indicare passi principali, risultato atteso e risultato osservato.
+
+\subsection{Valutazione qualitativa con utenti}
+
+Se sono stati svolti test informali o osservazioni su utenti reali o simulati, questa e' la sede giusta per riportarli. In particolare si possono discutere:
+
+\begin{itemize}
+	\item facilità d'uso percepita del configuratore;
+	\item comprensibilita' del flusso di acquisto;
+	\item utilita' percepita di chatbot e notifiche;
+	\item eventuali criticita' emerse durante la prova.
+\end{itemize}
+
+\subsection{Limiti dell'attivita' di test}
+
+In questa parte conviene esplicitare i limiti della verifica svolta, ad esempio presenza di test manuali predominanti, copertura non completa o parti ancora non implementate. Questa trasparenza rende il report piu' credibile e aiuta a contestualizzare i risultati.
+
+\subsection{Sintesi dei risultati}
+
+La sezione puo' chiudersi con una sintesi dei principali esiti della verifica, evidenziando quali obiettivi risultano gia' soddisfatti e quali miglioramenti restano pianificati per l'evoluzione del progetto.

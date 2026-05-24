@@ -1,2 +1,44 @@
 \section{Deployment}
-Rilascio, installazione e messa in funzione.
+
+Questa sezione descrive come il sistema viene eseguito, configurato e avviato. L'obiettivo e' mostrare che l'architettura progettata puo' essere effettivamente messa in funzione in un ambiente coerente con le scelte tecnologiche effettuate.
+
+\subsection{Architettura di esecuzione}
+
+KompozeR prevede l'esecuzione coordinata di frontend, gateway, microservizi backend e basi di dati dedicate. In questa sottosezione e' utile descrivere come tali componenti vengano avviati e collegati tra loro in ambiente locale o di test.
+
+Qui si puo' inserire un diagramma di deployment semplificato che mostri container o processi principali e relative dipendenze.
+
+\subsection{Containerizzazione dei servizi}
+
+Se il progetto utilizza Docker, questa parte dovrebbe spiegare come ogni componente applicativo venga pacchettizzato e reso eseguibile in modo consistente. Conviene chiarire:
+
+\begin{itemize}
+	\item quali componenti vengono containerizzati;
+	\item il ruolo delle immagini applicative;
+	\item il vantaggio in termini di isolamento e riproducibilita'.
+\end{itemize}
+
+\subsection{Configurazione dell'ambiente}
+
+Per l'esecuzione del sistema e' necessario definire variabili d'ambiente, porte di ascolto, URL dei servizi e parametri di connessione ai database. In questa sottosezione conviene riassumere la configurazione minima richiesta, evitando di riportare dati sensibili ma chiarendo la logica generale del setup.
+
+\subsection{Avvio del sistema in locale}
+
+Questa parte dovrebbe descrivere in modo sintetico la procedura necessaria per eseguire il progetto in ambiente di sviluppo o dimostrazione. Ad esempio:
+
+\begin{itemize}
+	\item preparazione dell'ambiente;
+	\item avvio dei servizi e dei database;
+	\item avvio del frontend;
+	\item verifica del corretto funzionamento iniziale.
+\end{itemize}
+
+Se utile, qui si possono richiamare i principali comandi o i file di configurazione che rendono possibile l'avvio coordinato del sistema.
+
+\subsection{Persistenza e dati iniziali}
+
+In questa sottosezione si puo' spiegare come vengono gestiti i dati minimi necessari all'avvio del sistema, ad esempio utenti amministrativi iniziali, prodotti di catalogo di esempio o configurazioni di base utili per test e dimostrazione.
+
+\subsection{Considerazioni operative}
+
+La sezione puo' chiudersi con alcune osservazioni sulle principali implicazioni operative della soluzione adottata: facilita' di setup, modularita' dell'ambiente, possibilita' di sostituzione o aggiornamento dei singoli servizi e supporto a una futura evoluzione del sistema.

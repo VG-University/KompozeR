@@ -75,6 +75,7 @@ INPUT .\sections\design.tex
 INPUT .\sections\design.tex
 INPUT .\sections\design.tex
 INPUT sections\design.tex
+INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\tfm\public\cm\cmtt10.tfm
 INPUT .\sections\tecnologie.tex
 INPUT .\sections\tecnologie.tex
 INPUT .\sections\tecnologie.tex
@@ -119,3 +120,5 @@ INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\c
 INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmr8.pfb
 INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy10.pfb
 INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmsy10.pfb
+INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmtt10.pfb
+INPUT C:\Users\giann\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmtt10.pfb

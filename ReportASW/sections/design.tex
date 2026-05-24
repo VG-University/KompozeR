@@ -1,3 +1,124 @@
 \section{Design}
-Design dell'architettura del sistema e delle interfacce utente.
+
+Questa sezione descrive le principali scelte di progettazione del sistema dal punto di vista di Applicazioni e Servizi Web. L'obiettivo e' spiegare come KompozeR sia stato organizzato come applicazione web moderna, chiarendo responsabilita' dei componenti, flussi di comunicazione, modello architetturale e organizzazione delle interfacce utente.
+
+Gli aspetti piu' strettamente legati ai sistemi distribuiti, come coordinamento collaborativo avanzato, ordering causale, recovery e fault tolerance, sono richiamati solo quando necessari per comprendere le scelte architetturali generali e vengono trattati in dettaglio nel report dedicato a DS.
+
+\subsection{Obiettivi di design}
+
+Le principali decisioni progettuali sono state guidate dai seguenti obiettivi:
+
+\begin{itemize}
+	\item separare in modo chiaro frontend, gateway e servizi backend;
+	\item mantenere indipendenti i moduli principali del dominio, come autenticazione, catalogo, configurazione, carrello, notifiche e reporting;
+	\item favorire manutenibilita', evoluzione incrementale e chiarezza delle responsabilita';
+	\item supportare un'esperienza utente interattiva, con aggiornamenti rapidi di prezzo, configurazione e notifiche.
+\end{itemize}
+
+\subsection{Visione architetturale}
+
+KompozeR e' stato progettato come una Single Page Application che comunica con un backend organizzato in piu' microservizi. Il frontend concentra la logica di presentazione e di interazione con l'utente, mentre il backend espone servizi applicativi separati per area di responsabilita'.
+
+Dal punto di vista logico, l'architettura si articola in tre livelli principali:
+
+\begin{itemize}
+	\item frontend web, responsabile dell'interazione con utenti finali e amministratori;
+	\item API Gateway, che rappresenta il punto di ingresso unico per richieste HTTP e comunicazioni real-time;
+	\item microservizi backend, ciascuno focalizzato su un sottoinsieme specifico del dominio.
+\end{itemize}
+
+In questa sottosezione e' opportuno inserire un diagramma architetturale generale che mostri SPA, gateway, servizi e database per servizio.
+
+\subsection{Suddivisione in microservizi}
+
+La scelta di suddividere il backend in microservizi nasce dall'esigenza di isolare responsabilita' diverse e contenere la complessita' del dominio.
+
+I principali servizi individuati sono:
+
+\begin{itemize}
+	\item \texttt{authenticationService}, responsabile di account, login, ruoli e sessioni;
+	\item \texttt{catalogService}, responsabile dei prodotti, dei prezzi e della disponibilita';
+	\item \texttt{cadService}, responsabile delle configurazioni create dagli utenti;
+	\item \texttt{cartService}, responsabile del carrello e delle richieste d'ordine;
+	\item \texttt{notificationService}, responsabile della gestione delle sottoscrizioni e delle notifiche utente;
+	\item \texttt{chatbotService}, responsabile delle sessioni di assistenza conversazionale;
+	\item \texttt{reportingService}, responsabile della generazione e consultazione dei report;
+	\item \texttt{apiGateway}, responsabile dell'esposizione unificata delle API verso il frontend.
+\end{itemize}
+
+Per ciascun servizio e' consigliabile descrivere brevemente:
+
+\begin{itemize}
+	\item responsabilita' principale;
+	\item dati posseduti;
+	\item principali interazioni con gli altri servizi.
+\end{itemize}
+
+\subsection{API Gateway e comunicazione tra componenti}
+
+Il gateway consente di semplificare la comunicazione tra client e backend, centralizzando forwarding, validazione preliminare dei token e controllo degli accessi. In questo modo il frontend interagisce con un unico punto di ingresso, senza dover conoscere i dettagli interni dell'organizzazione dei servizi.
+
+Le interazioni applicative principali avvengono tramite API REST, usate per autenticazione, gestione catalogo, operazioni sul carrello, recupero configurazioni e consultazione dei report. Alcune funzionalita' che richiedono aggiornamento tempestivo, come notifiche e assistenza conversazionale, fanno uso anche di comunicazione real-time.
+
+In questa parte conviene sottolineare che il canale real-time e' rilevante anche per ASW come scelta di interazione web avanzata, mentre gli aspetti algoritmici e distribuiti piu' sofisticati vengono approfonditi separatamente nel report DS.
+
+\subsection{Organizzazione del frontend}
+
+Il frontend e' stato pensato come SPA con pagine e componenti organizzati per responsabilita' utente. Le principali viste applicative sono:
+
+\begin{itemize}
+	\item area catalogo e accesso al configuratore;
+	\item configuratore visuale della scaffalatura;
+	\item area carrello e riepilogo richiesta d'ordine;
+	\item area notifiche;
+	\item interfaccia chatbot di supporto;
+	\item area amministrativa per catalogo e reportistica.
+\end{itemize}
+
+Qui e' utile spiegare come il frontend mantenga separati stato di sessione, stato del catalogo, stato delle configurazioni e dati amministrativi, cosi' da rendere piu' chiara la manutenzione del codice e la coerenza delle interazioni.
+
+\subsection{Modello del dominio rilevante per ASW}
+
+Dal punto di vista applicativo, il dominio ruota attorno ad alcune entita' centrali: utente, prodotto, configurazione, carrello, richiesta d'ordine, sessione di chat e notifica. La progettazione ha cercato di mantenere chiaro il confine tra dati globali condivisi e concetti locali dei singoli servizi.
+
+In questa sottosezione e' opportuno sintetizzare:
+
+\begin{itemize}
+	\item le entita' principali del dominio;
+	\item i bounded context principali;
+	\item le relazioni tra configurazione, catalogo e carrello;
+	\item il ruolo di utenti registrati, guest e amministratori.
+\end{itemize}
+
+Se necessario, si puo' inserire un diagramma concettuale semplificato, evitando pero' di appesantire il report con dettagli che saranno gia' sviluppati nel report DS.
+
+\subsection{Sicurezza e controllo accessi}
+
+La sicurezza applicativa si basa su autenticazione tramite token e su una distinzione chiara tra livelli di accesso. Il sistema prevede infatti operazioni pubbliche, operazioni accessibili a utenti autenticati e operazioni riservate agli amministratori.
+
+In questa parte conviene spiegare:
+
+\begin{itemize}
+	\item il ruolo del servizio di autenticazione;
+	\item l'uso dei token per identificare l'utente lato backend;
+	\item la distinzione tra utente guest, utente autenticato e amministratore;
+	\item il fatto che il gateway rappresenta il primo punto di enforcement delle policy di accesso.
+\end{itemize}
+
+\subsection{Design delle interfacce utente}
+
+Il design delle interfacce e' stato orientato a ridurre la complessita' percepita durante la composizione della scaffalatura. Le principali scelte sono state guidate dall'esigenza di mostrare solo le azioni rilevanti, mantenere visibili prezzo e stato della configurazione e fornire supporto contestuale senza interrompere il flusso principale.
+
+Questa sottosezione puo' includere:
+
+\begin{itemize}
+	\item mockup o screenshot delle viste principali;
+	\item motivazioni di usabilita' per il configuratore;
+	\item organizzazione dell'area amministrativa;
+	\item modalita' di visualizzazione di notifiche e chatbot.
+\end{itemize}
+
+\subsection{Considerazioni finali di progetto}
+
+Nel complesso, il design di KompozeR cerca di bilanciare semplicita' di utilizzo lato utente e modularita' lato backend. La struttura adottata consente di raccontare il progetto in modo coerente nel contesto ASW, concentrandosi su architettura web, progettazione dei servizi, interfacce e organizzazione applicativa, lasciando al report DS l'approfondimento delle dinamiche distribuite piu' specialistiche.
 

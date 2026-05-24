@@ -1,2 +1,70 @@
 \section{Tecnologie}
-Tecnologie adottate e motivazioni.
+
+Questa sezione descrive le principali tecnologie adottate nel progetto e le motivazioni che hanno guidato la loro selezione. L'obiettivo non e' fornire un semplice elenco di strumenti, ma mostrare come ogni scelta sia coerente con i requisiti del sistema e con l'architettura descritta nella sezione precedente.
+
+\subsection{Stack frontend}
+
+Il frontend di KompozeR e' stato concepito come una Single Page Application moderna, orientata a interazioni rapide e aggiornamento dinamico dello stato. In questa sottosezione e' opportuno descrivere le tecnologie utilizzate per:
+
+\begin{itemize}
+	\item rendering dell'interfaccia;
+	\item gestione dello stato client;
+	\item routing tra pagine e viste;
+	\item integrazione con API REST e canali real-time.
+\end{itemize}
+
+Per ciascuna tecnologia selezionata conviene motivare la scelta in termini di produttivita', chiarezza architetturale, ecosistema e aderenza ai requisiti dell'applicazione.
+
+\subsection{Stack backend}
+
+Il backend e' organizzato come insieme di servizi web separati. Qui e' utile descrivere:
+
+\begin{itemize}
+	\item runtime applicativo;
+	\item framework HTTP utilizzato per l'esposizione delle API;
+	\item linguaggio e supporto alla tipizzazione;
+	\item eventuale struttura interna comune dei microservizi.
+\end{itemize}
+
+In questa parte va spiegato perche' una soluzione basata su TypeScript e servizi Express risulta adeguata per un sistema web modulare e facilmente evolvibile.
+
+\subsection{Persistenza dei dati}
+
+La persistenza e' organizzata secondo il principio di database per servizio. Questa sottosezione dovrebbe spiegare:
+
+\begin{itemize}
+	\item la tecnologia di database scelta;
+	\item le motivazioni di flessibilita' e velocita' di sviluppo;
+	\item la separazione dei dati tra i diversi microservizi;
+	\item l'allineamento tra modello logico del dominio e struttura dei documenti persistiti.
+\end{itemize}
+
+\subsection{Comunicazione real-time}
+
+Alcune funzionalita' richiedono uno scambio di informazioni piu' immediato rispetto al classico modello request-response. In questa sottosezione e' utile presentare la tecnologia usata per la comunicazione real-time e spiegare in quali punti del sistema viene impiegata, ad esempio per notifiche utente e chatbot.
+
+Conviene mantenere qui il focus sul valore applicativo e sull'esperienza utente, senza entrare nel dettaglio dei meccanismi distribuiti avanzati che saranno trattati nel report DS.
+
+\subsection{Containerizzazione e strumenti di esecuzione}
+
+Per il deployment locale e per l'avvio coordinato dei servizi e' utile descrivere gli strumenti utilizzati per containerizzazione e orchestrazione leggera. In particolare si possono motivare:
+
+\begin{itemize}
+	\item uso di Docker per isolare i componenti;
+	\item uso di \texttt{docker-compose} per l'avvio dell'intero sistema;
+	\item vantaggi in termini di replicabilita' dell'ambiente e semplicità di setup.
+\end{itemize}
+
+\subsection{Tecnologie per test e sviluppo}
+
+Se previste o gia' utilizzate, questa sottosezione puo' descrivere le tecnologie di supporto allo sviluppo e alla qualita' del codice, ad esempio:
+
+\begin{itemize}
+	\item strumenti di test unitario e di integrazione;
+	\item linters e formatter;
+	\item strumenti per debugging e ispezione delle API.
+\end{itemize}
+
+\subsection{Valutazione complessiva dello stack}
+
+In chiusura, conviene sintetizzare perche' lo stack scelto sia adeguato al progetto: buona separazione delle responsabilita', facilita' di sviluppo incrementale, coerenza con una web application moderna e supporto alla futura evoluzione del sistema.

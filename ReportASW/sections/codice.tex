@@ -1,2 +1,58 @@
 \section{Codice}
-Solo aspetti rilevanti.
+
+Questa sezione non ha l'obiettivo di documentare ogni dettaglio implementativo, ma di mostrare gli aspetti di codice piu' significativi per comprendere come le scelte architetturali siano state tradotte in una soluzione concreta.
+
+\subsection{Organizzazione della repository}
+
+In questa sottosezione e' utile descrivere la struttura generale del progetto, distinguendo tra frontend, backend e documentazione di supporto. Conviene mettere in evidenza come l'organizzazione delle cartelle rifletta la separazione dei moduli applicativi e favorisca manutenzione e comprensione del sistema.
+
+Si puo' inserire un breve tree della repository o una descrizione sintetica delle directory principali.
+
+\subsection{Struttura tipo di un microservizio}
+
+Ogni microservizio del backend segue una struttura interna coerente, pensata per distinguere chiaramente logica di dominio, logica applicativa e componenti di integrazione tecnica. In questa parte conviene presentare la struttura tipo di un servizio, spiegando il ruolo di cartelle e moduli principali.
+
+Questa sottosezione e' particolarmente utile per mostrare come il progetto mantenga ordine e coerenza interna anche in presenza di piu' servizi distinti.
+
+\subsection{Esempi di flussi implementativi rilevanti}
+
+Per evitare una descrizione dispersiva del codice, e' consigliabile selezionare pochi flussi rappresentativi e commentarli in modo mirato. Alcuni candidati naturali sono:
+
+\begin{itemize}
+	\item autenticazione utente e gestione della sessione;
+	\item creazione o salvataggio di una configurazione;
+	\item aggiornamento del catalogo da parte di un amministratore;
+	\item generazione di una notifica a seguito di una modifica rilevante.
+\end{itemize}
+
+Per ciascun flusso si possono mostrare uno o due snippet significativi, spiegando:
+
+\begin{itemize}
+	\item punto di ingresso della richiesta;
+	\item logica applicativa principale;
+	\item componenti coinvolti;
+	\item formato della risposta o effetto osservabile lato utente.
+\end{itemize}
+
+\subsection{Componenti frontend significativi}
+
+Il frontend rappresenta una parte essenziale del progetto, poiche' ospita il configuratore, la navigazione dell'utente e l'interazione con i servizi backend. In questa sottosezione conviene illustrare i componenti piu' rilevanti, ad esempio:
+
+\begin{itemize}
+	\item vista del configuratore;
+	\item componenti di riepilogo prezzo e carrello;
+	\item gestione dello stato di autenticazione;
+	\item componenti per notifiche e chatbot.
+\end{itemize}
+
+L'obiettivo non e' mostrare l'intera implementazione dell'interfaccia, ma evidenziare i punti in cui la struttura del codice supporta in modo chiaro le esigenze applicative.
+
+\subsection{Contratti applicativi e validazione}
+
+Una parte rilevante del progetto riguarda la definizione chiara dei contratti dati tra frontend e backend. In questa sezione si puo' richiamare il lavoro svolto su payload REST, messaggi WebSocket e DTO logici, spiegando come questi contratti contribuiscano alla coerenza dell'implementazione.
+
+Questa sottosezione e' utile anche per mostrare che il progetto e' stato costruito con attenzione alla stabilita' delle API e alla manutenibilita' del codice.
+
+\subsection{Considerazioni sull'implementazione}
+
+In chiusura, conviene sottolineare come l'implementazione rispecchi le decisioni di design: separazione dei moduli, centralita' dei contratti, chiarezza dei servizi e attenzione alla leggibilita' del codice. Anche in presenza di una base ancora in evoluzione, questa sezione deve far emergere la coerenza complessiva della soluzione realizzata.

@@ -1,9 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.3.2)  17 MAY 2026 19:55
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.3.2)  24 MAY 2026 23:17
 entering extended mode
  restricted \write18 enabled.
+ file:line:error style messages enabled.
  %&-line parsing enabled.
-**./main.tex
-(main.tex
+**c:/Users/giann/Documents/GitHub/KompozeR/ReportASW/main.tex
+(c:/Users/giann/Documents/GitHub/KompozeR/ReportASW/main.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
 (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/base\report.cls
@@ -23,46 +24,35 @@ File: size10.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
 \abovecaptionskip=\skip49
 \belowcaptionskip=\skip50
 \bibindent=\dimen148
-)
-(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/base\inputenc.sty
+) (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/base\inputenc.sty
 Package: inputenc 2024/02/08 v1.3d Input encoding file
 \inpenc@prehook=\toks17
 \inpenc@posthook=\toks18
-)
-(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/natbib\natbib.sty
+) (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/natbib\natbib.sty
 Package: natbib 2010/09/13 8.31b (PWD, AO)
 \bibhang=\skip51
 \bibsep=\skip52
 LaTeX Info: Redefining \cite on input line 694.
 \c@NAT@ctr=\count284
-)
-(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
+) (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
 Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
-
-(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
+ (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
 Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
 \KV@toks@=\toks19
-)
-(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+) (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
 Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
-
-(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
+ (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
 Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
-)
-(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.c
-fg
+) (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.cfg
 File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: pdftex.def on input line 106.
-
-(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
+ (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
 File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
 ))
 \Gin@req@height=\dimen149
 \Gin@req@width=\dimen150
-)
-(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdf
-tex.def
+) (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count285
 ) (main.aux)
@@ -82,9 +72,7 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 16.
 LaTeX Font Info:    ... okay on input line 16.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 16.
 LaTeX Font Info:    ... okay on input line 16.
-
-(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mk
-ii
+ (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count286
 \scratchdimen=\dimen151
@@ -97,15 +85,10 @@ ii
 \MPnumerator=\count290
 \makeMPintoPDFobject=\count291
 \everyMPtoPDFconversion=\toks21
-)
-(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-b
-ase.sty
+) (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
-Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
-85.
-
-(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.c
-fg
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
+ (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -114,18 +97,15 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <8> on input line 18.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <6> on input line 18.
-LaTeX Font Info:    Trying to load font information for OMS+cmr on input line 1
-8.
+LaTeX Font Info:    Trying to load font information for OMS+cmr on input line 18.
  (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/base\omscmr.fd
 File: omscmr.fd 2024/11/19 v2.5n Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 18.
+ [1
 
-[1
-
-{C:/Users/giann/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
-(sections/introduzione.tex) (sections/requisiti.tex [1]
+{C:/Users/giann/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] (sections/introduzione.tex) (sections/requisiti.tex [1]
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 14.
 
@@ -318,35 +298,39 @@ Underfull \hbox (badness 1838) in paragraph at lines 43--43
 \OT1/cmr/m/n/8 ven-dite e uti-lizzo del
  []
 
-[2] [3] [4] [5] [6]) (sections/design.tex) (sections/tecnologie.tex)
-(sections/codice.tex) (sections/test.tex) (sections/deployment.tex)
-(sections/conclusioni.tex [7]) [8] (main.aux)
+[2] [3] [4] [5] [6]) (sections/design.tex [7] [8] [9] [10]) (sections/tecnologie.tex [11]
+Overfull \hbox (2.25055pt too wide) in paragraph at lines 46--47
+[]\OT1/cmr/m/n/10 Conviene man-tenere qui il fo-cus sul val-ore ap-plica-tivo e sull'esperienza utente,
+ []
+
+) (sections/codice.tex [12] [13]) (sections/test.tex [14] [15]) (sections/deployment.tex [16]) (sections/conclusioni.tex
+Overfull \hbox (6.99951pt too wide) in paragraph at lines 3--4
+\OT1/cmr/m/n/10 KompozeR e' stato con-cepito come un'estensione evo-luta dell'e-commerce Kompo,
+ []
+
+[17]
+Overfull \hbox (31.30627pt too wide) in paragraph at lines 22--23
+\OT1/cmr/m/n/10 Tra le evoluzioni nat-u-rali del pro-getto ri-en-trano il con-sol-i-da-mento dell'implementazione,
+ []
+
+) [18] (main.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 1800 strings out of 467867
- 29495 string characters out of 5418335
+ 1805 strings out of 467867
+ 29678 string characters out of 5418335
  448759 words of memory out of 5000000
- 30683 multiletter control sequences out of 15000+600000
- 632620 words of font info for 56 fonts, out of 8000000 for 9000
+ 30685 multiletter control sequences out of 15000+600000
+ 632788 words of font info for 57 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,8n,65p,544b,290s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\giann\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm
-1000.pk><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfon
-ts/cm/cmbx10.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/publ
-ic/amsfonts/cm/cmbx12.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/t
-ype1/public/amsfonts/cm/cmbx8.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX
-/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/giann/AppData/Local/Program
-s/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/giann/AppData/Local
-/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/giann/AppDa
-ta/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/gian
-n/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on main.pdf (9 pages, 139117 bytes).
+ 57i,8n,65p,593b,290s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\giann\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx8.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on main.pdf (19 pages, 180005 bytes).
 PDF statistics:
- 77 PDF objects out of 1000 (max. 8388607)
+ 114 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
