@@ -1,0 +1,141 @@
+// RevokeSession.test — Test TDD per i use case RevokeSession e ListUserSessions.
+// RevokeSession: revoca corretta (isRevoked=true), SessionNotFoundError, revoca da parte di ADMIN,
+// ForbiddenError se un utente BASE tenta di revocare una sessione altrui.
+// ListUserSessions: restituzione di tutte le sessioni, lista vuota per utente senza sessioni.
+import { RevokeSession } from '../../src/useCases/RevokeSession';
+import { ListUserSessions } from '../../src/useCases/ListUserSessions';
+import { LoginUser } from '../../src/useCases/LoginUser';
+import { RegisterUser } from '../../src/useCases/RegisterUser';
+import {
+  FakeUserRepository,
+  FakeSessionRepository,
+  FakePasswordHasher,
+  FakeTokenSigner,
+  FakeClock,
+  FakeIdGenerator,
+} from '../helpers/fakes';
+import { SessionNotFoundError, ForbiddenError } from '../../src/domain/errors';
+import { UserRole } from '../../src/domain/UserRole';
+import { User } from '../../src/domain/User';
+
+function makeUseCases() {
+  const userRepo = new FakeUserRepository();
+  const sessionRepo = new FakeSessionRepository();
+  const hasher = new FakePasswordHasher();
+  const signer = new FakeTokenSigner();
+  const clock = new FakeClock();
+  const userIdGen = new FakeIdGenerator('usr');
+  const sessionIdGen = new FakeIdGenerator('ses');
+  const tokenIdGen = new FakeIdGenerator('tok');
+
+  const register = new RegisterUser(userRepo, hasher, clock, userIdGen);
+  const login = new LoginUser(
+    userRepo,
+    sessionRepo,
+    hasher,
+    signer,
+    clock,
+    sessionIdGen,
+    tokenIdGen,
+    8 * 60 * 60 * 1000,
+  );
+  const revoke = new RevokeSession(sessionRepo, userRepo);
+  const listSessions = new ListUserSessions(sessionRepo);
+
+  return { register, login, revoke, listSessions, userRepo, sessionRepo };
+}
+
+describe('RevokeSession', () => {
+  it('marks the session as revoked', async () => {
+    const { register, login, revoke, sessionRepo } = makeUseCases();
+
+    await register.execute({ username: 'alice', email: 'a@e.com', password: 'Password123!' });
+    const loginResult = await login.execute({ username: 'alice', password: 'Password123!' });
+
+    await revoke.execute({
+      requestingUserId: loginResult.user.id,
+      sessionId: loginResult.session.id,
+    });
+
+    const session = await sessionRepo.findById(loginResult.session.id);
+    expect(session!.isRevoked).toBe(true);
+  });
+
+  it('throws SessionNotFoundError when session does not exist', async () => {
+    const { register, revoke } = makeUseCases();
+
+    await register.execute({ username: 'alice', email: 'a@e.com', password: 'Password123!' });
+
+    await expect(
+      revoke.execute({ requestingUserId: 'usr_001', sessionId: 'non-existent' }),
+    ).rejects.toThrow(SessionNotFoundError);
+  });
+
+  it('admin can revoke any session', async () => {
+    const { register, login, revoke, userRepo, sessionRepo } = makeUseCases();
+
+    await register.execute({ username: 'alice', email: 'a@e.com', password: 'Password123!' });
+    const aliceLogin = await login.execute({ username: 'alice', password: 'Password123!' });
+
+    // Manually promote an admin user
+    const admin: User = {
+      id: 'admin_001',
+      username: 'admin',
+      passwordHash: 'hashed:admin',
+      email: 'admin@e.com',
+      role: UserRole.ADMIN,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    await userRepo.save(admin);
+
+    await expect(
+      revoke.execute({ requestingUserId: 'admin_001', sessionId: aliceLogin.session.id }),
+    ).resolves.not.toThrow();
+
+    const session = await sessionRepo.findById(aliceLogin.session.id);
+    expect(session!.isRevoked).toBe(true);
+  });
+
+  it('throws ForbiddenError when a BASE user tries to revoke another user session', async () => {
+    const { register, login, revoke } = makeUseCases();
+
+    await register.execute({ username: 'alice', email: 'alice@e.com', password: 'Password123!' });
+    await register.execute({ username: 'bob', email: 'bob@e.com', password: 'Password123!' });
+
+    const aliceLogin = await login.execute({ username: 'alice', password: 'Password123!' });
+    const bobLogin = await login.execute({ username: 'bob', password: 'Password123!' });
+
+    await expect(
+      revoke.execute({
+        requestingUserId: bobLogin.user.id,
+        sessionId: aliceLogin.session.id,
+      }),
+    ).rejects.toThrow(ForbiddenError);
+  });
+});
+
+describe('ListUserSessions', () => {
+  it('returns all sessions for a user', async () => {
+    const { register, login, listSessions } = makeUseCases();
+
+    await register.execute({ username: 'alice', email: 'a@e.com', password: 'Password123!' });
+    const r1 = await login.execute({ username: 'alice', password: 'Password123!' });
+    const r2 = await login.execute({ username: 'alice', password: 'Password123!' });
+
+    const { sessions } = await listSessions.execute({ userId: r1.user.id });
+
+    expect(sessions).toHaveLength(2);
+    const ids = sessions.map((s) => s.id);
+    expect(ids).toContain(r1.session.id);
+    expect(ids).toContain(r2.session.id);
+  });
+
+  it('returns an empty list when the user has no sessions', async () => {
+    const { listSessions } = makeUseCases();
+
+    const { sessions } = await listSessions.execute({ userId: 'no-such-user' });
+    expect(sessions).toHaveLength(0);
+  });
+});
