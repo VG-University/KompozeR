@@ -8,6 +8,7 @@ import { buildJwtMiddleware } from './middleware/jwtMiddleware';
 import { gatewayErrorMiddleware } from './middleware/gatewayErrorMiddleware';
 import { buildRoutes, ServiceUrls } from './routes/index';
 import { buildHealthRouter } from './routes/health';
+import { buildBffRouter } from './routes/bff';
 
 export interface GatewayConfig {
   jwtSecret: string;
@@ -27,7 +28,10 @@ export function buildApp(config: GatewayConfig) {
   // JWT verification — runs before every route except public ones
   app.use(buildJwtMiddleware(config.jwtSecret));
 
-  // Proxy routes
+  // BFF aggregation routes — protected, called directly by the SPA
+  app.use(buildBffRouter(config.services));
+
+  // Proxy routes — forward to individual downstream services
   app.use(buildRoutes(config.services));
 
   app.use(gatewayErrorMiddleware);
