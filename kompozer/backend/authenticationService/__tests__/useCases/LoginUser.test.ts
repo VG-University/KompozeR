@@ -12,8 +12,8 @@ import {
   FakeClock,
   FakeIdGenerator,
 } from '../helpers/fakes';
-import { InvalidCredentialsError } from '../../src/domain/errors';
-import { UserRole } from '../../src/domain/UserRole';
+import { InvalidCredentialsError } from '../../src/domain/entities/errors';
+import { UserRole } from '../../src/domain/entities/UserRole';
 
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000; // 8 hours
 

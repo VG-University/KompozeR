@@ -14,9 +14,9 @@ import {
   FakeClock,
   FakeIdGenerator,
 } from '../helpers/fakes';
-import { SessionNotFoundError, ForbiddenError } from '../../src/domain/errors';
-import { UserRole } from '../../src/domain/UserRole';
-import { User } from '../../src/domain/User';
+import { SessionNotFoundError, ForbiddenError } from '../../src/domain/entities/errors';
+import { UserRole } from '../../src/domain/entities/UserRole';
+import { User } from '../../src/domain/entities/User';
 
 function makeUseCases() {
   const userRepo = new FakeUserRepository();

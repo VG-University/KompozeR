@@ -13,8 +13,8 @@ import {
   DuplicateUsernameError,
   DuplicateEmailError,
   ValidationError,
-} from '../../src/domain/errors';
-import { UserRole } from '../../src/domain/UserRole';
+} from '../../src/domain/entities/errors';
+import { UserRole } from '../../src/domain/entities/UserRole';
 
 function makeUseCase() {
   const userRepo = new FakeUserRepository();

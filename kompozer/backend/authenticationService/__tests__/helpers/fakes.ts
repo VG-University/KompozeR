@@ -3,15 +3,15 @@
 // FakePasswordHasher usa una trasformazione deterministica ('hashed:<plain>').
 // FakeTokenSigner produce token leggibili senza crittografia reale.
 // FakeClock restituisce un orario fisso iniettabile; FakeIdGenerator produce id sequenziali.
-import { User } from '../../src/domain/User';
-import { Session } from '../../src/domain/Session';
-import { UserRepository } from '../../src/domain/UserRepository';
-import { SessionRepository } from '../../src/domain/SessionRepository';
-import { PasswordHasher } from '../../src/domain/PasswordHasher';
-import { TokenSigner, TokenPayload } from '../../src/domain/TokenSigner';
-import { Clock } from '../../src/domain/Clock';
-import { IdGenerator } from '../../src/domain/IdGenerator';
-import { UserRole } from '../../src/domain/UserRole';
+import { User } from '../../src/domain/entities/User';
+import { Session } from '../../src/domain/entities/Session';
+import { UserRepository } from '../../src/domain/ports/UserRepository';
+import { SessionRepository } from '../../src/domain/ports/SessionRepository';
+import { PasswordHasher } from '../../src/domain/ports/PasswordHasher';
+import { TokenSigner, TokenPayload } from '../../src/domain/ports/TokenSigner';
+import { Clock } from '../../src/domain/ports/Clock';
+import { IdGenerator } from '../../src/domain/ports/IdGenerator';
+import { UserRole } from '../../src/domain/entities/UserRole';
 
 // ── Fake UserRepository ───────────────────────────────────────────────────────
 

@@ -1,16 +1,16 @@
 // RegisterUser — Use case: registrazione di un nuovo utente.
 // Valida i dati in ingresso (username, email, password), verifica l'assenza di duplicati
 // su username ed email, esegue il hash della password e persiste il nuovo utente con ruolo BASE.
-import { UserRepository } from '../domain/UserRepository';
-import { PasswordHasher } from '../domain/PasswordHasher';
-import { Clock } from '../domain/Clock';
-import { IdGenerator } from '../domain/IdGenerator';
-import { UserRole } from '../domain/UserRole';
+import { UserRepository } from '../domain/ports/UserRepository';
+import { PasswordHasher } from '../domain/ports/PasswordHasher';
+import { Clock } from '../domain/ports/Clock';
+import { IdGenerator } from '../domain/ports/IdGenerator';
+import { UserRole } from '../domain/entities/UserRole';
 import {
   DuplicateUsernameError,
   DuplicateEmailError,
   ValidationError,
-} from '../domain/errors';
+} from '../domain/entities/errors';
 import { RegisterUserInput, RegisterUserOutput } from './types';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

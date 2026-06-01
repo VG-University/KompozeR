@@ -1,7 +1,7 @@
 // types — Tipi input/output per tutti gli use case dell'authenticationService.
 // Raccoglie in un unico file le interfacce delle richieste e delle risposte
 // così da avere un contratto leggibile separato dalla logica applicativa.
-import { UserRole } from '../domain/UserRole';
+import { UserRole } from '../domain/entities/UserRole';
 
 // ── RegisterUser ─────────────────────────────────────────────────────────────
 

@@ -8,7 +8,7 @@ import {
   FakeClock,
   FakeIdGenerator,
 } from '../helpers/fakes';
-import { UserRole } from '../../src/domain/UserRole';
+import { UserRole } from '../../src/domain/entities/UserRole';
 
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
 

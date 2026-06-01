@@ -1,13 +1,13 @@
 // LoginUser — Use case: autenticazione di un utente esistente.
 // Verifica le credenziali, crea una nuova sessione in DB e firma un JWT con userId,
 // tokenId e ruolo. Restituisce il token, il riepilogo della sessione e del profilo utente.
-import { UserRepository } from '../domain/UserRepository';
-import { SessionRepository } from '../domain/SessionRepository';
-import { PasswordHasher } from '../domain/PasswordHasher';
-import { TokenSigner } from '../domain/TokenSigner';
-import { Clock } from '../domain/Clock';
-import { IdGenerator } from '../domain/IdGenerator';
-import { InvalidCredentialsError } from '../domain/errors';
+import { UserRepository } from '../domain/ports/UserRepository';
+import { SessionRepository } from '../domain/ports/SessionRepository';
+import { PasswordHasher } from '../domain/ports/PasswordHasher';
+import { TokenSigner } from '../domain/ports/TokenSigner';
+import { Clock } from '../domain/ports/Clock';
+import { IdGenerator } from '../domain/ports/IdGenerator';
+import { InvalidCredentialsError } from '../domain/entities/errors';
 import { LoginUserInput, LoginUserOutput } from './types';
 
 export class LoginUser {

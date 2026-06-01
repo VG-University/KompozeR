@@ -1,8 +1,8 @@
 // GetCurrentUser — Use case: recupero del profilo dell'utente autenticato.
 // Riceve l'userId iniettato dall'API gateway tramite header X-User-Id
 // e restituisce il profilo completo (senza passwordHash).
-import { UserRepository } from '../domain/UserRepository';
-import { UserNotFoundError } from '../domain/errors';
+import { UserRepository } from '../domain/ports/UserRepository';
+import { UserNotFoundError } from '../domain/entities/errors';
 import { GetCurrentUserInput, GetCurrentUserOutput } from './types';
 
 export class GetCurrentUser {

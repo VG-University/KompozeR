@@ -2,7 +2,7 @@
 // Usa bcryptjs con SALT_ROUNDS=12 per garantire un hashing sicuro e resistente
 // ad attacchi brute-force. Non dipende da API native di Node (compatibile con edge).
 import bcrypt from 'bcryptjs';
-import { PasswordHasher } from '../domain/PasswordHasher';
+import { PasswordHasher } from '../domain/ports/PasswordHasher';
 
 const SALT_ROUNDS = 12;
 

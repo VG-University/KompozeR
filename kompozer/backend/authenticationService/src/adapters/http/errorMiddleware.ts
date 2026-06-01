@@ -13,7 +13,7 @@ import {
   UserNotFoundError,
   SessionRevokedError,
   ForbiddenError,
-} from '../../domain/errors';
+} from '../../domain/entities/errors';
 
 interface ApiError {
   error: {

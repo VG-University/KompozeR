@@ -2,8 +2,8 @@
 // Usa Mongoose per le operazioni CRUD sulla collection `sessions`.
 // update() aggiorna solo i campi mutabili (loggedOut, isRevoked) lasciando immutabili
 // gli altri dati della sessione (userId, tokenId, loggedIn, expiresAt).
-import { Session } from '../../domain/Session';
-import { SessionRepository } from '../../domain/SessionRepository';
+import { Session } from '../../domain/entities/Session';
+import { SessionRepository } from '../../domain/ports/SessionRepository';
 import { SessionModel } from './schemas/sessionSchema';
 
 export class MongoSessionRepository implements SessionRepository {

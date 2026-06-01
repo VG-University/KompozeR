@@ -1,9 +1,9 @@
 // LogoutUser — Use case: chiusura volontaria della sessione corrente.
 // Verifica che la sessione esista e appartenga all'utente richiedente,
 // poi imposta il campo loggedOut al timestamp corrente.
-import { SessionRepository } from '../domain/SessionRepository';
-import { Clock } from '../domain/Clock';
-import { SessionNotFoundError, ForbiddenError } from '../domain/errors';
+import { SessionRepository } from '../domain/ports/SessionRepository';
+import { Clock } from '../domain/ports/Clock';
+import { SessionNotFoundError, ForbiddenError } from '../domain/entities/errors';
 import { LogoutUserInput } from './types';
 
 export class LogoutUser {

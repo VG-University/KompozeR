@@ -3,7 +3,7 @@
 // verify() decodifica e valida la struttura del payload prima di restituirlo,
 // lanciando un errore generico per non rivelare dettagli interni al chiamante.
 import jwt from 'jsonwebtoken';
-import { TokenSigner, TokenPayload } from '../domain/TokenSigner';
+import { TokenSigner, TokenPayload } from '../domain/ports/TokenSigner';
 
 export class JwtTokenSigner implements TokenSigner {
   constructor(private readonly secret: string) {}

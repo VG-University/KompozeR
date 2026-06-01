@@ -2,9 +2,9 @@
 // Usa Mongoose per le operazioni CRUD sulla collection `users`.
 // Il metodo toEntity() isola il codice di dominio dalla struttura del documento Mongo
 // (nessuna fuga di tipi Mongoose verso il dominio).
-import { User } from '../../domain/User';
-import { UserRole } from '../../domain/UserRole';
-import { UserRepository } from '../../domain/UserRepository';
+import { User } from '../../domain/entities/User';
+import { UserRole } from '../../domain/entities/UserRole';
+import { UserRepository } from '../../domain/ports/UserRepository';
 import { UserModel } from './schemas/userSchema';
 
 export class MongoUserRepository implements UserRepository {

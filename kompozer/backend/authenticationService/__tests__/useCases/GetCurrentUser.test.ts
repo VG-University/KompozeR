@@ -9,8 +9,8 @@ import {
   FakeClock,
   FakeIdGenerator,
 } from '../helpers/fakes';
-import { UserNotFoundError } from '../../src/domain/errors';
-import { UserRole } from '../../src/domain/UserRole';
+import { UserNotFoundError } from '../../src/domain/entities/errors';
+import { UserRole } from '../../src/domain/entities/UserRole';
 
 function makeUseCases() {
   const userRepo = new FakeUserRepository();

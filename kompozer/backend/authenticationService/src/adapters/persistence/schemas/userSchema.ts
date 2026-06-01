@@ -3,7 +3,7 @@
 // Usa _id: String (UUID) invece del default ObjectId per coerenza con il modello di dominio.
 // I campi createdAt e updatedAt sono gestiti automaticamente dall'opzione timestamps.
 import { Schema, model } from 'mongoose';
-import { UserRole } from '../../../domain/UserRole';
+import { UserRole } from '../../../domain/entities/UserRole';
 
 type UserDocType = {
   _id: string;

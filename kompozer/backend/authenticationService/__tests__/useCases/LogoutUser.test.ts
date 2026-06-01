@@ -12,7 +12,7 @@ import {
   FakeClock,
   FakeIdGenerator,
 } from '../helpers/fakes';
-import { SessionNotFoundError, ForbiddenError } from '../../src/domain/errors';
+import { SessionNotFoundError, ForbiddenError } from '../../src/domain/entities/errors';
 
 function makeUseCases() {
   const userRepo = new FakeUserRepository();

@@ -1,10 +1,10 @@
 // RevokeSession — Use case: revoca forzata di una sessione.
 // Un utente BASE può revocare solo le proprie sessioni; un ADMIN può revocare
 // qualsiasi sessione. La revoca imposta isRevoked=true nel DB.
-import { SessionRepository } from '../domain/SessionRepository';
-import { UserRepository } from '../domain/UserRepository';
-import { UserRole } from '../domain/UserRole';
-import { SessionNotFoundError, ForbiddenError } from '../domain/errors';
+import { SessionRepository } from '../domain/ports/SessionRepository';
+import { UserRepository } from '../domain/ports/UserRepository';
+import { UserRole } from '../domain/entities/UserRole';
+import { SessionNotFoundError, ForbiddenError } from '../domain/entities/errors';
 import { RevokeSessionInput } from './types';
 
 export class RevokeSession {

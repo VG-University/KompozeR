@@ -1,11 +1,11 @@
 // GenerateGuestSession — Use case: generazione di una sessione ospite.
 // Crea un utente virtuale con ruolo GUEST (senza credenziali e senza persistere su users),
 // genera una sessione con scadenza e firma un JWT. Usato per accesso anonimo al catalogo e al CAD.
-import { SessionRepository } from '../domain/SessionRepository';
-import { TokenSigner } from '../domain/TokenSigner';
-import { Clock } from '../domain/Clock';
-import { IdGenerator } from '../domain/IdGenerator';
-import { UserRole } from '../domain/UserRole';
+import { SessionRepository } from '../domain/ports/SessionRepository';
+import { TokenSigner } from '../domain/ports/TokenSigner';
+import { Clock } from '../domain/ports/Clock';
+import { IdGenerator } from '../domain/ports/IdGenerator';
+import { UserRole } from '../domain/entities/UserRole';
 import { GenerateGuestSessionOutput } from './types';
 
 export class GenerateGuestSession {
