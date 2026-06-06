@@ -1,0 +1,41 @@
+import { Schema, model } from 'mongoose';
+
+type CartItemDoc = {
+  sku: string;
+  name: string;
+  unitPrice: number;
+  quantity: number;
+  lineTotal: number;
+};
+
+type CartDoc = {
+  _id: string;
+  userId: string;
+  items: CartItemDoc[];
+  total: number;
+  updatedAt: Date;
+};
+
+const cartItemSchema = new Schema<CartItemDoc>(
+  {
+    sku: { type: String, required: true },
+    name: { type: String, required: true },
+    unitPrice: { type: Number, required: true },
+    quantity: { type: Number, required: true },
+    lineTotal: { type: Number, required: true },
+  },
+  { _id: false },
+);
+
+const cartSchema = new Schema<CartDoc>(
+  {
+    _id: { type: String, required: true },
+    userId: { type: String, required: true, unique: true, index: true },
+    items: { type: [cartItemSchema], default: [] },
+    total: { type: Number, required: true, default: 0 },
+    updatedAt: { type: Date, required: true },
+  },
+  { _id: false },
+);
+
+export const CartModel = model<CartDoc>('Cart', cartSchema, 'carts');

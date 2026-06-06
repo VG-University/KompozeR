@@ -43,6 +43,18 @@ services:
       - mongo-catalog-data:/data/db
     restart: unless-stopped
 
+  mongo-cart:
+    image: mongo:7
+    ports:
+      - "27019:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: changeme
+      MONGO_INITDB_DATABASE: cartdb
+    volumes:
+      - mongo-cart-data:/data/db
+    restart: unless-stopped
+
   # ── Backend ─────────────────────────────────────────────────────────────────
 
   auth-service:
@@ -67,6 +79,15 @@ services:
       - redis
     restart: unless-stopped
 
+  cart-service:
+    build: ./backend/cartService
+    environment:
+      PORT: "3004"
+      MONGO_URI: "mongodb://root:changeme@mongo-cart:27017/cartdb?authSource=admin"
+    depends_on:
+      - mongo-cart
+    restart: unless-stopped
+
   api-gateway:
     build: ./backend/apiGateway
     ports:
@@ -84,8 +105,10 @@ services:
     depends_on:
       - auth-service
       - catalog-service
+      - cart-service
     restart: unless-stopped
 
 volumes:
   mongo-auth-data:
   mongo-catalog-data:
+  mongo-cart-data:
