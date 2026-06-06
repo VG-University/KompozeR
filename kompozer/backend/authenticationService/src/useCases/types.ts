@@ -63,6 +63,7 @@ export interface GenerateGuestSessionOutput {
 
 export interface GetCurrentUserInput {
   userId: string;
+  sessionId: string;
 }
 
 export interface GetCurrentUserOutput {

@@ -24,6 +24,11 @@ export class MongoSessionRepository implements SessionRepository {
     return doc ? this.toEntity(doc) : null;
   }
 
+  async findByTokenId(tokenId: string): Promise<Session | null> {
+    const doc = await SessionModel.findOne({ tokenId }).lean();
+    return doc ? this.toEntity(doc) : null;
+  }
+
   async findAllByUserId(userId: string): Promise<Session[]> {
     const docs = await SessionModel.find({ userId }).lean();
     return docs.map((d) => this.toEntity(d));

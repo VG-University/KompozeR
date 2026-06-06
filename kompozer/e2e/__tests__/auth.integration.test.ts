@@ -10,6 +10,8 @@
  * I dati NON vengono puliti al termine: restano visibili in Compass per ispezione.
  */
 
+export {};
+
 const BASE   = 'http://localhost:3000';
 const SUFFIX = Date.now();
 
@@ -33,8 +35,9 @@ describe('[INT] Auth — registrazione', () => {
     expect(res.status).toBe(201);
 
     const body = await res.json() as Record<string, unknown>;
-    expect(body['username']).toBe(testUser.username);
-    expect(body['role']).toBe('BASE');
+    const user = body['user'] as Record<string, unknown>;
+    expect(user['username']).toBe(testUser.username);
+    expect(user['role']).toBe('BASE');
     // → Compass: authdb.users — documento appena creato con role=BASE, isActive=true
   });
 
@@ -123,7 +126,8 @@ describe('[INT] Auth — sessione attiva', () => {
     });
     expect(res.status).toBe(200);
 
-    const sessions = await res.json() as unknown[];
+    const payload = await res.json() as Record<string, unknown>;
+    const sessions = payload['sessions'] as unknown[];
     expect(Array.isArray(sessions)).toBe(true);
     expect(sessions.length).toBeGreaterThanOrEqual(1);
     // → Compass: authdb.sessions — le stesse sessioni, filtrate per userId

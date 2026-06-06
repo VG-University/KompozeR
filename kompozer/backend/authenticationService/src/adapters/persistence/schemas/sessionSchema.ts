@@ -18,7 +18,7 @@ const sessionSchema = new Schema<SessionDocType>(
   {
     _id: { type: String, required: true },
     userId: { type: String, required: true, index: true },
-    tokenId: { type: String, required: true },
+    tokenId: { type: String, required: true, index: true },
     loggedIn: { type: Date, required: true },
     expiresAt: { type: Date, required: true },
     loggedOut: { type: Date, default: null },

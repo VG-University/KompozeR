@@ -166,12 +166,13 @@ describe('POST /auth/logout', () => {
 
 describe('GET /auth/me', () => {
   it('returns 200 with user profile', async () => {
-    const { user } = await registerAndLogin('me_user', 'meuser@example.com');
+    const { user, session } = await registerAndLogin('me_user', 'meuser@example.com');
 
     const res = await request(app)
       .get('/auth/me')
       .set('X-User-Id', user.id)
-      .set('X-User-Role', 'BASE');
+      .set('X-User-Role', 'BASE')
+      .set('X-Session-Id', session.id);
 
     expect(res.status).toBe(200);
     expect(res.body.username).toBe('me_user');
@@ -179,12 +180,14 @@ describe('GET /auth/me', () => {
   });
 
   it('returns 404 when user does not exist', async () => {
+    const { session } = await registerAndLogin('me_missing', 'me_missing@example.com');
     const res = await request(app)
       .get('/auth/me')
       .set('X-User-Id', 'non-existent')
-      .set('X-User-Role', 'BASE');
+      .set('X-User-Role', 'BASE')
+      .set('X-Session-Id', session.id);
 
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(401);
   });
 });
 

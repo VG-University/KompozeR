@@ -4,6 +4,8 @@
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
+    "types": ["node", "jest"],
+    "lib": ["ES2020", "DOM"],
     "outDir": "dist",
     "rootDir": "."
   },

@@ -1,14 +1,36 @@
 // GetCurrentUser — Use case: recupero del profilo dell'utente autenticato.
 // Riceve l'userId iniettato dall'API gateway tramite header X-User-Id
 // e restituisce il profilo completo (senza passwordHash).
+import { Clock } from '../domain/ports/Clock';
+import { SessionRepository } from '../domain/ports/SessionRepository';
 import { UserRepository } from '../domain/ports/UserRepository';
-import { UserNotFoundError } from '../domain/entities/errors';
+import { SessionRevokedError, UserNotFoundError } from '../domain/entities/errors';
 import { GetCurrentUserInput, GetCurrentUserOutput } from './types';
 
 export class GetCurrentUser {
-  constructor(private readonly userRepo: UserRepository) {}
+  constructor(
+    private readonly userRepo: UserRepository,
+    private readonly sessionRepo: SessionRepository,
+    private readonly clock: Clock,
+  ) {}
 
   async execute(input: GetCurrentUserInput): Promise<GetCurrentUserOutput> {
+    // Gateway forwards tokenId in X-Session-Id; fallback by id for compatibility.
+    let session = await this.sessionRepo.findByTokenId(input.sessionId);
+    if (!session) {
+      session = await this.sessionRepo.findById(input.sessionId);
+    }
+
+    const now = this.clock.now();
+    const isInactive =
+      !session ||
+      session.userId !== input.userId ||
+      session.isRevoked ||
+      session.loggedOut !== null ||
+      session.expiresAt.getTime() <= now.getTime();
+
+    if (isInactive) throw new SessionRevokedError();
+
     const user = await this.userRepo.findById(input.userId);
 
     if (!user) throw new UserNotFoundError();

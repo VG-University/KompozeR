@@ -57,7 +57,7 @@ export function buildApp(config: AppConfig) {
     config.sessionTtlMs,
   );
   const logoutUser = new LogoutUser(sessionRepo, clock);
-  const getCurrentUser = new GetCurrentUser(userRepo);
+  const getCurrentUser = new GetCurrentUser(userRepo, sessionRepo, clock);
   const listUserSessions = new ListUserSessions(sessionRepo);
   const revokeSession = new RevokeSession(sessionRepo, userRepo);
 

@@ -88,4 +88,24 @@ describe('LogoutUser', () => {
       logout.execute({ userId: bobLogin.user.id, sessionId: aliceLogin.session.id }),
     ).rejects.toThrow(ForbiddenError);
   });
+
+  it('marks session logged out when called with tokenId (gateway header semantics)', async () => {
+    const { register, login, logout, sessionRepo } = makeUseCases();
+
+    await register.execute({
+      username: 'gateway-user',
+      email: 'gateway@example.com',
+      password: 'Password123!',
+    });
+    const loginResult = await login.execute({ username: 'gateway-user', password: 'Password123!' });
+
+    // Simula X-Session-Id iniettato dal gateway: contiene tokenId, non session.id.
+    await logout.execute({
+      userId: loginResult.user.id,
+      sessionId: loginResult.session.tokenId,
+    });
+
+    const session = await sessionRepo.findById(loginResult.session.id);
+    expect(session!.loggedOut).not.toBeNull();
+  });
 });

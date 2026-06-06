@@ -11,6 +11,8 @@
  * I dati NON vengono puliti: restano visibili in Compass (utile per debuggare).
  */
 
+export {};
+
 const BASE = 'http://localhost:3000';
 const SKU  = `INT-TONDO-${Date.now()}`; // univoco per ogni run
 

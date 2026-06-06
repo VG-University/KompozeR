@@ -4,6 +4,6 @@ module.exports = {
   testEnvironment: 'node',
   testMatch:       ['**/__tests__/**/*.test.ts'],
   globalSetup:     './globalSetup.js',
-  testTimeout:     15000,  // I/O reale: timeout generoso
+  testTimeout:     30000,  // I/O reale: i container possono impiegare più tempo a rispondere
   verbose:         true,
 };

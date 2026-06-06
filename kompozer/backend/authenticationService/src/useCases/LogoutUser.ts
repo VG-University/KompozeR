@@ -13,7 +13,12 @@ export class LogoutUser {
   ) {}
 
   async execute(input: LogoutUserInput): Promise<void> {
-    const session = await this.sessionRepo.findById(input.sessionId);
+    // Gateway injects X-Session-Id from JWT tokenId, not from DB session id.
+    // For compatibility we first try tokenId lookup, then fallback to id.
+    let session = await this.sessionRepo.findByTokenId(input.sessionId);
+    if (!session) {
+      session = await this.sessionRepo.findById(input.sessionId);
+    }
 
     if (!session) throw new SessionNotFoundError();
     if (session.userId !== input.userId) throw new ForbiddenError();

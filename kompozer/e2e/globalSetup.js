@@ -21,6 +21,46 @@ function checkGateway() {
   });
 }
 
+function requestGateway(pathname, method = 'GET', headers = {}, body = null) {
+  return new Promise(resolve => {
+    const req = http.request(
+      {
+        hostname: 'localhost',
+        port: 3000,
+        path: pathname,
+        method,
+        headers,
+      },
+      res => {
+        let data = '';
+        res.on('data', chunk => {
+          data += chunk;
+        });
+        res.on('end', () => {
+          let parsed = null;
+          try {
+            parsed = data ? JSON.parse(data) : null;
+          } catch {
+            parsed = null;
+          }
+          resolve({ status: res.statusCode || 0, body: parsed, raw: data });
+        });
+      },
+    );
+
+    req.on('error', () => resolve({ status: 0, body: null, raw: '' }));
+    req.setTimeout(3000, () => {
+      req.destroy();
+      resolve({ status: 0, body: null, raw: '' });
+    });
+
+    if (body) {
+      req.write(body);
+    }
+    req.end();
+  });
+}
+
 function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
 }
@@ -28,8 +68,8 @@ function sleep(ms) {
 // ── globalSetup ──────────────────────────────────────────────────────────────
 
 module.exports = async function globalSetup() {
-  // ── 1. Attendi il gateway (max 15 s) ─────────────────────────────────────
-  const timeoutMs = 15000;
+  // ── 1. Attendi il gateway (max 30 s) ─────────────────────────────────────
+  const timeoutMs = 30000;
   const start     = Date.now();
   let up          = false;
 
@@ -47,6 +87,50 @@ module.exports = async function globalSetup() {
       '\n[e2e] Gateway non raggiungibile su localhost:3000.\n' +
       'Assicurati che i container siano in esecuzione:\n' +
       '  cd kompozer && docker compose -f docker-compose.dev.yml up\n',
+    );
+  }
+
+  // ── 1b. Attendi auth via endpoint pubblico reale: POST /auth/guest ─────
+  process.stdout.write('[e2e] Attendo auth (POST /auth/guest)');
+  let guestToken = '';
+  while (Date.now() - start < timeoutMs) {
+    const res = await requestGateway('/auth/guest', 'POST', {
+      'Content-Type': 'application/json',
+    });
+    if (res.status === 200 && res.body && typeof res.body.token === 'string') {
+      guestToken = res.body.token;
+      break;
+    }
+    process.stdout.write('.');
+    await sleep(1000);
+  }
+  process.stdout.write(guestToken ? ' OK\n' : ' FAIL\n');
+
+  if (!guestToken) {
+    throw new Error(
+      '\n[e2e] auth non pronto entro timeout (POST /auth/guest non riuscito).\n',
+    );
+  }
+
+  // ── 1c. Attendi catalog via endpoint reale protetto: GET /catalog ───────
+  process.stdout.write('[e2e] Attendo catalog (GET /catalog con token guest)');
+  let catalogReady = false;
+  while (Date.now() - start < timeoutMs) {
+    const res = await requestGateway('/catalog', 'GET', {
+      Authorization: `Bearer ${guestToken}`,
+    });
+    if (res.status === 200) {
+      catalogReady = true;
+      break;
+    }
+    process.stdout.write('.');
+    await sleep(1000);
+  }
+  process.stdout.write(catalogReady ? ' OK\n' : ' FAIL\n');
+
+  if (!catalogReady) {
+    throw new Error(
+      '\n[e2e] catalog non pronto entro timeout (GET /catalog non riuscito).\n',
     );
   }
 

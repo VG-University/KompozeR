@@ -62,6 +62,13 @@ export class FakeSessionRepository implements SessionRepository {
     return this.store.get(id) ?? null;
   }
 
+  async findByTokenId(tokenId: string): Promise<Session | null> {
+    for (const s of this.store.values()) {
+      if (s.tokenId === tokenId) return { ...s };
+    }
+    return null;
+  }
+
   async findAllByUserId(userId: string): Promise<Session[]> {
     return [...this.store.values()].filter((s) => s.userId === userId);
   }

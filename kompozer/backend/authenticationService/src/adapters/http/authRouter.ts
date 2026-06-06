@@ -74,7 +74,8 @@ export function buildAuthRouter(deps: AuthRouterDeps): Router {
     '/me',
     wrap(async (req, res) => {
       const userId = req.headers['x-user-id'] as string;
-      const result = await deps.getCurrentUser.execute({ userId });
+      const sessionId = req.headers['x-session-id'] as string;
+      const result = await deps.getCurrentUser.execute({ userId, sessionId });
       res.status(200).json(result);
     }),
   );

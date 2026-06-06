@@ -5,7 +5,7 @@
 // Il JWT middleware ha già iniettato gli header X-User-Id / X-User-Role / X-Session-Id
 // prima che la richiesta arrivi qui — i servizi downstream leggono solo quelli.
 import { Router } from 'express';
-import { createProxyMiddleware } from 'http-proxy-middleware';
+import { createProxyMiddleware, fixRequestBody } from 'http-proxy-middleware';
 
 export interface ServiceUrls {
   auth: string;
@@ -26,6 +26,8 @@ export function buildRoutes(services: ServiceUrls): Router {
     createProxyMiddleware({
       target: services.auth,
       changeOrigin: true,
+      pathRewrite: (path) => `/auth${path}`,
+      on: { proxyReq: fixRequestBody },
     }),
   );
 
@@ -35,6 +37,8 @@ export function buildRoutes(services: ServiceUrls): Router {
     createProxyMiddleware({
       target: services.catalog,
       changeOrigin: true,
+      pathRewrite: (path) => `/catalog${path}`,
+      on: { proxyReq: fixRequestBody },
     }),
   );
 
@@ -44,6 +48,8 @@ export function buildRoutes(services: ServiceUrls): Router {
     createProxyMiddleware({
       target: services.cad,
       changeOrigin: true,
+      pathRewrite: (path) => `/cad${path}`,
+      on: { proxyReq: fixRequestBody },
     }),
   );
 
@@ -53,6 +59,8 @@ export function buildRoutes(services: ServiceUrls): Router {
     createProxyMiddleware({
       target: services.cart,
       changeOrigin: true,
+      pathRewrite: (path) => `/cart${path}`,
+      on: { proxyReq: fixRequestBody },
     }),
   );
 
@@ -62,6 +70,8 @@ export function buildRoutes(services: ServiceUrls): Router {
     createProxyMiddleware({
       target: services.notification,
       changeOrigin: true,
+      pathRewrite: (path) => `/notifications${path}`,
+      on: { proxyReq: fixRequestBody },
     }),
   );
 
@@ -71,6 +81,8 @@ export function buildRoutes(services: ServiceUrls): Router {
     createProxyMiddleware({
       target: services.chatbot,
       changeOrigin: true,
+      pathRewrite: (path) => `/chatbot${path}`,
+      on: { proxyReq: fixRequestBody },
     }),
   );
 
@@ -80,6 +92,8 @@ export function buildRoutes(services: ServiceUrls): Router {
     createProxyMiddleware({
       target: services.reporting,
       changeOrigin: true,
+      pathRewrite: (path) => `/reports${path}`,
+      on: { proxyReq: fixRequestBody },
     }),
   );
 
