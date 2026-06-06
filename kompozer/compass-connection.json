@@ -5,7 +5,7 @@
   },
   "connections": [
     {
-      "id": "a1b2c3d4-0001-4000-8000-kompozer00001",
+      "id": "c3f1a2b4-e5d6-4a7b-8c9d-0e1f2a3b4c5d",
       "lastUsed": {
         "$date": {
           "$numberLong": "1749203200000"
@@ -20,7 +20,7 @@
       }
     },
     {
-      "id": "a1b2c3d4-0002-4000-8000-kompozer00002",
+      "id": "d4e5f6a7-b8c9-4d0e-af1b-2c3d4e5f6a7b",
       "lastUsed": {
         "$date": {
           "$numberLong": "1749203200000"
