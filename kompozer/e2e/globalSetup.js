@@ -8,6 +8,7 @@
 const http         = require('http');
 const { execSync } = require('child_process');
 const path         = require('path');
+const fs           = require('fs');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -63,6 +64,42 @@ function requestGateway(pathname, method = 'GET', headers = {}, body = null) {
 
 function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
+}
+
+function resolveNpmCommand() {
+  if (process.platform !== 'win32') {
+    return 'npm';
+  }
+
+  const candidates = [
+    process.env.npm_execpath,
+    'C:/Program Files/nodejs/npm.cmd',
+    'C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js',
+  ].filter(Boolean);
+
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    const normalized = candidate.replace(/\\/g, '/');
+    if (fs.existsSync(normalized)) {
+      if (normalized.endsWith('npm-cli.js')) {
+        return `"${process.execPath}" "${normalized}"`;
+      }
+      return `"${normalized}"`;
+    }
+  }
+
+  return 'npm.cmd';
+}
+
+function withNodeInPath(env) {
+  const nodeDir = path.dirname(process.execPath);
+  const currentPath = env.PATH || env.Path || '';
+  const joined = currentPath ? `${nodeDir};${currentPath}` : nodeDir;
+  return {
+    ...env,
+    PATH: joined,
+    Path: joined,
+  };
 }
 
 // ── globalSetup ──────────────────────────────────────────────────────────────
@@ -143,15 +180,15 @@ module.exports = async function globalSetup() {
 
   process.stdout.write('[e2e] Seed admin (devuser in authdb)...');
   try {
-    const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+    const npmCmd = resolveNpmCommand();
     execSync(`${npmCmd} run seed`, {
       cwd:   authServiceDir,
       shell: true,
-      env: {
+      env: withNodeInPath({
         ...process.env,
         MONGO_URI:   'mongodb://root:changeme@localhost:27017/authdb?authSource=admin',
         JWT_SECRET:  'kompozer-dev-secret-key-32-chars!!',
-      },
+      }),
       stdio: 'pipe',
     });
     process.stdout.write(' OK\n');

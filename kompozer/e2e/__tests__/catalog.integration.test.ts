@@ -149,7 +149,8 @@ describe('[INT] Catalog — CRUD (ruolo ADMIN)', () => {
     expect(res.status).toBe(409);
 
     const body = await res.json() as Record<string, unknown>;
-    expect(body['code']).toBe('DUPLICATE_SKU');
+    const error = body['error'] as Record<string, unknown>;
+    expect(error['code']).toBe('DUPLICATE_SKU');
   });
 
   it('POST /catalog → 422 VALIDATION_ERROR con name vuoto', async () => {
@@ -172,7 +173,8 @@ describe('[INT] Catalog — CRUD (ruolo ADMIN)', () => {
     expect(res.status).toBe(422);
 
     const body = await res.json() as Record<string, unknown>;
-    expect(body['code']).toBe('VALIDATION_ERROR');
+    const error = body['error'] as Record<string, unknown>;
+    expect(error['code']).toBe('VALIDATION_ERROR');
   });
 });
 
@@ -231,7 +233,8 @@ describe('[INT] Catalog — lettura e filtri', () => {
     expect(res.status).toBe(404);
 
     const body = await res.json() as Record<string, unknown>;
-    expect(body['code']).toBe('COMPONENT_NOT_FOUND');
+    const error = body['error'] as Record<string, unknown>;
+    expect(error['code']).toBe('COMPONENT_NOT_FOUND');
   });
 });
 
@@ -267,7 +270,8 @@ describe('[INT] Catalog — aggiornamento e OCC [DS]', () => {
     expect(res.status).toBe(409);
 
     const body = await res.json() as Record<string, unknown>;
-    expect(body['code']).toBe('VERSION_CONFLICT');
+    const error = body['error'] as Record<string, unknown>;
+    expect(error['code']).toBe('VERSION_CONFLICT');
     // → Compass: il documento rimane intatto con version=2 (no silent overwrite)
   });
 
@@ -308,6 +312,7 @@ describe('[INT] Catalog — eliminazione', () => {
     expect(res.status).toBe(404);
 
     const body = await res.json() as Record<string, unknown>;
-    expect(body['code']).toBe('COMPONENT_NOT_FOUND');
+    const error = body['error'] as Record<string, unknown>;
+    expect(error['code']).toBe('COMPONENT_NOT_FOUND');
   });
 });

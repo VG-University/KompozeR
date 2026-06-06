@@ -33,6 +33,21 @@
       "connectionOptions": {
         "connectionString": "mongodb://root:changeme@localhost:27018/catalogdb?authSource=admin"
       }
+    },
+    {
+      "id": "9f8b2c76-4a3d-4f1d-9b2a-6e5c4d3f2a1b",
+      "lastUsed": {
+        "$date": {
+          "$numberLong": "1749203200000"
+        }
+      },
+      "favorite": {
+        "name": "KompozeR — cartdb (localhost:27019)"
+      },
+      "savedConnectionType": "favorite",
+      "connectionOptions": {
+        "connectionString": "mongodb://root:changeme@localhost:27019/cartdb?authSource=admin"
+      }
     }
   ]
 }

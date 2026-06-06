@@ -119,7 +119,7 @@ describe('GET /catalog/:id', () => {
     const { app } = buildApp();
     const res = await request(app).get('/catalog/non-esiste');
     expect(res.status).toBe(404);
-    expect(res.body).toHaveProperty('code', 'COMPONENT_NOT_FOUND');
+    expect(res.body).toHaveProperty('error.code', 'COMPONENT_NOT_FOUND');
   });
 });
 
@@ -161,7 +161,7 @@ describe('POST /catalog — richiede ADMIN', () => {
       .set('x-user-id', 'admin-001')
       .send(VALID_BODY);
     expect(res.status).toBe(409);
-    expect(res.body).toHaveProperty('code', 'DUPLICATE_SKU');
+    expect(res.body).toHaveProperty('error.code', 'DUPLICATE_SKU');
   });
 
   it('422 — dati non validi (name vuoto)', async () => {
@@ -172,7 +172,7 @@ describe('POST /catalog — richiede ADMIN', () => {
       .set('x-user-id', 'admin-001')
       .send({ ...VALID_BODY, name: '' });
     expect(res.status).toBe(422);
-    expect(res.body).toHaveProperty('code', 'VALIDATION_ERROR');
+    expect(res.body).toHaveProperty('error.code', 'VALIDATION_ERROR');
   });
 });
 
@@ -222,7 +222,7 @@ describe('PUT /catalog/:id — richiede ADMIN', () => {
       .set('x-user-id', 'admin-001')
       .send({ expectedVersion: 1, name: 'x' });
     expect(res.status).toBe(409);
-    expect(res.body).toHaveProperty('code', 'VERSION_CONFLICT');
+    expect(res.body).toHaveProperty('error.code', 'VERSION_CONFLICT');
   });
 });
 

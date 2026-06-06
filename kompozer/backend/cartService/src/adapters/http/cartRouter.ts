@@ -18,7 +18,13 @@ function wrap(fn: (req: Request, res: Response, next: NextFunction) => Promise<v
 function requireUserId(req: Request, res: Response, next: NextFunction): void {
   const userId = req.headers['x-user-id'];
   if (!userId || typeof userId !== 'string') {
-    res.status(401).json({ code: 'UNAUTHORIZED', message: 'Missing identity header X-User-Id' });
+    res.status(401).json({
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Missing identity header X-User-Id',
+        timestamp: new Date().toISOString(),
+      },
+    });
     return;
   }
   next();

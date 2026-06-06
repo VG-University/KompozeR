@@ -1,4 +1,5 @@
 import { UpsertCartItem } from '../../src/useCases/UpsertCartItem';
+import { ValidationError } from '../../src/domain/entities/errors';
 import { FakeCartRepository } from '../helpers/fakes';
 
 describe('UpsertCartItem', () => {
@@ -42,5 +43,35 @@ describe('UpsertCartItem', () => {
     expect(cart.items).toHaveLength(1);
     expect(cart.items[0].quantity).toBe(3);
     expect(cart.total).toBe(5970);
+  });
+
+  it('throws ValidationError on non-positive quantity', async () => {
+    const repo = new FakeCartRepository();
+    const useCase = new UpsertCartItem(repo);
+
+    await expect(
+      useCase.execute({
+        userId: 'usr_1',
+        sku: 'SKU-001',
+        name: 'Ripiano',
+        unitPrice: 1990,
+        quantity: 0,
+      }),
+    ).rejects.toThrow(ValidationError);
+  });
+
+  it('throws ValidationError on negative unitPrice', async () => {
+    const repo = new FakeCartRepository();
+    const useCase = new UpsertCartItem(repo);
+
+    await expect(
+      useCase.execute({
+        userId: 'usr_1',
+        sku: 'SKU-001',
+        name: 'Ripiano',
+        unitPrice: -10,
+        quantity: 1,
+      }),
+    ).rejects.toThrow(ValidationError);
   });
 });

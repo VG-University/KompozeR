@@ -28,10 +28,18 @@ function buildTestApp() {
 }
 
 describe('cartRouter', () => {
+  it('GET /cart/health -> 200', async () => {
+    const app = buildTestApp();
+    const res = await request(app).get('/cart/health');
+    expect(res.status).toBe(200);
+    expect(res.body.status).toBe('ok');
+  });
+
   it('GET /cart -> 401 when identity is missing', async () => {
     const app = buildTestApp();
     const res = await request(app).get('/cart');
     expect(res.status).toBe(401);
+    expect(res.body.error.code).toBe('UNAUTHORIZED');
   });
 
   it('PUT /cart/items/:sku adds item and GET /cart returns it', async () => {
@@ -48,6 +56,48 @@ describe('cartRouter', () => {
     const get = await request(app).get('/cart').set('x-user-id', 'usr_1');
     expect(get.status).toBe(200);
     expect(get.body.items).toHaveLength(1);
+  });
+
+  it('PUT /cart/items/:sku is idempotent on same SKU (single row, stable total)', async () => {
+    const app = buildTestApp();
+
+    await request(app)
+      .put('/cart/items/SKU-001')
+      .set('x-user-id', 'usr_1')
+      .send({ name: 'Ripiano', unitPrice: 1990, quantity: 2 });
+
+    const second = await request(app)
+      .put('/cart/items/SKU-001')
+      .set('x-user-id', 'usr_1')
+      .send({ name: 'Ripiano', unitPrice: 1990, quantity: 2 });
+
+    expect(second.status).toBe(200);
+    expect(second.body.items).toHaveLength(1);
+    expect(second.body.total).toBe(3980);
+  });
+
+  it('PUT /cart/items/:sku -> 422 on invalid quantity', async () => {
+    const app = buildTestApp();
+
+    const res = await request(app)
+      .put('/cart/items/SKU-001')
+      .set('x-user-id', 'usr_1')
+      .send({ name: 'Ripiano', unitPrice: 1990, quantity: 0 });
+
+    expect(res.status).toBe(422);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('PUT /cart/items/:sku -> 422 on invalid unitPrice', async () => {
+    const app = buildTestApp();
+
+    const res = await request(app)
+      .put('/cart/items/SKU-001')
+      .set('x-user-id', 'usr_1')
+      .send({ name: 'Ripiano', unitPrice: -1, quantity: 1 });
+
+    expect(res.status).toBe(422);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
   });
 
   it('DELETE /cart/items/:sku removes item', async () => {

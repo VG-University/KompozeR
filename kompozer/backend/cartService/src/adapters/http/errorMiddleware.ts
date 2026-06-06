@@ -5,6 +5,14 @@ const CODE_TO_STATUS: Record<string, number> = {
   VALIDATION_ERROR: 422,
 };
 
+interface ApiError {
+  error: {
+    code: string;
+    message: string;
+    timestamp: string;
+  };
+}
+
 export function errorMiddleware(
   err: unknown,
   _req: Request,
@@ -13,10 +21,23 @@ export function errorMiddleware(
 ): void {
   if (err instanceof CartError) {
     const status = CODE_TO_STATUS[err.code] ?? 500;
-    res.status(status).json({ code: err.code, message: err.message });
+    const body: ApiError = {
+      error: {
+        code: err.code,
+        message: err.message,
+        timestamp: new Date().toISOString(),
+      },
+    };
+    res.status(status).json(body);
     return;
   }
 
   console.error('[cart] Unhandled error:', err);
-  res.status(500).json({ code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' });
+  res.status(500).json({
+    error: {
+      code: 'INTERNAL_ERROR',
+      message: 'An unexpected error occurred',
+      timestamp: new Date().toISOString(),
+    },
+  });
 }

@@ -28,7 +28,13 @@ export interface CatalogRouterDeps {
 function requireAdmin(req: Request, res: Response, next: NextFunction): void {
   const role = req.headers['x-user-role'];
   if (role !== 'ADMIN') {
-    res.status(403).json({ code: 'FORBIDDEN', message: 'Admin role required' });
+    res.status(403).json({
+      error: {
+        code: 'FORBIDDEN',
+        message: 'Admin role required',
+        timestamp: new Date().toISOString(),
+      },
+    });
     return;
   }
   next();

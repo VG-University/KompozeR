@@ -12,6 +12,15 @@ const CODE_TO_STATUS: Record<string, number> = {
   INSUFFICIENT_STOCK:   409,
 };
 
+interface ApiError {
+  error: {
+    code: string;
+    message: string;
+    details?: unknown[];
+    timestamp: string;
+  };
+}
+
 export function errorMiddleware(
   err: unknown,
   _req: Request,
@@ -21,10 +30,31 @@ export function errorMiddleware(
 ): void {
   if (err instanceof CatalogError) {
     const status = CODE_TO_STATUS[err.code] ?? 500;
-    res.status(status).json({ code: err.code, message: err.message });
+    const body: ApiError = {
+      error: {
+        code: err.code,
+        message: err.message,
+        timestamp: new Date().toISOString(),
+      },
+    };
+
+    if ('details' in err && Array.isArray((err as { details?: unknown[] }).details)) {
+      const details = (err as { details?: unknown[] }).details;
+      if (details && details.length > 0) {
+        body.error.details = details;
+      }
+    }
+
+    res.status(status).json(body);
     return;
   }
 
   console.error('[catalog] Unhandled error:', err);
-  res.status(500).json({ code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' });
+  res.status(500).json({
+    error: {
+      code: 'INTERNAL_ERROR',
+      message: 'An unexpected error occurred',
+      timestamp: new Date().toISOString(),
+    },
+  });
 }
