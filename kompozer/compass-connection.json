@@ -1,0 +1,38 @@
+{
+  "type": "Compass Connections",
+  "version": {
+    "$numberInt": "1"
+  },
+  "connections": [
+    {
+      "id": "a1b2c3d4-0001-4000-8000-kompozer00001",
+      "lastUsed": {
+        "$date": {
+          "$numberLong": "1749203200000"
+        }
+      },
+      "favorite": {
+        "name": "KompozeR — authdb (localhost:27017)"
+      },
+      "savedConnectionType": "favorite",
+      "connectionOptions": {
+        "connectionString": "mongodb://root:changeme@localhost:27017/authdb?authSource=admin"
+      }
+    },
+    {
+      "id": "a1b2c3d4-0002-4000-8000-kompozer00002",
+      "lastUsed": {
+        "$date": {
+          "$numberLong": "1749203200000"
+        }
+      },
+      "favorite": {
+        "name": "KompozeR — catalogdb (localhost:27018)"
+      },
+      "savedConnectionType": "favorite",
+      "connectionOptions": {
+        "connectionString": "mongodb://root:changeme@localhost:27018/catalogdb?authSource=admin"
+      }
+    }
+  ]
+}
