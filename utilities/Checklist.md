@@ -218,20 +218,28 @@ Obiettivo:
 - Implementare il cuore del configuratore server-side e collegarlo al carrello.
 
 Backlog sprint:
-- [ ] Modello CAD configurazione + persistenza Mongo.
-- [ ] API CRUD bozza configurazione.
-- [ ] Regole compatibilita categoria (no mix).
-- [ ] Finalize configurazione -> lista componenti consolidata.
-- [ ] Integrazione con cart per generazione carrello da configurazione.
+- [x] Modello CAD configurazione step-based + persistenza Mongo (`environment`, `category`, `columnPlan`, `columnDesigns`).
+- [ ] API CAD a comandi di dominio (setup/design/finalize) al posto di CRUD generico bozza.
+- [ ] Regole compatibilita categoria (no mix TONDO/QUADRO/KUBE) enforce lato backend.
+- [ ] Vincoli geometrici backend con formula altezza completa: quota ultimo livello + spessore ripiano + terminale.
+- [ ] Vincolo adiacenza colonne (ripiani adiacenti non alla stessa quota).
+- [ ] Solver di fattibilita futura (look-ahead) per prevenire dead-end configurativi (Scenario 2).
+- [ ] Derivazione automatica BOM componenti (ripiani/montanti/piedini/terminali) con deduplica montanti condivisi.
+- [ ] Finalize configurazione -> BOM consolidata -> integrazione cart per generazione/upsert carrello.
+- [ ] Allineamento contratti CAD (DB/DTO/Payload) con modello a colonne/livelli.
 
 Deliverable:
-- Flusso backend completo: crea bozza -> modifica -> finalizza -> cart aggiornato.
+- Flusso backend completo e vincolato: setup ambiente/categoria/colonne -> design guidato -> finalize -> cart aggiornato.
 
 Stima:
 - 5-6 gg.
 
 Exit criteria:
-- Test integrazione CAD->Cart verdi.
+- Test CAD->Cart verdi con copertura minima su:
+	- vincolo adiacenza colonne;
+	- vincolo altezza con spessore ripiano;
+	- prevenzione dead-end (look-ahead);
+	- finalize con BOM coerente e carrello aggiornato.
 
 ### Sprint 3 - Notification + Chatbot + Reporting minimo (ASW)
 
@@ -338,6 +346,6 @@ Exit criteria:
 ## Priorita immediata (prossimi 3 passi)
 
 - [ ] Step 1: chiudere Sprint 1 task tecnici in sospeso (stabilizzazione baseline).
-- [ ] Step 2: aprire Sprint 2 partendo dal dominio CAD e API bozza.
+- [ ] Step 2: aprire Sprint 2 con dominio CAD step-based, vincoli backend (spessore ripiano incluso) e solver look-ahead.
 - [ ] Step 3: aggiungere e2e CAD iniziali prima di estendere le feature.
 

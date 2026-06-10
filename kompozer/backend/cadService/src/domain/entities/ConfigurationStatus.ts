@@ -1,0 +1,11 @@
+export const CONFIGURATION_STATUSES = [
+  'DRAFT',
+  'ENVIRONMENT_DEFINED',
+  'CATEGORY_SELECTED',
+  'COLUMNS_DEFINED',
+  'DESIGN_IN_PROGRESS',
+  'READY_FOR_FINALIZE',
+  'FINALIZED',
+] as const;
+
+export type ConfigurationStatus = (typeof CONFIGURATION_STATUSES)[number];
