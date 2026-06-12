@@ -5,8 +5,8 @@
 import mongoose from 'mongoose';
 import { buildApp } from './app';
 
-const PORT = Number(process.env.PORT) || 3001;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/kompozer-auth';
+const PORT = Number(process.env['AUTH_PORT'] ?? process.env['PORT']) || 3001;
+const MONGO_URI = process.env['AUTH_MONGO_URI'] ?? process.env['MONGO_URI'] ?? 'mongodb://localhost:27017/kompozer-auth';
 const JWT_SECRET = process.env.JWT_SECRET;
 const SESSION_TTL_HOURS = Number(process.env.SESSION_TTL_HOURS) || 8;
 

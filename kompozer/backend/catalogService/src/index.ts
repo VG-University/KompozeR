@@ -3,9 +3,9 @@
 import mongoose from 'mongoose';
 import { buildApp } from './app';
 
-const PORT      = Number(process.env['PORT'])      || 3002;
-const MONGO_URI = process.env['MONGO_URI']         || 'mongodb://localhost:27017/kompozer-catalog';
-const REDIS_URL = process.env['REDIS_URL']         || '';
+const PORT      = Number(process.env['CATALOG_PORT'] ?? process.env['PORT']) || 3004;
+const MONGO_URI = process.env['CATALOG_MONGO_URI'] ?? process.env['MONGO_URI'] ?? 'mongodb://localhost:27017/kompozer-catalog';
+const REDIS_URL = process.env['REDIS_URL'] || '';
 
 const app = buildApp({ redisUrl: REDIS_URL || undefined });
 

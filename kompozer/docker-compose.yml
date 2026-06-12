@@ -67,6 +67,9 @@ services:
   auth-service:
     build: ./backend/authenticationService
     env_file: .env
+    environment:
+      MONGO_URI: ${AUTH_MONGO_URI}
+      PORT: ${AUTH_PORT}
     depends_on: [mongo-auth]
 
   cad-service:
@@ -81,11 +84,17 @@ services:
   cart-service:
     build: ./backend/cartService
     env_file: .env
+    environment:
+      MONGO_URI: ${CART_MONGO_URI}
+      PORT: ${CART_PORT}
     depends_on: [mongo-cart, redis, catalog-service]
 
   catalog-service:
     build: ./backend/catalogService
     env_file: .env
+    environment:
+      MONGO_URI: ${CATALOG_MONGO_URI}
+      PORT: ${CATALOG_PORT}
     depends_on: [mongo-catalog, redis]
 
   chatbot-service:
