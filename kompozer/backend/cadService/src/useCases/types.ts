@@ -32,6 +32,35 @@ export interface GetConfigurationInput {
   ownerId: string;
 }
 
+export interface SetEnvironmentInput {
+  id: string;
+  ownerId: string;
+  environment: Environment;
+}
+
+export interface SetCategoryInput {
+  id: string;
+  ownerId: string;
+  category: Category;
+}
+
+export interface SetColumnPlanInput {
+  id: string;
+  ownerId: string;
+  columnPlan: ColumnPlan;
+}
+
+export interface UpdateDesignInput {
+  id: string;
+  ownerId: string;
+  columnDesigns: ColumnDesign[];
+}
+
+export interface FinalizeConfigurationInput {
+  id: string;
+  ownerId: string;
+}
+
 export function toConfigurationDto(configuration: Configuration): ConfigurationDto {
   return {
     id: configuration.id,

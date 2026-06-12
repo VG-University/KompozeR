@@ -1,12 +1,23 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import { isCategory } from '../../domain/entities/Category';
+import { Category, isCategory } from '../../domain/entities/Category';
+import { ColumnDesign, ColumnPlan, Environment } from '../../domain/entities/Configuration';
 import { ValidationError } from '../../domain/entities/errors';
 import { GetConfiguration } from '../../useCases/read/GetConfiguration';
 import { CreateConfiguration } from '../../useCases/write/CreateConfiguration';
+import { FinalizeConfiguration } from '../../useCases/write/FinalizeConfiguration';
+import { SetCategory } from '../../useCases/write/SetCategory';
+import { SetColumnPlan } from '../../useCases/write/SetColumnPlan';
+import { SetEnvironment } from '../../useCases/write/SetEnvironment';
+import { UpdateDesign } from '../../useCases/write/UpdateDesign';
 
 export interface CadRouterDeps {
   createConfiguration: CreateConfiguration;
   getConfiguration: GetConfiguration;
+  setEnvironment: SetEnvironment;
+  setCategory: SetCategory;
+  setColumnPlan: SetColumnPlan;
+  updateDesign: UpdateDesign;
+  finalizeConfiguration: FinalizeConfiguration;
 }
 
 function wrap(fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) {
@@ -29,7 +40,7 @@ function requireUserId(req: Request, res: Response, next: NextFunction): void {
   next();
 }
 
-function parseCategory(body: unknown): 'TONDO' | 'QUADRO' | 'KUBE' | null | undefined {
+function parseCategory(body: unknown): Category | null | undefined {
   if (!body || typeof body !== 'object') {
     return undefined;
   }
@@ -60,6 +71,110 @@ function parseCategory(body: unknown): 'TONDO' | 'QUADRO' | 'KUBE' | null | unde
   }
 
   return undefined;
+}
+
+function parseEnvironment(body: unknown): Environment {
+  if (!body || typeof body !== 'object') {
+    throw new ValidationError('environment payload is required');
+  }
+
+  const typedBody = body as Record<string, unknown>;
+  const maxWidthMm = Number(typedBody['maxWidthMm']);
+  const maxHeightMm = Number(typedBody['maxHeightMm']);
+  const minWidthMm = Number(typedBody['minWidthMm']);
+  const minHeightMm = Number(typedBody['minHeightMm']);
+  const unit = typedBody['unit'] ?? 'mm';
+
+  if ([maxWidthMm, maxHeightMm, minWidthMm, minHeightMm].some((value) => Number.isNaN(value))) {
+    throw new ValidationError('environment dimensions must be numeric');
+  }
+
+  if (unit !== 'mm') {
+    throw new ValidationError('environment unit must be mm');
+  }
+
+  return {
+    maxWidthMm,
+    maxHeightMm,
+    minWidthMm,
+    minHeightMm,
+    unit: 'mm',
+  };
+}
+
+function parseColumnPlan(body: unknown): ColumnPlan {
+  if (!body || typeof body !== 'object') {
+    throw new ValidationError('columnPlan payload is required');
+  }
+
+  const typedBody = body as {
+    columnCount?: unknown;
+    columns?: unknown;
+  };
+
+  if (!Array.isArray(typedBody.columns)) {
+    throw new ValidationError('columnPlan.columns must be an array');
+  }
+
+  const columns = typedBody.columns.map((column): ColumnPlan['columns'][number] => {
+    if (!column || typeof column !== 'object') {
+      throw new ValidationError('Each columnPlan item must be an object');
+    }
+
+    const typedColumn = column as Record<string, unknown>;
+    const index = Number(typedColumn['index']);
+    const shelfWidthMm = Number(typedColumn['shelfWidthMm']);
+
+    if (Number.isNaN(index) || Number.isNaN(shelfWidthMm)) {
+      throw new ValidationError('Column plan values must be numeric');
+    }
+
+    return { index, shelfWidthMm };
+  });
+
+  const columnCount = Number(typedBody.columnCount);
+  if (Number.isNaN(columnCount)) {
+    throw new ValidationError('columnCount must be numeric');
+  }
+
+  return { columnCount, columns };
+}
+
+function parseColumnDesigns(body: unknown): ColumnDesign[] {
+  if (!body || typeof body !== 'object') {
+    throw new ValidationError('design payload is required');
+  }
+
+  const typedBody = body as { columnDesigns?: unknown };
+  if (!Array.isArray(typedBody.columnDesigns)) {
+    throw new ValidationError('columnDesigns must be an array');
+  }
+
+  return typedBody.columnDesigns.map((design): ColumnDesign => {
+    if (!design || typeof design !== 'object') {
+      throw new ValidationError('Each columnDesign must be an object');
+    }
+
+    const typedDesign = design as Record<string, unknown>;
+    const columnIndex = Number(typedDesign['columnIndex']);
+    const shelfThicknessMm = Number(typedDesign['shelfThicknessMm']);
+    const rawLevels = typedDesign['levelsMm'];
+
+    if (!Array.isArray(rawLevels)) {
+      throw new ValidationError('columnDesign.levelsMm must be an array');
+    }
+
+    const levelsMm = rawLevels.map((level) => Number(level));
+    if ([columnIndex, shelfThicknessMm, ...levelsMm].some((value) => Number.isNaN(value))) {
+      throw new ValidationError('columnDesign values must be numeric');
+    }
+
+    return {
+      columnIndex,
+      shelfThicknessMm,
+      levelsMm,
+    };
+  });
 }
 
 export function buildCadRouter(deps: CadRouterDeps): Router {
@@ -95,6 +210,80 @@ export function buildCadRouter(deps: CadRouterDeps): Router {
     wrap(async (req, res) => {
       const ownerId = req.headers['x-user-id'] as string;
       const configuration = await deps.getConfiguration.execute({
+        id: req.params['id'],
+        ownerId,
+      });
+      res.json(configuration);
+    }),
+  );
+
+  router.patch(
+    '/configurations/:id/environment',
+    requireUserId,
+    wrap(async (req, res) => {
+      const ownerId = req.headers['x-user-id'] as string;
+      const configuration = await deps.setEnvironment.execute({
+        id: req.params['id'],
+        ownerId,
+        environment: parseEnvironment(req.body),
+      });
+      res.json(configuration);
+    }),
+  );
+
+  router.patch(
+    '/configurations/:id/category',
+    requireUserId,
+    wrap(async (req, res) => {
+      const ownerId = req.headers['x-user-id'] as string;
+      const category = parseCategory(req.body);
+      if (!category) {
+        throw new ValidationError('category is required');
+      }
+
+      const configuration = await deps.setCategory.execute({
+        id: req.params['id'],
+        ownerId,
+        category,
+      });
+      res.json(configuration);
+    }),
+  );
+
+  router.patch(
+    '/configurations/:id/column-plan',
+    requireUserId,
+    wrap(async (req, res) => {
+      const ownerId = req.headers['x-user-id'] as string;
+      const configuration = await deps.setColumnPlan.execute({
+        id: req.params['id'],
+        ownerId,
+        columnPlan: parseColumnPlan(req.body),
+      });
+      res.json(configuration);
+    }),
+  );
+
+  router.patch(
+    '/configurations/:id/design',
+    requireUserId,
+    wrap(async (req, res) => {
+      const ownerId = req.headers['x-user-id'] as string;
+      const configuration = await deps.updateDesign.execute({
+        id: req.params['id'],
+        ownerId,
+        columnDesigns: parseColumnDesigns(req.body),
+      });
+      res.json(configuration);
+    }),
+  );
+
+  router.post(
+    '/configurations/:id/finalize',
+    requireUserId,
+    wrap(async (req, res) => {
+      const ownerId = req.headers['x-user-id'] as string;
+      const configuration = await deps.finalizeConfiguration.execute({
         id: req.params['id'],
         ownerId,
       });

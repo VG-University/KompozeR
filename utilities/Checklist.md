@@ -219,11 +219,11 @@ Obiettivo:
 
 Backlog sprint:
 - [x] Modello CAD configurazione step-based + persistenza Mongo (`environment`, `category`, `columnPlan`, `columnDesigns`).
-- [ ] API CAD a comandi di dominio (setup/design/finalize) al posto di CRUD generico bozza.
-- [ ] Regole compatibilita categoria (no mix TONDO/QUADRO/KUBE) enforce lato backend.
-- [ ] Vincoli geometrici backend con formula altezza completa: quota ultimo livello + spessore ripiano + terminale.
-- [ ] Vincolo adiacenza colonne (ripiani adiacenti non alla stessa quota).
-- [ ] Solver di fattibilita futura (look-ahead) per prevenire dead-end configurativi (Scenario 2).
+- [x] API CAD a comandi di dominio (setup/design/finalize) al posto di CRUD generico bozza.
+- [x] Regole compatibilita categoria (no mix TONDO/QUADRO/KUBE) enforce lato backend.
+- [x] Vincoli geometrici backend con formula altezza completa: quota ultimo livello + spessore ripiano + terminale.
+- [x] Vincolo adiacenza colonne (ripiani adiacenti non alla stessa quota).
+- [x] Solver di fattibilita futura (look-ahead) per prevenire dead-end configurativi (Scenario 2).
 - [ ] Derivazione automatica BOM componenti (ripiani/montanti/piedini/terminali) con deduplica montanti condivisi.
 - [ ] Finalize configurazione -> BOM consolidata -> integrazione cart per generazione/upsert carrello.
 - [ ] Allineamento contratti CAD (DB/DTO/Payload) con modello a colonne/livelli.
