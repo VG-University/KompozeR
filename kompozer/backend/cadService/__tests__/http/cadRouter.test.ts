@@ -2,6 +2,7 @@ import request from 'supertest';
 import { buildApp } from '../../src/app';
 import {
   FakeCatalogRulesProvider,
+  FakeCartServiceClient,
   FakeConfigurationRepository,
   buildCatalogRules,
 } from '../helpers/fakes';
@@ -11,6 +12,7 @@ describe('cadRouter', () => {
     const app = buildApp({
       configurationRepository: new FakeConfigurationRepository(),
       catalogRulesProvider: new FakeCatalogRulesProvider(),
+      cartServiceClient: new FakeCartServiceClient(),
     });
     const res = await request(app).get('/health');
 
@@ -19,9 +21,11 @@ describe('cadRouter', () => {
   });
 
   it('POST /cad/configurations -> 201 and PATCH commands finalize full flow', async () => {
+    const cart = new FakeCartServiceClient();
     const app = buildApp({
       configurationRepository: new FakeConfigurationRepository(),
       catalogRulesProvider: new FakeCatalogRulesProvider(),
+      cartServiceClient: cart,
     });
 
     const created = await request(app)
@@ -73,8 +77,8 @@ describe('cadRouter', () => {
       .set('x-user-id', 'usr_1')
       .send({
         columnDesigns: [
-          { columnIndex: 0, levelsMm: [420, 860], shelfThicknessMm: 20 },
-          { columnIndex: 1, levelsMm: [520, 960], shelfThicknessMm: 20 },
+          { columnIndex: 0, levelsMm: [120, 440], shelfThicknessMm: 20 },
+          { columnIndex: 1, levelsMm: [300, 640], shelfThicknessMm: 20 },
         ],
       });
 
@@ -88,6 +92,9 @@ describe('cadRouter', () => {
 
     expect(finalized.status).toBe(200);
     expect(finalized.body.status).toBe('FINALIZED');
+    expect(finalized.body.bom).toBeDefined();
+    expect(finalized.body.bom.length).toBeGreaterThan(0);
+    expect(cart.calls).toHaveLength(1);
 
     const fetched = await request(app)
       .get(`/cad/configurations/${configurationId}`)
@@ -105,6 +112,7 @@ describe('cadRouter', () => {
     const app = buildApp({
       configurationRepository: new FakeConfigurationRepository(),
       catalogRulesProvider: new FakeCatalogRulesProvider(),
+      cartServiceClient: new FakeCartServiceClient(),
     });
 
     const created = await request(app)
@@ -125,6 +133,7 @@ describe('cadRouter', () => {
     const app = buildApp({
       configurationRepository: new FakeConfigurationRepository(),
       catalogRulesProvider: new FakeCatalogRulesProvider(),
+      cartServiceClient: new FakeCartServiceClient(),
     });
 
     const created = await request(app)
@@ -164,11 +173,12 @@ describe('cadRouter', () => {
 
   it('PATCH /cad/configurations/:id/column-plan -> 422 when shelf width is unavailable in category', async () => {
     const rules = buildCatalogRules({
-      shelfByWidthMm: new Map([[600, { type: 'RIPIANO', widthMm: 600, heightMm: 20, depthMm: 300 }]]),
+      shelfByWidthMm: new Map([[600, { type: 'RIPIANO', sku: 'RIP-600', name: 'Ripiano 600', priceCents: 2990, widthMm: 600, heightMm: 20, depthMm: 300 }]]),
     });
     const app = buildApp({
       configurationRepository: new FakeConfigurationRepository(),
       catalogRulesProvider: new FakeCatalogRulesProvider(rules),
+      cartServiceClient: new FakeCartServiceClient(),
     });
 
     const created = await request(app)
@@ -205,6 +215,7 @@ describe('cadRouter', () => {
     const app = buildApp({
       configurationRepository: new FakeConfigurationRepository(),
       catalogRulesProvider: new FakeCatalogRulesProvider(),
+      cartServiceClient: new FakeCartServiceClient(),
     });
 
     const created = await request(app)

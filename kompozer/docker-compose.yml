@@ -79,6 +79,7 @@ services:
       MONGO_URI: ${CAD_MONGO_URI}
       PORT: ${CAD_PORT}
       CATALOG_BASE_URL: http://catalog-service:${CATALOG_PORT}
+      CART_BASE_URL: http://cart-service:${CART_PORT}
     depends_on: [mongo-cad, redis, catalog-service]
 
   cart-service:

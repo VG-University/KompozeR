@@ -4,6 +4,9 @@ export type CatalogComponentType = 'PIEDINO' | 'MONTANTE' | 'RIPIANO' | 'TERMINA
 
 export interface CatalogComponentRule {
   type: CatalogComponentType;
+  sku: string;
+  name: string;
+  priceCents: number;
   widthMm: number;
   heightMm: number;
   depthMm: number;
@@ -11,9 +14,15 @@ export interface CatalogComponentRule {
 
 export interface CatalogRules {
   shelfByWidthMm: Map<number, CatalogComponentRule>;
+  /** Smallest upright whose heightMm >= requested gap; keyed by exact heightMm */
+  uprightByHeightMm: Map<number, CatalogComponentRule>;
   terminalHeightsMm: number[];
   footHeightsMm: number[];
   uprightHeightsMm: number[];
+  /** First available foot rule (lowest height) */
+  defaultFoot: CatalogComponentRule | null;
+  /** First available terminal rule */
+  defaultTerminal: CatalogComponentRule | null;
 }
 
 export interface CatalogRulesProvider {

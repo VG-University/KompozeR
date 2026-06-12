@@ -8,7 +8,8 @@
     "test:catalog": "npm --prefix backend/catalogService test -- --runInBand",
     "test:cart": "npm --prefix backend/cartService test -- --runInBand",
     "test:gateway": "npm --prefix backend/apiGateway test -- --runInBand",
-    "test:backend": "npm run test:auth && npm run test:catalog && npm run test:cart && npm run test:gateway",
+    "test:cad": "npm --prefix backend/cadService test -- --runInBand",
+    "test:backend": "npm run test:auth && npm run test:catalog && npm run test:cart && npm run test:gateway && npm run test:cad",
     "test:e2e": "npm --prefix e2e test -- --runInBand",
     "test:baseline": "npm run test:backend && npm run test:e2e"
   }

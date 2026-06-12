@@ -4,8 +4,10 @@ import { SetCategory } from '../../src/useCases/write/SetCategory';
 import { SetColumnPlan } from '../../src/useCases/write/SetColumnPlan';
 import { SetEnvironment } from '../../src/useCases/write/SetEnvironment';
 import { UpdateDesign } from '../../src/useCases/write/UpdateDesign';
+import { deriveBom } from '../../src/domain/services/deriveBom';
 import {
   FakeCatalogRulesProvider,
+  FakeCartServiceClient,
   FakeConfigurationRepository,
   buildCatalogRules,
   buildConfiguration,
@@ -59,8 +61,10 @@ describe('CAD command use cases', () => {
     ).rejects.toMatchObject({ code: 'RESOURCE_CONFLICT' });
   });
 
-  it('FinalizeConfiguration marks configuration as FINALIZED', async () => {
+  it('FinalizeConfiguration marks configuration as FINALIZED and pushes BOM to cart', async () => {
     const repo = new FakeConfigurationRepository();
+    const catalog = new FakeCatalogRulesProvider();
+    const cart = new FakeCartServiceClient();
     repo.seed(
       buildConfiguration({
         status: 'DESIGN_IN_PROGRESS',
@@ -80,17 +84,22 @@ describe('CAD command use cases', () => {
           ],
         },
         columnDesigns: [
-          { columnIndex: 0, levelsMm: [420, 860], shelfThicknessMm: 20 },
-          { columnIndex: 1, levelsMm: [520, 960], shelfThicknessMm: 20 },
+          { columnIndex: 0, levelsMm: [120, 440], shelfThicknessMm: 20 },
+          { columnIndex: 1, levelsMm: [300, 640], shelfThicknessMm: 20 },
         ],
       }),
     );
 
-    const useCase = new FinalizeConfiguration(repo);
+    const useCase = new FinalizeConfiguration(repo, catalog, cart);
     const result = await useCase.execute({ id: 'cfg_test', ownerId: 'usr_1' });
 
     expect(result.status).toBe('FINALIZED');
     expect(result.version).toBe(2);
+    expect(result.bom).toBeDefined();
+    expect(result.bom!.length).toBeGreaterThan(0);
+    expect(cart.calls).toHaveLength(1);
+    expect(cart.calls[0].ownerId).toBe('usr_1');
+    expect(cart.calls[0].items.length).toBeGreaterThan(0);
   });
 
   it('UpdateDesign rejects unknown column indexes', async () => {
@@ -174,7 +183,7 @@ describe('CAD command use cases', () => {
     );
 
     const catalog = new FakeCatalogRulesProvider(buildCatalogRules({
-      shelfByWidthMm: new Map([[600, { type: 'RIPIANO', widthMm: 600, heightMm: 20, depthMm: 300 }]]),
+      shelfByWidthMm: new Map([[600, { type: 'RIPIANO', sku: 'RIP-600', name: 'Ripiano 600', priceCents: 2990, widthMm: 600, heightMm: 20, depthMm: 300 }]]),
     }));
 
     const useCase = new SetColumnPlan(repo, catalog);
@@ -319,8 +328,8 @@ describe('CAD command use cases', () => {
       terminalHeightsMm: [60],
       footHeightsMm: [120],
       shelfByWidthMm: new Map([
-        [600, { type: 'RIPIANO', widthMm: 600, heightMm: 20, depthMm: 300 }],
-        [800, { type: 'RIPIANO', widthMm: 800, heightMm: 20, depthMm: 300 }],
+        [600, { type: 'RIPIANO', sku: 'RIP-600', name: 'Ripiano 600', priceCents: 2990, widthMm: 600, heightMm: 20, depthMm: 300 }],
+        [800, { type: 'RIPIANO', sku: 'RIP-800', name: 'Ripiano 800', priceCents: 3490, widthMm: 800, heightMm: 20, depthMm: 300 }],
       ]),
     });
     const useCase = new UpdateDesign(repo, new FakeCatalogRulesProvider(rules));

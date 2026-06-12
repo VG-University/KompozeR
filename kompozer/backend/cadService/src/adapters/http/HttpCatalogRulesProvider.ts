@@ -11,6 +11,9 @@ import {
 } from '../../domain/ports/CatalogRulesProvider';
 
 interface CatalogListItem {
+  sku: unknown;
+  name: unknown;
+  price: unknown;
   Type: unknown;
   dimensions: {
     widthMm: unknown;
@@ -40,9 +43,12 @@ export class HttpCatalogRulesProvider implements CatalogRulesProvider {
     }
 
     const shelfByWidthMm = new Map<number, CatalogComponentRule>();
+    const uprightByHeightMm = new Map<number, CatalogComponentRule>();
     const terminalHeightsMm: number[] = [];
     const footHeightsMm: number[] = [];
     const uprightHeightsMm: number[] = [];
+    const footRules: CatalogComponentRule[] = [];
+    const terminalRules: CatalogComponentRule[] = [];
 
     for (const item of data.items) {
       const type = this.parseType(item.Type);
@@ -54,8 +60,15 @@ export class HttpCatalogRulesProvider implements CatalogRulesProvider {
         continue;
       }
 
+      const sku = typeof item.sku === 'string' ? item.sku : String(item.sku ?? '');
+      const name = typeof item.name === 'string' ? item.name : String(item.name ?? '');
+      const priceCents = Number.isFinite(Number(item.price)) ? Number(item.price) : 0;
+
       const rule: CatalogComponentRule = {
         type,
+        sku,
+        name,
+        priceCents,
         widthMm,
         heightMm,
         depthMm,
@@ -66,20 +79,29 @@ export class HttpCatalogRulesProvider implements CatalogRulesProvider {
       }
       if (type === 'TERMINALE') {
         terminalHeightsMm.push(heightMm);
+        terminalRules.push(rule);
       }
       if (type === 'PIEDINO') {
         footHeightsMm.push(heightMm);
+        footRules.push(rule);
       }
       if (type === 'MONTANTE') {
         uprightHeightsMm.push(heightMm);
+        uprightByHeightMm.set(heightMm, rule);
       }
     }
 
+    const sortedFeet = footRules.sort((a, b) => a.heightMm - b.heightMm);
+    const sortedTerminals = terminalRules.sort((a, b) => a.heightMm - b.heightMm);
+
     return {
       shelfByWidthMm,
+      uprightByHeightMm,
       terminalHeightsMm: uniqueSorted(terminalHeightsMm),
       footHeightsMm: uniqueSorted(footHeightsMm),
       uprightHeightsMm: uniqueSorted(uprightHeightsMm),
+      defaultFoot: sortedFeet[0] ?? null,
+      defaultTerminal: sortedTerminals[0] ?? null,
     };
   }
 

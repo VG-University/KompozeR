@@ -4,6 +4,9 @@ import {
   ResourceNotFoundError,
   ValidationError,
 } from '../../domain/entities/errors';
+import { deriveBom } from '../../domain/services/deriveBom';
+import { CartServiceClient } from '../../domain/ports/CartServiceClient';
+import { CatalogRulesProvider } from '../../domain/ports/CatalogRulesProvider';
 import { ConfigurationRepository } from '../../domain/ports/ConfigurationRepository';
 import {
   ConfigurationDto,
@@ -12,7 +15,11 @@ import {
 } from '../types';
 
 export class FinalizeConfiguration {
-  constructor(private readonly configurationRepository: ConfigurationRepository) {}
+  constructor(
+    private readonly configurationRepository: ConfigurationRepository,
+    private readonly catalogRulesProvider: CatalogRulesProvider,
+    private readonly cartServiceClient: CartServiceClient,
+  ) {}
 
   async execute(input: FinalizeConfigurationInput): Promise<ConfigurationDto> {
     if (!input.id?.trim()) {
@@ -36,6 +43,11 @@ export class FinalizeConfiguration {
       throw new ValidationError('Configuration design is required before finalize');
     }
 
+    const rules = await this.catalogRulesProvider.getRules(configuration.category);
+    const bom = deriveBom(configuration, rules);
+
+    await this.cartServiceClient.pushBomToCart(configuration.ownerId, bom);
+
     const updated: Configuration = {
       ...configuration,
       status: 'FINALIZED',
@@ -44,7 +56,10 @@ export class FinalizeConfiguration {
     };
 
     await this.configurationRepository.update(updated);
-    return toConfigurationDto(updated);
+
+    const dto = toConfigurationDto(updated);
+    dto.bom = bom;
+    return dto;
   }
 
   private async loadOwnedConfiguration(id: string, ownerId: string): Promise<Configuration> {

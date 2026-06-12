@@ -6,6 +6,7 @@ import {
   Environment,
 } from '../domain/entities/Configuration';
 import { ConfigurationStatus } from '../domain/entities/ConfigurationStatus';
+import { BomItem } from '../domain/entities/Bom';
 
 export interface CreateConfigurationInput {
   ownerId: string;
@@ -25,6 +26,7 @@ export interface ConfigurationDto {
   version: number;
   createdAt: Date;
   updatedAt: Date;
+  bom?: BomItem[];
 }
 
 export interface GetConfigurationInput {

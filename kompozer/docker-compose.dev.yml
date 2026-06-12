@@ -55,6 +55,18 @@ services:
       - mongo-cart-data:/data/db
     restart: unless-stopped
 
+  mongo-cad:
+    image: mongo:7
+    ports:
+      - "27020:27017"          # Compass: mongodb://root:changeme@localhost:27020/?authSource=admin
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: changeme
+      MONGO_INITDB_DATABASE: caddb
+    volumes:
+      - mongo-cad-data:/data/db
+    restart: unless-stopped
+
   # ── Backend ─────────────────────────────────────────────────────────────────
 
   auth-service:
@@ -88,6 +100,19 @@ services:
       - mongo-cart
     restart: unless-stopped
 
+  cad-service:
+    build: ./backend/cadService
+    environment:
+      PORT: "3003"
+      MONGO_URI: "mongodb://root:changeme@mongo-cad:27017/caddb?authSource=admin"
+      CATALOG_BASE_URL: "http://catalog-service:3002"
+      CART_BASE_URL: "http://cart-service:3004"
+    depends_on:
+      - mongo-cad
+      - catalog-service
+      - cart-service
+    restart: unless-stopped
+
   api-gateway:
     build: ./backend/apiGateway
     ports:
@@ -106,9 +131,11 @@ services:
       - auth-service
       - catalog-service
       - cart-service
+      - cad-service
     restart: unless-stopped
 
 volumes:
   mongo-auth-data:
   mongo-catalog-data:
   mongo-cart-data:
+  mongo-cad-data:

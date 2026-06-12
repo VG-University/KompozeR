@@ -1,8 +1,10 @@
 import { Configuration } from '../../src/domain/entities/Configuration';
+import { BomItem } from '../../src/domain/entities/Bom';
 import {
   CatalogRules,
   CatalogRulesProvider,
 } from '../../src/domain/ports/CatalogRulesProvider';
+import { CartServiceClient } from '../../src/domain/ports/CartServiceClient';
 import { ConfigurationRepository } from '../../src/domain/ports/ConfigurationRepository';
 
 export class FakeConfigurationRepository implements ConfigurationRepository {
@@ -75,29 +77,58 @@ export class FakeCatalogRulesProvider implements CatalogRulesProvider {
   async getRules(): Promise<CatalogRules> {
     return {
       shelfByWidthMm: new Map(this.rules.shelfByWidthMm),
+      uprightByHeightMm: new Map(this.rules.uprightByHeightMm),
       terminalHeightsMm: [...this.rules.terminalHeightsMm],
       footHeightsMm: [...this.rules.footHeightsMm],
       uprightHeightsMm: [...this.rules.uprightHeightsMm],
+      defaultFoot: this.rules.defaultFoot,
+      defaultTerminal: this.rules.defaultTerminal,
     };
   }
 }
 
+export class FakeCartServiceClient implements CartServiceClient {
+  readonly calls: Array<{ ownerId: string; items: BomItem[] }> = [];
+
+  async pushBomToCart(ownerId: string, items: BomItem[]): Promise<void> {
+    this.calls.push({ ownerId, items: [...items] });
+  }
+}
+
 export function buildCatalogRules(overrides: Partial<CatalogRules> = {}): CatalogRules {
+  const shelfMap = new Map([
+    [600,  { type: 'RIPIANO' as const, sku: 'RIP-600', name: 'Ripiano 600', priceCents: 2990, widthMm: 600,  heightMm: 20, depthMm: 300 }],
+    [800,  { type: 'RIPIANO' as const, sku: 'RIP-800', name: 'Ripiano 800', priceCents: 3490, widthMm: 800,  heightMm: 20, depthMm: 300 }],
+    [1000, { type: 'RIPIANO' as const, sku: 'RIP-1000', name: 'Ripiano 1000', priceCents: 3990, widthMm: 1000, heightMm: 20, depthMm: 300 }],
+  ]);
+
+  const uprightMap = new Map([
+    [120, { type: 'MONTANTE' as const, sku: 'MON-120', name: 'Montante 120', priceCents: 990, widthMm: 40, heightMm: 120, depthMm: 40 }],
+    [300, { type: 'MONTANTE' as const, sku: 'MON-300', name: 'Montante 300', priceCents: 1490, widthMm: 40, heightMm: 300, depthMm: 40 }],
+    [400, { type: 'MONTANTE' as const, sku: 'MON-400', name: 'Montante 400', priceCents: 1790, widthMm: 40, heightMm: 400, depthMm: 40 }],
+    [500, { type: 'MONTANTE' as const, sku: 'MON-500', name: 'Montante 500', priceCents: 1990, widthMm: 40, heightMm: 500, depthMm: 40 }],
+  ]);
+
+  const defaultFoot = { type: 'PIEDINO' as const, sku: 'PIE-120', name: 'Piedino 120', priceCents: 490, widthMm: 40, heightMm: 120, depthMm: 40 };
+  const defaultTerminal = { type: 'TERMINALE' as const, sku: 'TER-40', name: 'Terminale 40', priceCents: 390, widthMm: 40, heightMm: 40, depthMm: 40 };
+
   const base: CatalogRules = {
-    shelfByWidthMm: new Map([
-      [600, { type: 'RIPIANO', widthMm: 600, heightMm: 20, depthMm: 300 }],
-      [800, { type: 'RIPIANO', widthMm: 800, heightMm: 20, depthMm: 300 }],
-      [1000, { type: 'RIPIANO', widthMm: 1000, heightMm: 20, depthMm: 300 }],
-    ]),
+    shelfByWidthMm: shelfMap,
+    uprightByHeightMm: uprightMap,
     terminalHeightsMm: [40],
     footHeightsMm: [120, 160],
-    uprightHeightsMm: [300, 400, 500],
+    uprightHeightsMm: [120, 300, 400, 500],
+    defaultFoot,
+    defaultTerminal,
   };
 
   return {
-    shelfByWidthMm: overrides.shelfByWidthMm ? new Map(overrides.shelfByWidthMm) : base.shelfByWidthMm,
+    shelfByWidthMm:   overrides.shelfByWidthMm   ? new Map(overrides.shelfByWidthMm)   : base.shelfByWidthMm,
+    uprightByHeightMm: overrides.uprightByHeightMm ? new Map(overrides.uprightByHeightMm) : base.uprightByHeightMm,
     terminalHeightsMm: overrides.terminalHeightsMm ?? base.terminalHeightsMm,
-    footHeightsMm: overrides.footHeightsMm ?? base.footHeightsMm,
-    uprightHeightsMm: overrides.uprightHeightsMm ?? base.uprightHeightsMm,
+    footHeightsMm:     overrides.footHeightsMm     ?? base.footHeightsMm,
+    uprightHeightsMm:  overrides.uprightHeightsMm  ?? base.uprightHeightsMm,
+    defaultFoot:       overrides.defaultFoot       ?? base.defaultFoot,
+    defaultTerminal:   overrides.defaultTerminal   ?? base.defaultTerminal,
   };
 }

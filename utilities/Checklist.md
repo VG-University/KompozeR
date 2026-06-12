@@ -224,9 +224,9 @@ Backlog sprint:
 - [x] Vincoli geometrici backend con formula altezza completa: quota ultimo livello + spessore ripiano + terminale.
 - [x] Vincolo adiacenza colonne (ripiani adiacenti non alla stessa quota).
 - [x] Solver di fattibilita futura (look-ahead) per prevenire dead-end configurativi (Scenario 2).
-- [ ] Derivazione automatica BOM componenti (ripiani/montanti/piedini/terminali) con deduplica montanti condivisi.
-- [ ] Finalize configurazione -> BOM consolidata -> integrazione cart per generazione/upsert carrello.
-- [ ] Allineamento contratti CAD (DB/DTO/Payload) con modello a colonne/livelli.
+- [x] Derivazione automatica BOM componenti (ripiani/montanti/piedini/terminali) con deduplica montanti condivisi.
+- [x] Finalize configurazione -> BOM consolidata -> integrazione cart per generazione/upsert carrello.
+- [x] Allineamento contratti CAD (DB/DTO/Payload) con modello a colonne/livelli.
 
 Deliverable:
 - Flusso backend completo e vincolato: setup ambiente/categoria/colonne -> design guidato -> finalize -> cart aggiornato.
