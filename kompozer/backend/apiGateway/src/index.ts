@@ -24,6 +24,18 @@ const app = buildApp({
   },
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`[gateway] Listening on port ${PORT}`);
 });
+
+const notificationsWsProxy = app.locals['notificationsWsProxy'] as
+  | { upgrade?: (req: unknown, socket: unknown, head: unknown) => void }
+  | undefined;
+
+if (notificationsWsProxy?.upgrade) {
+  server.on('upgrade', (req, socket, head) => {
+    if (req.url?.startsWith('/ws/notifications')) {
+      notificationsWsProxy.upgrade?.(req, socket, head);
+    }
+  });
+}

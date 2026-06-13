@@ -63,6 +63,21 @@
       "connectionOptions": {
         "connectionString": "mongodb://root:changeme@localhost:27020/caddb?authSource=admin"
       }
+    },
+    {
+      "id": "a2b3c4d5-e6f7-4a8b-9c0d-1e2f3a4b5c6d",
+      "lastUsed": {
+        "$date": {
+          "$numberLong": "1749203200000"
+        }
+      },
+      "favorite": {
+        "name": "KompozeR — notificationdb (localhost:27021)"
+      },
+      "savedConnectionType": "favorite",
+      "connectionOptions": {
+        "connectionString": "mongodb://root:changeme@localhost:27021/notificationdb?authSource=admin"
+      }
     }
   ]
 }

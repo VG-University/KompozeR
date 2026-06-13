@@ -1,0 +1,162 @@
+import { Router, Request, Response, NextFunction } from 'express';
+import { CountUnreadNotifications } from '../../useCases/CountUnreadNotifications';
+import { ListNotifications } from '../../useCases/ListNotifications';
+import { MarkNotificationRead } from '../../useCases/MarkNotificationRead';
+import { CreateSubscription } from '../../useCases/CreateSubscription';
+import { ListSubscriptions } from '../../useCases/ListSubscriptions';
+import { GetSubscription } from '../../useCases/GetSubscription';
+import { UpdateSubscription } from '../../useCases/UpdateSubscription';
+import { DeleteSubscription } from '../../useCases/DeleteSubscription';
+
+export interface NotificationsRouterDeps {
+  listNotifications: ListNotifications;
+  countUnreadNotifications: CountUnreadNotifications;
+  markNotificationRead: MarkNotificationRead;
+  createSubscription: CreateSubscription;
+  listSubscriptions: ListSubscriptions;
+  getSubscription: GetSubscription;
+  updateSubscription: UpdateSubscription;
+  deleteSubscription: DeleteSubscription;
+}
+
+function wrap(fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) {
+  return (req: Request, res: Response, next: NextFunction) => fn(req, res, next).catch(next);
+}
+
+function requireUserId(req: Request, res: Response, next: NextFunction): void {
+  const userId = req.headers['x-user-id'];
+  if (!userId || typeof userId !== 'string') {
+    res.status(401).json({
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Missing identity header X-User-Id',
+        timestamp: new Date().toISOString(),
+      },
+    });
+    return;
+  }
+  next();
+}
+
+export function buildNotificationsRouter(deps: NotificationsRouterDeps): Router {
+  const router = Router();
+
+  router.get(
+    '/subscriptions',
+    requireUserId,
+    wrap(async (req, res) => {
+      const userId = req.headers['x-user-id'] as string;
+      const response = await deps.listSubscriptions.execute({ userId });
+      res.json(response);
+    }),
+  );
+
+  router.post(
+    '/subscriptions',
+    requireUserId,
+    wrap(async (req, res) => {
+      const userId = req.headers['x-user-id'] as string;
+      const { scope, targetId, events, channel } = req.body as {
+        scope: 'PRODUCT';
+        targetId: string;
+        events: Array<'PRICE_CHANGED' | 'AVAILABILITY_CHANGED'>;
+        channel: 'IN_APP';
+      };
+      const created = await deps.createSubscription.execute({
+        userId,
+        scope,
+        targetId,
+        events,
+        channel,
+      });
+      res.status(201).json(created);
+    }),
+  );
+
+  router.get(
+    '/subscriptions/:subscriptionId',
+    requireUserId,
+    wrap(async (req, res) => {
+      const userId = req.headers['x-user-id'] as string;
+      const subscriptionId = req.params['subscriptionId'] as string;
+      const sub = await deps.getSubscription.execute({ userId, subscriptionId });
+      res.json(sub);
+    }),
+  );
+
+  router.patch(
+    '/subscriptions/:subscriptionId',
+    requireUserId,
+    wrap(async (req, res) => {
+      const userId = req.headers['x-user-id'] as string;
+      const subscriptionId = req.params['subscriptionId'] as string;
+      const { events, isActive } = req.body as {
+        events?: Array<'PRICE_CHANGED' | 'AVAILABILITY_CHANGED'>;
+        isActive?: boolean;
+      };
+      const sub = await deps.updateSubscription.execute({
+        userId,
+        subscriptionId,
+        events,
+        isActive,
+      });
+      res.json(sub);
+    }),
+  );
+
+  router.delete(
+    '/subscriptions/:subscriptionId',
+    requireUserId,
+    wrap(async (req, res) => {
+      const userId = req.headers['x-user-id'] as string;
+      const subscriptionId = req.params['subscriptionId'] as string;
+      await deps.deleteSubscription.execute({ userId, subscriptionId });
+      res.status(204).send();
+    }),
+  );
+
+  router.get(
+    '/',
+    requireUserId,
+    wrap(async (req, res) => {
+      const userId = req.headers['x-user-id'] as string;
+      const page = req.query['page'] ? Number(req.query['page']) : undefined;
+      const limit = req.query['limit'] ? Number(req.query['limit']) : undefined;
+      const unreadOnly = req.query['unread'] === 'true';
+
+      const response = await deps.listNotifications.execute({
+        userId,
+        page,
+        limit,
+        unreadOnly,
+      });
+      res.json(response);
+    }),
+  );
+
+  router.get(
+    '/unread/count',
+    requireUserId,
+    wrap(async (req, res) => {
+      const userId = req.headers['x-user-id'] as string;
+      const response = await deps.countUnreadNotifications.execute({ userId });
+      res.json(response);
+    }),
+  );
+
+  router.patch(
+    '/:notificationId/read',
+    requireUserId,
+    wrap(async (req, res) => {
+      const userId = req.headers['x-user-id'] as string;
+      const notificationId = req.params['notificationId'] as string;
+      const notification = await deps.markNotificationRead.execute({
+        userId,
+        notificationId,
+      });
+      res.json(notification);
+    }),
+  );
+
+  return router;
+}

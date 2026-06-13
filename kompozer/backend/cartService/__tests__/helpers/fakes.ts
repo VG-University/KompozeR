@@ -1,4 +1,5 @@
 import { Cart } from '../../src/domain/entities/Cart';
+import { CatalogItemSnapshot, CatalogSnapshotProvider } from '../../src/domain/ports/CatalogSnapshotProvider';
 import { CartRepository } from '../../src/domain/ports/CartRepository';
 
 export class FakeCartRepository implements CartRepository {
@@ -20,5 +21,17 @@ export class FakeCartRepository implements CartRepository {
       total: 0,
       updatedAt: new Date(),
     });
+  }
+}
+
+export class FakeCatalogSnapshotProvider implements CatalogSnapshotProvider {
+  private snapshots = new Map<string, CatalogItemSnapshot>();
+
+  set(snapshot: CatalogItemSnapshot): void {
+    this.snapshots.set(snapshot.sku, snapshot);
+  }
+
+  async getBySku(sku: string): Promise<CatalogItemSnapshot | null> {
+    return this.snapshots.get(sku) ?? null;
   }
 }

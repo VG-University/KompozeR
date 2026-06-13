@@ -247,8 +247,8 @@ Obiettivo:
 - Coprire i moduli applicativi ASW mancanti lato backend.
 
 Backlog sprint:
-- [ ] notification-service: persistenza + API list/read + push realtime.
-- [ ] Sottoscrizione eventi catalog per price/availability changed.
+- [x] notification-service: persistenza + API list/read + push realtime.
+- [x] Sottoscrizione eventi catalog per price/availability changed.
 - [ ] chatbot-service: endpoint Q&A contestuale su catalogo/prezzi.
 - [ ] reporting-service: endpoint trend base per admin.
 

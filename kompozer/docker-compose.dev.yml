@@ -67,6 +67,18 @@ services:
       - mongo-cad-data:/data/db
     restart: unless-stopped
 
+  mongo-notification:
+    image: mongo:7
+    ports:
+      - "27021:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: changeme
+      MONGO_INITDB_DATABASE: notificationdb
+    volumes:
+      - mongo-notification-data:/data/db
+    restart: unless-stopped
+
   # ── Backend ─────────────────────────────────────────────────────────────────
 
   auth-service:
@@ -96,6 +108,7 @@ services:
     environment:
       PORT: "3004"
       MONGO_URI: "mongodb://root:changeme@mongo-cart:27017/cartdb?authSource=admin"
+      CATALOG_BASE_URL: "http://catalog-service:3002"
     depends_on:
       - mongo-cart
     restart: unless-stopped
@@ -111,6 +124,21 @@ services:
       - mongo-cad
       - catalog-service
       - cart-service
+    restart: unless-stopped
+
+  notification-service:
+    build: ./backend/notificationService
+    environment:
+      PORT: "3005"
+      MONGO_URI: "mongodb://root:changeme@mongo-notification:27017/notificationdb?authSource=admin"
+      REDIS_URL: "redis://redis:6379"
+      CART_MONGO_URI: "mongodb://root:changeme@mongo-cart:27017/cartdb?authSource=admin"
+      CAD_MONGO_URI: "mongodb://root:changeme@mongo-cad:27017/caddb?authSource=admin"
+    depends_on:
+      - mongo-notification
+      - mongo-cart
+      - mongo-cad
+      - redis
     restart: unless-stopped
 
   api-gateway:
@@ -132,6 +160,7 @@ services:
       - catalog-service
       - cart-service
       - cad-service
+      - notification-service
     restart: unless-stopped
 
 volumes:
@@ -139,3 +168,4 @@ volumes:
   mongo-catalog-data:
   mongo-cart-data:
   mongo-cad-data:
+  mongo-notification-data:

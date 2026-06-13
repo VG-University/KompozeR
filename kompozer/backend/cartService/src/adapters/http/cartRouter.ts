@@ -3,12 +3,14 @@ import { GetCart } from '../../useCases/GetCart';
 import { UpsertCartItem } from '../../useCases/UpsertCartItem';
 import { RemoveCartItem } from '../../useCases/RemoveCartItem';
 import { ClearCart } from '../../useCases/ClearCart';
+import { CheckoutCart } from '../../useCases/CheckoutCart';
 
 export interface CartRouterDeps {
   getCart: GetCart;
   upsertCartItem: UpsertCartItem;
   removeCartItem: RemoveCartItem;
   clearCart: ClearCart;
+  checkoutCart: CheckoutCart;
 }
 
 function wrap(fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) {
@@ -90,6 +92,16 @@ export function buildCartRouter(deps: CartRouterDeps): Router {
       const userId = req.headers['x-user-id'] as string;
       await deps.clearCart.execute({ userId });
       res.status(204).send();
+    }),
+  );
+
+  router.post(
+    '/checkout',
+    requireUserId,
+    wrap(async (req, res) => {
+      const userId = req.headers['x-user-id'] as string;
+      const result = await deps.checkoutCart.execute({ userId });
+      res.status(200).json(result);
     }),
   );
 

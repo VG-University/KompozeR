@@ -6,10 +6,12 @@ import { GetCart } from '../../src/useCases/GetCart';
 import { UpsertCartItem } from '../../src/useCases/UpsertCartItem';
 import { RemoveCartItem } from '../../src/useCases/RemoveCartItem';
 import { ClearCart } from '../../src/useCases/ClearCart';
-import { FakeCartRepository } from '../helpers/fakes';
+import { CheckoutCart } from '../../src/useCases/CheckoutCart';
+import { FakeCartRepository, FakeCatalogSnapshotProvider } from '../helpers/fakes';
 
 function buildTestApp() {
   const repo = new FakeCartRepository();
+  const catalog = new FakeCatalogSnapshotProvider();
 
   const app = express();
   app.use(express.json());
@@ -20,30 +22,31 @@ function buildTestApp() {
       upsertCartItem: new UpsertCartItem(repo),
       removeCartItem: new RemoveCartItem(repo),
       clearCart: new ClearCart(repo),
+      checkoutCart: new CheckoutCart(repo, catalog),
     }),
   );
   app.use(errorMiddleware);
 
-  return app;
+  return { app, catalog };
 }
 
 describe('cartRouter', () => {
   it('GET /cart/health -> 200', async () => {
-    const app = buildTestApp();
+    const { app } = buildTestApp();
     const res = await request(app).get('/cart/health');
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('ok');
   });
 
   it('GET /cart -> 401 when identity is missing', async () => {
-    const app = buildTestApp();
+    const { app } = buildTestApp();
     const res = await request(app).get('/cart');
     expect(res.status).toBe(401);
     expect(res.body.error.code).toBe('UNAUTHORIZED');
   });
 
   it('PUT /cart/items/:sku adds item and GET /cart returns it', async () => {
-    const app = buildTestApp();
+    const { app } = buildTestApp();
 
     const upsert = await request(app)
       .put('/cart/items/SKU-001')
@@ -59,7 +62,7 @@ describe('cartRouter', () => {
   });
 
   it('PUT /cart/items/:sku is idempotent on same SKU (single row, stable total)', async () => {
-    const app = buildTestApp();
+    const { app } = buildTestApp();
 
     await request(app)
       .put('/cart/items/SKU-001')
@@ -77,7 +80,7 @@ describe('cartRouter', () => {
   });
 
   it('PUT /cart/items/:sku -> 422 on invalid quantity', async () => {
-    const app = buildTestApp();
+    const { app } = buildTestApp();
 
     const res = await request(app)
       .put('/cart/items/SKU-001')
@@ -89,7 +92,7 @@ describe('cartRouter', () => {
   });
 
   it('PUT /cart/items/:sku -> 422 on invalid unitPrice', async () => {
-    const app = buildTestApp();
+    const { app } = buildTestApp();
 
     const res = await request(app)
       .put('/cart/items/SKU-001')
@@ -101,7 +104,7 @@ describe('cartRouter', () => {
   });
 
   it('DELETE /cart/items/:sku removes item', async () => {
-    const app = buildTestApp();
+    const { app } = buildTestApp();
 
     await request(app)
       .put('/cart/items/SKU-001')
@@ -118,7 +121,7 @@ describe('cartRouter', () => {
   });
 
   it('DELETE /cart clears entire cart', async () => {
-    const app = buildTestApp();
+    const { app } = buildTestApp();
 
     await request(app)
       .put('/cart/items/SKU-001')
@@ -131,5 +134,70 @@ describe('cartRouter', () => {
     const get = await request(app).get('/cart').set('x-user-id', 'usr_1');
     expect(get.status).toBe(200);
     expect(get.body.items).toHaveLength(0);
+  });
+
+  it('POST /cart/checkout -> 409 when cart is empty', async () => {
+    const { app } = buildTestApp();
+
+    const res = await request(app)
+      .post('/cart/checkout')
+      .set('x-user-id', 'usr_1');
+
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('CART_EMPTY');
+  });
+
+  it('POST /cart/checkout -> 200 when catalog snapshot is consistent', async () => {
+    const { app, catalog } = buildTestApp();
+
+    await request(app)
+      .put('/cart/items/SKU-001')
+      .set('x-user-id', 'usr_1')
+      .send({ name: 'Ripiano', unitPrice: 1990, quantity: 1 });
+
+    catalog.set({ sku: 'SKU-001', unitPrice: 1990, isAvailable: true });
+
+    const res = await request(app)
+      .post('/cart/checkout')
+      .set('x-user-id', 'usr_1');
+
+    expect(res.status).toBe(200);
+    expect(res.body.status).toBe('CONFIRMED');
+  });
+
+  it('POST /cart/checkout -> 409 when item becomes unavailable', async () => {
+    const { app, catalog } = buildTestApp();
+
+    await request(app)
+      .put('/cart/items/SKU-001')
+      .set('x-user-id', 'usr_1')
+      .send({ name: 'Ripiano', unitPrice: 1990, quantity: 1 });
+
+    catalog.set({ sku: 'SKU-001', unitPrice: 1990, isAvailable: false });
+
+    const res = await request(app)
+      .post('/cart/checkout')
+      .set('x-user-id', 'usr_1');
+
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('ITEM_UNAVAILABLE');
+  });
+
+  it('POST /cart/checkout -> 409 when price changed', async () => {
+    const { app, catalog } = buildTestApp();
+
+    await request(app)
+      .put('/cart/items/SKU-001')
+      .set('x-user-id', 'usr_1')
+      .send({ name: 'Ripiano', unitPrice: 1990, quantity: 1 });
+
+    catalog.set({ sku: 'SKU-001', unitPrice: 2090, isAvailable: true });
+
+    const res = await request(app)
+      .post('/cart/checkout')
+      .set('x-user-id', 'usr_1');
+
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('PRICE_CHANGED');
   });
 });

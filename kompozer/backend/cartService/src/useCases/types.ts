@@ -27,3 +27,15 @@ export interface RemoveCartItemInput {
 export interface ClearCartInput {
   userId: string;
 }
+
+export interface CheckoutCartInput {
+  userId: string;
+}
+
+export interface CheckoutCartOutput {
+  status: 'CONFIRMED';
+  userId: string;
+  items: CartItem[];
+  total: number;
+  checkedAt: Date;
+}

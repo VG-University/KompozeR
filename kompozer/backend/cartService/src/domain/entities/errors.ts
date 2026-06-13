@@ -13,3 +13,31 @@ export class ValidationError extends CartError {
     super('VALIDATION_ERROR', message);
   }
 }
+
+export class CartEmptyError extends CartError {
+  constructor() {
+    super('CART_EMPTY', 'Cart is empty');
+  }
+}
+
+export class CartItemUnavailableError extends CartError {
+  constructor(public readonly sku: string) {
+    super('ITEM_UNAVAILABLE', `Item ${sku} is no longer available`);
+  }
+}
+
+export class CartItemPriceChangedError extends CartError {
+  constructor(
+    public readonly sku: string,
+    public readonly expected: number,
+    public readonly actual: number,
+  ) {
+    super('PRICE_CHANGED', `Item ${sku} has changed price (${expected} -> ${actual})`);
+  }
+}
+
+export class CatalogLookupError extends CartError {
+  constructor(message: string) {
+    super('CATALOG_LOOKUP_FAILED', message);
+  }
+}

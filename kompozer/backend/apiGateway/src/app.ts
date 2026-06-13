@@ -4,6 +4,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 import { buildJwtMiddleware } from './middleware/jwtMiddleware';
 import { gatewayErrorMiddleware } from './middleware/gatewayErrorMiddleware';
 import { buildRoutes, ServiceUrls } from './routes/index';
@@ -18,9 +19,20 @@ export interface GatewayConfig {
 export function buildApp(config: GatewayConfig) {
   const app = express();
 
+  const notificationsWsProxy = createProxyMiddleware({
+    target: config.services.notification,
+    changeOrigin: true,
+    ws: true,
+  });
+
+  app.locals['notificationsWsProxy'] = notificationsWsProxy;
+
   app.use(cors());
   app.use(helmet());
   app.use(express.json());
+
+  // WebSocket proxy for notifications realtime channel.
+  app.use('/ws/notifications', notificationsWsProxy);
 
   // Health check — pubblico, prima del JWT middleware
   app.use(buildHealthRouter(config.services));
