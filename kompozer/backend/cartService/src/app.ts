@@ -33,7 +33,7 @@ export function buildApp(config: CartAppConfig = {}) {
   const upsertCartItem = new UpsertCartItem(repo, eventPublisher);
   const removeCartItem = new RemoveCartItem(repo, eventPublisher);
   const clearCart = new ClearCart(repo, eventPublisher);
-  const checkoutCart = new CheckoutCart(repo, catalog);
+  const checkoutCart = new CheckoutCart(repo, catalog, eventPublisher);
 
   const app = express();
   app.use(cors());

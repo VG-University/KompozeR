@@ -3,7 +3,9 @@ import {
   CartItemPriceChangedError,
   CartItemUnavailableError,
 } from '../domain/entities/errors';
+import { CartEvent } from '../domain/entities/CartEvent';
 import { CartRepository } from '../domain/ports/CartRepository';
+import { CartEventPublisher } from '../domain/ports/CartEventPublisher';
 import { CatalogSnapshotProvider } from '../domain/ports/CatalogSnapshotProvider';
 import { CheckoutCartInput, CheckoutCartOutput } from './types';
 
@@ -11,6 +13,7 @@ export class CheckoutCart {
   constructor(
     private readonly cartRepo: CartRepository,
     private readonly catalog: CatalogSnapshotProvider,
+    private readonly eventPublisher: CartEventPublisher = { publish: async () => {} },
   ) {}
 
   async execute(input: CheckoutCartInput): Promise<CheckoutCartOutput> {
@@ -29,12 +32,34 @@ export class CheckoutCart {
       }
     }
 
+    await this.eventPublisher.publish(
+      this.buildEvent({
+        type: 'OrderRequestSubmitted',
+        userId: cart.userId,
+      }),
+    );
+
+    await this.eventPublisher.publish(
+      this.buildEvent({
+        type: 'OrderConfirmationRequested',
+        userId: cart.userId,
+      }),
+    );
+
     return {
       status: 'CONFIRMED',
       userId: cart.userId,
       items: cart.items,
       total: cart.total,
       checkedAt: new Date(),
+    };
+  }
+
+  private buildEvent(event: Omit<CartEvent, 'eventId' | 'occurredAt'>): CartEvent {
+    return {
+      ...event,
+      eventId: `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+      occurredAt: new Date().toISOString(),
     };
   }
 }

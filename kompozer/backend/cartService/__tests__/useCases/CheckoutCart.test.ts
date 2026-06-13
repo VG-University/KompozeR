@@ -5,14 +5,19 @@ import {
   CartItemUnavailableError,
 } from '../../src/domain/entities/errors';
 import { UpsertCartItem } from '../../src/useCases/UpsertCartItem';
-import { FakeCartRepository, FakeCatalogSnapshotProvider } from '../helpers/fakes';
+import {
+  FakeCartEventPublisher,
+  FakeCartRepository,
+  FakeCatalogSnapshotProvider,
+} from '../helpers/fakes';
 
 describe('CheckoutCart', () => {
   it('confirms checkout when catalog snapshot matches cart', async () => {
     const repo = new FakeCartRepository();
     const catalog = new FakeCatalogSnapshotProvider();
-    const upsert = new UpsertCartItem(repo);
-    const checkout = new CheckoutCart(repo, catalog);
+    const publisher = new FakeCartEventPublisher();
+    const upsert = new UpsertCartItem(repo, publisher);
+    const checkout = new CheckoutCart(repo, catalog, publisher);
 
     await upsert.execute({
       userId: 'usr_1',
@@ -27,6 +32,8 @@ describe('CheckoutCart', () => {
     const result = await checkout.execute({ userId: 'usr_1' });
     expect(result.status).toBe('CONFIRMED');
     expect(result.total).toBe(3980);
+    expect(publisher.events.map((event) => event.type)).toContain('OrderRequestSubmitted');
+    expect(publisher.events.map((event) => event.type)).toContain('OrderConfirmationRequested');
   });
 
   it('throws CartEmptyError when cart has no items', async () => {
