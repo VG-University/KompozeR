@@ -33,7 +33,7 @@ DoD Fase 0:
 ### 1.1 Cart service completamento funzionale
 - [ ] Integrare cart con catalog per validare SKU/prezzo correnti lato server.
 - [ ] Gestire ricalcolo prezzi da catalog al checkout/cart refresh.
-- [ ] Eventi minimi cart (item aggiunto/rimosso, carrello svuotato).
+- [x] Eventi minimi cart (item aggiunto/rimosso, carrello svuotato).
 
 ### 1.2 CAD service (configuratore backend)
 - [ ] Modello configurazione scaffalatura (sessione, celle/moduli, categoria selezionata).

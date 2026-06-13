@@ -1,0 +1,15 @@
+import Redis from 'ioredis';
+import { CartEvent } from '../../../domain/entities/CartEvent';
+import { CartEventPublisher } from '../../../domain/ports/CartEventPublisher';
+
+export const CART_EVENTS_CHANNEL = 'cart:events';
+
+export class RedisCartEventPublisher implements CartEventPublisher {
+  constructor(private readonly redis: Redis) {}
+
+  async publish(event: CartEvent): Promise<void> {
+    const payload = JSON.stringify(event);
+    await this.redis.publish(CART_EVENTS_CHANNEL, payload);
+    console.log(`[cart][redis-publisher] Published ${event.type} for user ${event.userId}`);
+  }
+}

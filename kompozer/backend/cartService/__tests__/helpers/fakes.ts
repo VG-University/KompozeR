@@ -1,5 +1,7 @@
 import { Cart } from '../../src/domain/entities/Cart';
+import { CartEvent } from '../../src/domain/entities/CartEvent';
 import { CatalogItemSnapshot, CatalogSnapshotProvider } from '../../src/domain/ports/CatalogSnapshotProvider';
+import { CartEventPublisher } from '../../src/domain/ports/CartEventPublisher';
 import { CartRepository } from '../../src/domain/ports/CartRepository';
 
 export class FakeCartRepository implements CartRepository {
@@ -33,5 +35,13 @@ export class FakeCatalogSnapshotProvider implements CatalogSnapshotProvider {
 
   async getBySku(sku: string): Promise<CatalogItemSnapshot | null> {
     return this.snapshots.get(sku) ?? null;
+  }
+}
+
+export class FakeCartEventPublisher implements CartEventPublisher {
+  readonly events: CartEvent[] = [];
+
+  async publish(event: CartEvent): Promise<void> {
+    this.events.push(event);
   }
 }

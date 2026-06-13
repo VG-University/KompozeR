@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
+import Redis from 'ioredis';
 import { MongoCartRepository } from './adapters/persistence/MongoCartRepository';
 import { HttpCatalogSnapshotProvider } from './adapters/httpClient/HttpCatalogSnapshotProvider';
+import { RedisCartEventPublisher } from './adapters/messaging/publishers/RedisCartEventPublisher';
 import { GetCart } from './useCases/GetCart';
 import { UpsertCartItem } from './useCases/UpsertCartItem';
 import { RemoveCartItem } from './useCases/RemoveCartItem';
@@ -9,19 +11,28 @@ import { ClearCart } from './useCases/ClearCart';
 import { CheckoutCart } from './useCases/CheckoutCart';
 import { buildCartRouter } from './adapters/http/cartRouter';
 import { errorMiddleware } from './adapters/http/errorMiddleware';
+import { CartEventPublisher } from './domain/ports/CartEventPublisher';
+import { NoopCartEventPublisher } from './infrastructure/NoopCartEventPublisher';
 
 export interface CartAppConfig {
   catalogBaseUrl?: string;
+  redisUrl?: string;
 }
 
 export function buildApp(config: CartAppConfig = {}) {
   const repo = new MongoCartRepository();
   const catalog = new HttpCatalogSnapshotProvider(config.catalogBaseUrl || 'http://catalog-service:3002');
+  let eventPublisher: CartEventPublisher = new NoopCartEventPublisher();
+
+  if (config.redisUrl) {
+    const redis = new Redis(config.redisUrl);
+    eventPublisher = new RedisCartEventPublisher(redis);
+  }
 
   const getCart = new GetCart(repo);
-  const upsertCartItem = new UpsertCartItem(repo);
-  const removeCartItem = new RemoveCartItem(repo);
-  const clearCart = new ClearCart(repo);
+  const upsertCartItem = new UpsertCartItem(repo, eventPublisher);
+  const removeCartItem = new RemoveCartItem(repo, eventPublisher);
+  const clearCart = new ClearCart(repo, eventPublisher);
   const checkoutCart = new CheckoutCart(repo, catalog);
 
   const app = express();

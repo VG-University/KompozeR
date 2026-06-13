@@ -1,9 +1,14 @@
 import { computeCartTotal } from '../domain/entities/Cart';
+import { CartEvent } from '../domain/entities/CartEvent';
+import { CartEventPublisher } from '../domain/ports/CartEventPublisher';
 import { CartRepository } from '../domain/ports/CartRepository';
 import { GetCartOutput, RemoveCartItemInput } from './types';
 
 export class RemoveCartItem {
-  constructor(private readonly cartRepo: CartRepository) {}
+  constructor(
+    private readonly cartRepo: CartRepository,
+    private readonly eventPublisher: CartEventPublisher = { publish: async () => {} },
+  ) {}
 
   async execute(input: RemoveCartItemInput): Promise<GetCartOutput> {
     const cart = await this.cartRepo.findByUserId(input.userId);
@@ -16,16 +21,37 @@ export class RemoveCartItem {
       };
     }
 
+    const initialLength = cart.items.length;
     cart.items = cart.items.filter((item) => item.sku !== input.sku);
+    const wasRemoved = cart.items.length < initialLength;
     cart.total = computeCartTotal(cart.items);
     cart.updatedAt = new Date();
     await this.cartRepo.upsert(cart);
+
+    if (wasRemoved) {
+      await this.eventPublisher.publish(
+        this.buildEvent({
+          type: 'ItemRemovedFromCart',
+          userId: input.userId,
+          sku: input.sku,
+          source: 'MANUAL',
+        }),
+      );
+    }
 
     return {
       userId: cart.userId,
       items: cart.items,
       total: cart.total,
       updatedAt: cart.updatedAt,
+    };
+  }
+
+  private buildEvent(event: Omit<CartEvent, 'eventId' | 'occurredAt'>): CartEvent {
+    return {
+      ...event,
+      eventId: `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
+      occurredAt: new Date().toISOString(),
     };
   }
 }
