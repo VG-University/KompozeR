@@ -210,7 +210,7 @@ Exit criteria:
 
 Stato:
 - [x] Sprint 1 formalmente chiuso.
-- [x] Step 2 NON avviato (nessuna attivita su CAD backend core).
+- [x] Step 2 avviato e completato: CAD backend core e integrazione cart implementati e verificati.
 
 ### Sprint 2 - CAD backend core + integrazione cart (ASW)
 
