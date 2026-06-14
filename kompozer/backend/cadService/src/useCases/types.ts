@@ -34,6 +34,21 @@ export interface GetConfigurationInput {
   ownerId: string;
 }
 
+export interface ListConfigurationsInput {
+  ownerId: string;
+  status?: ConfigurationStatus;
+  page?: number;
+  limit?: number;
+}
+
+export interface ListConfigurationsOutput {
+  items: ConfigurationDto[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export interface SetEnvironmentInput {
   id: string;
   ownerId: string;

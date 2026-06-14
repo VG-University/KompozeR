@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { Category, isCategory } from '../../domain/entities/Category';
+import { ConfigurationStatus } from '../../domain/entities/ConfigurationStatus';
 import { ColumnDesign, ColumnPlan, Environment } from '../../domain/entities/Configuration';
 import { ValidationError } from '../../domain/entities/errors';
 import { GetConfiguration } from '../../useCases/read/GetConfiguration';
+import { ListConfigurations } from '../../useCases/read/ListConfigurations';
 import { CreateConfiguration } from '../../useCases/write/CreateConfiguration';
 import { FinalizeConfiguration } from '../../useCases/write/FinalizeConfiguration';
 import { SetCategory } from '../../useCases/write/SetCategory';
@@ -12,6 +14,7 @@ import { UpdateDesign } from '../../useCases/write/UpdateDesign';
 
 export interface CadRouterDeps {
   createConfiguration: CreateConfiguration;
+  listConfigurations: ListConfigurations;
   getConfiguration: GetConfiguration;
   setEnvironment: SetEnvironment;
   setCategory: SetCategory;
@@ -201,6 +204,26 @@ export function buildCadRouter(deps: CadRouterDeps): Router {
       });
 
       res.status(201).json(configuration);
+    }),
+  );
+
+  router.get(
+    '/configurations',
+    requireUserId,
+    wrap(async (req, res) => {
+      const ownerId = req.headers['x-user-id'] as string;
+      const status = req.query['status'];
+      const page = req.query['page'];
+      const limit = req.query['limit'];
+
+      const configurations = await deps.listConfigurations.execute({
+        ownerId,
+        status: typeof status === 'string' ? (status as ConfigurationStatus) : undefined,
+        page: typeof page === 'string' ? Number(page) : undefined,
+        limit: typeof limit === 'string' ? Number(limit) : undefined,
+      });
+
+      res.json(configurations);
     }),
   );
 

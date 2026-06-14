@@ -4,6 +4,7 @@ import {
   FakeCatalogRulesProvider,
   FakeCartServiceClient,
   FakeConfigurationRepository,
+  buildConfiguration,
   buildCatalogRules,
 } from '../helpers/fakes';
 
@@ -18,6 +19,29 @@ describe('cadRouter', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('ok');
+  });
+
+  it('GET /cad/configurations -> 200 and returns only owner configurations', async () => {
+    const repo = new FakeConfigurationRepository();
+    repo.seed(buildConfiguration({ id: 'cfg_1', ownerId: 'usr_1', status: 'DRAFT' }));
+    repo.seed(buildConfiguration({ id: 'cfg_2', ownerId: 'usr_1', status: 'FINALIZED' }));
+    repo.seed(buildConfiguration({ id: 'cfg_3', ownerId: 'usr_2', status: 'FINALIZED' }));
+
+    const app = buildApp({
+      configurationRepository: repo,
+      catalogRulesProvider: new FakeCatalogRulesProvider(),
+      cartServiceClient: new FakeCartServiceClient(),
+    });
+
+    const res = await request(app)
+      .get('/cad/configurations?status=FINALIZED')
+      .set('x-user-id', 'usr_1');
+
+    expect(res.status).toBe(200);
+    expect(res.body.total).toBe(1);
+    expect(res.body.items).toHaveLength(1);
+    expect(res.body.items[0].id).toBe('cfg_2');
+    expect(res.body.items[0].ownerId).toBe('usr_1');
   });
 
   it('POST /cad/configurations -> 201 and PATCH commands finalize full flow', async () => {
