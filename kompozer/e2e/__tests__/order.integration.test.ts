@@ -10,6 +10,7 @@ const SKU = `INT-ORDER-${RUN}`;
 
 let adminToken = '';
 let userToken = '';
+let createdOrderId = '';
 
 async function parseJson<T = Record<string, unknown>>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
@@ -91,6 +92,7 @@ describe('[INT] Order — checkout from cart', () => {
     expect(checkoutBody['orderId']).toEqual(expect.any(String));
 
     const orderId = checkoutBody['orderId'] as string;
+    createdOrderId = orderId;
 
     const getOrder = await fetch(`${BASE}/orders/${orderId}`, {
       headers: { Authorization: `Bearer ${userToken}` },
@@ -109,5 +111,34 @@ describe('[INT] Order — checkout from cart', () => {
     const listBody = await parseJson<Record<string, unknown>>(listOrders);
     const items = listBody['items'] as Array<Record<string, unknown>>;
     expect(items.some((order) => order['id'] === orderId)).toBe(true);
+  });
+
+  it('PATCH /orders/:id/status come admin porta ordine a DONE', async () => {
+    expect(createdOrderId).toBeTruthy();
+
+    const markDone = await fetch(`${BASE}/orders/${createdOrderId}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${adminToken}`,
+      },
+      body: JSON.stringify({ status: 'DONE' }),
+    });
+
+    expect(markDone.status).toBe(200);
+    const doneBody = await parseJson<Record<string, unknown>>(markDone);
+    expect(doneBody['status']).toBe('DONE');
+    expect(doneBody['doneAt']).toEqual(expect.any(String));
+  });
+
+  it('GET /orders/:id come utente mostra stato DONE', async () => {
+    const getOrder = await fetch(`${BASE}/orders/${createdOrderId}`, {
+      headers: { Authorization: `Bearer ${userToken}` },
+    });
+
+    expect(getOrder.status).toBe(200);
+    const orderBody = await parseJson<Record<string, unknown>>(getOrder);
+    expect(orderBody['id']).toBe(createdOrderId);
+    expect(orderBody['status']).toBe('DONE');
   });
 });

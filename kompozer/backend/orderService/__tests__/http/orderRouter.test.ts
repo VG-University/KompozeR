@@ -6,6 +6,7 @@ import { CancelOrder } from '../../src/useCases/CancelOrder';
 import { CreateOrder } from '../../src/useCases/CreateOrder';
 import { GetOrder } from '../../src/useCases/GetOrder';
 import { ListOrders } from '../../src/useCases/ListOrders';
+import { UpdateOrderStatus } from '../../src/useCases/UpdateOrderStatus';
 import { FakeOrderRepository } from '../helpers/fakes';
 
 function buildTestApp() {
@@ -20,6 +21,7 @@ function buildTestApp() {
       listOrders: new ListOrders(repo),
       getOrder: new GetOrder(repo),
       cancelOrder: new CancelOrder(repo),
+      updateOrderStatus: new UpdateOrderStatus(repo),
     }),
   );
   app.use(errorMiddleware);
@@ -70,5 +72,52 @@ describe('orderRouter', () => {
 
     expect(cancelRes.status).toBe(200);
     expect(cancelRes.body.status).toBe('CANCELLED');
+  });
+
+  it('PATCH /orders/:id/status -> 403 for non-admin user', async () => {
+    const app = buildTestApp();
+
+    const createRes = await request(app)
+      .post('/orders')
+      .set('x-user-id', 'usr_1')
+      .send({
+        items: [{ sku: 'SKU-001', name: 'Ripiano', unitPrice: 1990, quantity: 1 }],
+        total: 1990,
+      });
+
+    const orderId = createRes.body.id as string;
+
+    const updateRes = await request(app)
+      .patch(`/orders/${orderId}/status`)
+      .set('x-user-id', 'usr_1')
+      .set('x-user-role', 'BASE')
+      .send({ status: 'DONE' });
+
+    expect(updateRes.status).toBe(403);
+    expect(updateRes.body.error.code).toBe('FORBIDDEN');
+  });
+
+  it('PATCH /orders/:id/status -> 200 for admin and sets DONE', async () => {
+    const app = buildTestApp();
+
+    const createRes = await request(app)
+      .post('/orders')
+      .set('x-user-id', 'usr_1')
+      .send({
+        items: [{ sku: 'SKU-001', name: 'Ripiano', unitPrice: 1990, quantity: 1 }],
+        total: 1990,
+      });
+
+    const orderId = createRes.body.id as string;
+
+    const updateRes = await request(app)
+      .patch(`/orders/${orderId}/status`)
+      .set('x-user-id', 'adm_1')
+      .set('x-user-role', 'ADMIN')
+      .send({ status: 'DONE' });
+
+    expect(updateRes.status).toBe(200);
+    expect(updateRes.body.status).toBe('DONE');
+    expect(updateRes.body.doneAt).toEqual(expect.any(String));
   });
 });

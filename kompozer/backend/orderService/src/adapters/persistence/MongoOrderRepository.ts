@@ -11,6 +11,7 @@ export class MongoOrderRepository implements OrderRepository {
       total: order.total,
       status: order.status,
       submittedAt: order.submittedAt,
+      doneAt: order.doneAt,
       cancelledAt: order.cancelledAt,
     });
   }
@@ -28,6 +29,7 @@ export class MongoOrderRepository implements OrderRepository {
       total: doc.total,
       status: doc.status,
       submittedAt: doc.submittedAt,
+      doneAt: doc.doneAt,
       cancelledAt: doc.cancelledAt,
     };
   }
@@ -41,6 +43,7 @@ export class MongoOrderRepository implements OrderRepository {
       total: doc.total,
       status: doc.status,
       submittedAt: doc.submittedAt,
+      doneAt: doc.doneAt,
       cancelledAt: doc.cancelledAt,
     }));
   }
@@ -52,6 +55,7 @@ export class MongoOrderRepository implements OrderRepository {
       total: order.total,
       status: order.status,
       submittedAt: order.submittedAt,
+      doneAt: order.doneAt,
       cancelledAt: order.cancelledAt,
     });
   }

@@ -31,3 +31,15 @@ export class OrderAlreadyCancelledError extends OrderError {
     super('ORDER_ALREADY_CANCELLED', `Order ${orderId} is already cancelled`);
   }
 }
+
+export class OrderAlreadyDoneError extends OrderError {
+  constructor(orderId: string) {
+    super('ORDER_ALREADY_DONE', `Order ${orderId} is already done`);
+  }
+}
+
+export class OrderStatusTransitionNotAllowedError extends OrderError {
+  constructor(message: string) {
+    super('ORDER_STATUS_TRANSITION_NOT_ALLOWED', message);
+  }
+}

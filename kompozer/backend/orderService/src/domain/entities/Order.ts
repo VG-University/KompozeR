@@ -1,4 +1,4 @@
-export type OrderStatus = 'SUBMITTED' | 'CANCELLED';
+export type OrderStatus = 'SUBMITTED' | 'DONE' | 'CANCELLED';
 
 export interface OrderItem {
   sku: string;
@@ -14,5 +14,6 @@ export interface Order {
   total: number;
   status: OrderStatus;
   submittedAt: Date;
+  doneAt?: Date;
   cancelledAt?: Date;
 }

@@ -6,6 +6,8 @@ const CODE_TO_STATUS: Record<string, number> = {
   ORDER_NOT_FOUND: 404,
   FORBIDDEN: 403,
   ORDER_ALREADY_CANCELLED: 409,
+  ORDER_ALREADY_DONE: 409,
+  ORDER_STATUS_TRANSITION_NOT_ALLOWED: 409,
 };
 
 export function errorMiddleware(

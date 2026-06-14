@@ -7,6 +7,7 @@ import { CancelOrder } from './useCases/CancelOrder';
 import { CreateOrder } from './useCases/CreateOrder';
 import { GetOrder } from './useCases/GetOrder';
 import { ListOrders } from './useCases/ListOrders';
+import { UpdateOrderStatus } from './useCases/UpdateOrderStatus';
 
 export function buildApp() {
   const repo = new MongoOrderRepository();
@@ -15,6 +16,7 @@ export function buildApp() {
   const listOrders = new ListOrders(repo);
   const getOrder = new GetOrder(repo);
   const cancelOrder = new CancelOrder(repo);
+  const updateOrderStatus = new UpdateOrderStatus(repo);
 
   const app = express();
   app.use(cors());
@@ -31,6 +33,7 @@ export function buildApp() {
       listOrders,
       getOrder,
       cancelOrder,
+      updateOrderStatus,
     }),
   );
 

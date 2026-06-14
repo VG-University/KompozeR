@@ -7,6 +7,7 @@ export interface OrderDto {
   total: number;
   status: OrderStatus;
   submittedAt: string;
+  doneAt?: string;
   cancelledAt?: string;
 }
 
@@ -30,6 +31,11 @@ export interface CancelOrderInput {
   orderId: string;
 }
 
+export interface UpdateOrderStatusInput {
+  orderId: string;
+  status: 'DONE';
+}
+
 export function toOrderDto(order: Order): OrderDto {
   return {
     id: order.id,
@@ -38,6 +44,7 @@ export function toOrderDto(order: Order): OrderDto {
     total: order.total,
     status: order.status,
     submittedAt: order.submittedAt.toISOString(),
+    doneAt: order.doneAt?.toISOString(),
     cancelledAt: order.cancelledAt?.toISOString(),
   };
 }

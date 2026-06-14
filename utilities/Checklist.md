@@ -250,6 +250,8 @@ Backlog sprint:
 - [x] notification-service: persistenza + API list/read + push realtime.
 - [x] Sottoscrizione eventi catalog per price/availability changed.
 - [x] chatbot-service: endpoint Q&A contestuale su catalogo/prezzi.
+- [x] order-service minimo (senza pagamento): creazione/lista/dettaglio/annullo ordine con persistenza dedicata.
+- [x] Checkout cart integrato con order-service (creazione ordine reale da carrello).
 - [ ] reporting-service: endpoint trend base per admin.
 
 Deliverable:
@@ -259,7 +261,7 @@ Stima:
 - 5-6 gg.
 
 Exit criteria:
-- Test e2e backend per notifica e chatbot almeno su scenario base.
+- Test e2e backend per notifica, chatbot e ordine almeno su scenario base.
 
 ### Sprint 4 - Frontend MVP completo (ASW)
 

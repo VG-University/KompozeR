@@ -3,12 +3,14 @@ import { CancelOrder } from '../../useCases/CancelOrder';
 import { CreateOrder } from '../../useCases/CreateOrder';
 import { GetOrder } from '../../useCases/GetOrder';
 import { ListOrders } from '../../useCases/ListOrders';
+import { UpdateOrderStatus } from '../../useCases/UpdateOrderStatus';
 
 export interface OrderRouterDeps {
   createOrder: CreateOrder;
   listOrders: ListOrders;
   getOrder: GetOrder;
   cancelOrder: CancelOrder;
+  updateOrderStatus: UpdateOrderStatus;
 }
 
 function wrap(fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) {
@@ -22,6 +24,21 @@ function requireUserId(req: Request, res: Response, next: NextFunction): void {
       error: {
         code: 'UNAUTHORIZED',
         message: 'Missing identity header X-User-Id',
+        timestamp: new Date().toISOString(),
+      },
+    });
+    return;
+  }
+  next();
+}
+
+function requireAdmin(req: Request, res: Response, next: NextFunction): void {
+  const role = req.headers['x-user-role'];
+  if (typeof role !== 'string' || role.toUpperCase() !== 'ADMIN') {
+    res.status(403).json({
+      error: {
+        code: 'FORBIDDEN',
+        message: 'Admin role required',
         timestamp: new Date().toISOString(),
       },
     });
@@ -85,6 +102,23 @@ export function buildOrderRouter(deps: OrderRouterDeps): Router {
       const userId = req.headers['x-user-id'] as string;
       const orderId = req.params['orderId'] as string;
       const order = await deps.cancelOrder.execute({ userId, orderId });
+      res.json(order);
+    }),
+  );
+
+  router.patch(
+    '/:orderId/status',
+    requireUserId,
+    requireAdmin,
+    wrap(async (req, res) => {
+      const orderId = req.params['orderId'] as string;
+      const body = (req.body ?? {}) as { status?: 'DONE' };
+
+      const order = await deps.updateOrderStatus.execute({
+        orderId,
+        status: body.status ?? 'DONE',
+      });
+
       res.json(order);
     }),
   );
