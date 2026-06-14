@@ -15,6 +15,7 @@ export {};
 
 const BASE = 'http://localhost:3000';
 const SKU  = `INT-TONDO-${Date.now()}`; // univoco per ogni run
+const SEARCH_TOKEN = `catalog-e2e-${Date.now()}`;
 
 let adminToken = '';
 let baseToken  = '';
@@ -63,7 +64,7 @@ describe('[INT] Catalog — accesso protetto', () => {
     expect(res.status).toBe(401);
   });
 
-  it('GET /catalog → 200 con token BASE, risposta paginata vuota (catalog inizialmente vuoto)', async () => {
+  it('GET /catalog → 200 con token BASE, risposta paginata valida', async () => {
     const res = await fetch(`${BASE}/catalog`, {
       headers: { Authorization: `Bearer ${baseToken}` },
     });
@@ -109,7 +110,7 @@ describe('[INT] Catalog — CRUD (ruolo ADMIN)', () => {
       body: JSON.stringify({
         sku:            SKU,
         name:           'Ripiano test integrazione',
-        description:    'Creato dai test e2e — sicuro da eliminare',
+        description:    `Creato dai test e2e ${SEARCH_TOKEN} — sicuro da eliminare`,
         category:       'TONDO',
         Type:           'RIPIANO',
         price:          2500,           // 25,00 €
@@ -194,7 +195,7 @@ describe('[INT] Catalog — lettura e filtri', () => {
   });
 
   it('GET /catalog → 200, il componente compare nella lista', async () => {
-    const res = await fetch(`${BASE}/catalog`, {
+    const res = await fetch(`${BASE}/catalog?search=${encodeURIComponent(SEARCH_TOKEN)}&limit=100`, {
       headers: { Authorization: `Bearer ${adminToken}` },
     });
     const body = await res.json() as Record<string, unknown>;
@@ -204,7 +205,7 @@ describe('[INT] Catalog — lettura e filtri', () => {
   });
 
   it('GET /catalog?category=TONDO → 200, solo componenti TONDO', async () => {
-    const res = await fetch(`${BASE}/catalog?category=TONDO`, {
+    const res = await fetch(`${BASE}/catalog?category=TONDO&search=${encodeURIComponent(SEARCH_TOKEN)}&limit=100`, {
       headers: { Authorization: `Bearer ${adminToken}` },
     });
     expect(res.status).toBe(200);
@@ -216,7 +217,7 @@ describe('[INT] Catalog — lettura e filtri', () => {
   });
 
   it('GET /catalog?available=true → 200, contiene il componente (isAvailable=true)', async () => {
-    const res = await fetch(`${BASE}/catalog?available=true`, {
+    const res = await fetch(`${BASE}/catalog?available=true&search=${encodeURIComponent(SEARCH_TOKEN)}&limit=100`, {
       headers: { Authorization: `Bearer ${adminToken}` },
     });
     expect(res.status).toBe(200);
