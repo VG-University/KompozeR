@@ -79,6 +79,18 @@ services:
       - mongo-notification-data:/data/db
     restart: unless-stopped
 
+  mongo-chat:
+    image: mongo:7
+    ports:
+      - "27022:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: changeme
+      MONGO_INITDB_DATABASE: chatbotdb
+    volumes:
+      - mongo-chat-data:/data/db
+    restart: unless-stopped
+
   # ── Backend ─────────────────────────────────────────────────────────────────
 
   auth-service:
@@ -141,6 +153,17 @@ services:
       - redis
     restart: unless-stopped
 
+  chatbot-service:
+    build: ./backend/chatbotService
+    environment:
+      CHATBOT_PORT: "3006"
+      CHAT_MONGO_URI: "mongodb://root:changeme@mongo-chat:27017/chatbotdb?authSource=admin"
+      CATALOG_BASE_URL: "http://catalog-service:3002"
+    depends_on:
+      - mongo-chat
+      - catalog-service
+    restart: unless-stopped
+
   api-gateway:
     build: ./backend/apiGateway
     ports:
@@ -161,6 +184,7 @@ services:
       - cart-service
       - cad-service
       - notification-service
+      - chatbot-service
     restart: unless-stopped
 
 volumes:
@@ -169,3 +193,4 @@ volumes:
   mongo-cart-data:
   mongo-cad-data:
   mongo-notification-data:
+  mongo-chat-data:

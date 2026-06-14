@@ -249,7 +249,7 @@ Obiettivo:
 Backlog sprint:
 - [x] notification-service: persistenza + API list/read + push realtime.
 - [x] Sottoscrizione eventi catalog per price/availability changed.
-- [ ] chatbot-service: endpoint Q&A contestuale su catalogo/prezzi.
+- [x] chatbot-service: endpoint Q&A contestuale su catalogo/prezzi.
 - [ ] reporting-service: endpoint trend base per admin.
 
 Deliverable:

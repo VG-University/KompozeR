@@ -1,0 +1,49 @@
+import cors from 'cors';
+import express from 'express';
+import { buildChatbotRouter } from './adapters/http/chatbotRouter';
+import { errorMiddleware } from './adapters/http/errorMiddleware';
+import { HttpCatalogQaProvider } from './adapters/httpClient/HttpCatalogQaProvider';
+import { MongoChatRepository } from './adapters/persistence/MongoChatRepository';
+import { CloseSession } from './useCases/CloseSession';
+import { CreateSession } from './useCases/CreateSession';
+import { GetSession } from './useCases/GetSession';
+import { ListSessionMessages } from './useCases/ListSessionMessages';
+import { SendSessionMessage } from './useCases/SendSessionMessage';
+
+export interface ChatbotAppConfig {
+  catalogBaseUrl?: string;
+}
+
+export function buildApp(config: ChatbotAppConfig = {}) {
+  const repo = new MongoChatRepository();
+  const catalog = new HttpCatalogQaProvider(config.catalogBaseUrl ?? 'http://catalog-service:3002');
+
+  const createSession = new CreateSession(repo);
+  const getSession = new GetSession(repo);
+  const listSessionMessages = new ListSessionMessages(repo);
+  const closeSession = new CloseSession(repo);
+  const sendSessionMessage = new SendSessionMessage(repo, catalog);
+
+  const app = express();
+  app.use(cors());
+  app.use(express.json());
+
+  app.get('/health', (_req, res) => {
+    res.json({ status: 'ok' });
+  });
+
+  app.use(
+    '/chatbot',
+    buildChatbotRouter({
+      createSession,
+      getSession,
+      listSessionMessages,
+      closeSession,
+      sendSessionMessage,
+    }),
+  );
+
+  app.use(errorMiddleware);
+
+  return app;
+}
