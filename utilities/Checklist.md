@@ -252,7 +252,7 @@ Backlog sprint:
 - [x] chatbot-service: endpoint Q&A contestuale su catalogo/prezzi.
 - [x] order-service minimo (senza pagamento): creazione/lista/dettaglio/annullo ordine con persistenza dedicata.
 - [x] Checkout cart integrato con order-service (creazione ordine reale da carrello).
-- [ ] reporting-service: endpoint trend base per admin.
+- [x] reporting-service: endpoint trend base per admin.
 
 Deliverable:
 - Backend ASW completo per requisiti principali utente/admin.

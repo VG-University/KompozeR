@@ -108,6 +108,21 @@
       "connectionOptions": {
         "connectionString": "mongodb://root:changeme@localhost:27023/orderdb?authSource=admin"
       }
+    },
+    {
+      "id": "7e9f1a2b-3c4d-4e5f-8a9b-0c1d2e3f4a6b",
+      "lastUsed": {
+        "$date": {
+          "$numberLong": "1749203200000"
+        }
+      },
+      "favorite": {
+        "name": "KompozeR — reporting trend source (orderdb localhost:27023)"
+      },
+      "savedConnectionType": "favorite",
+      "connectionOptions": {
+        "connectionString": "mongodb://root:changeme@localhost:27023/orderdb?authSource=admin"
+      }
     }
   ]
 }

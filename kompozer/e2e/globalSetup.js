@@ -185,6 +185,20 @@ module.exports = async function globalSetup() {
   }
   process.stdout.write(cadReady ? ' OK\n' : ' WARN (cad test potrebbero fallire)\n');
 
+  // ── 1e. Attendi reporting service via healthcheck ────────────────────────
+  process.stdout.write('[e2e] Attendo reporting-service (GET /reports/health)');
+  let reportingReady = false;
+  while (Date.now() - start < timeoutMs) {
+    const res = await requestGateway('/reports/health', 'GET', {});
+    if (res.status === 200) {
+      reportingReady = true;
+      break;
+    }
+    process.stdout.write('.');
+    await sleep(1000);
+  }
+  process.stdout.write(reportingReady ? ' OK\n' : ' WARN (reporting test potrebbero fallire)\n');
+
   // ── 2. Seed admin idempotente ─────────────────────────────────────────────
   // Crea/aggiorna devuser (ADMIN) in authdb usando lo script seed del servizio.
   // Il seed legge DEVUSER.json e fa upsert — rieseguibile senza effetti collaterali.

@@ -187,6 +187,15 @@ services:
       - catalog-service
     restart: unless-stopped
 
+  reporting-service:
+    build: ./backend/reportingService
+    environment:
+      REPORTING_PORT: "3007"
+      ORDER_MONGO_URI: "mongodb://root:changeme@mongo-order:27017/orderdb?authSource=admin"
+    depends_on:
+      - mongo-order
+    restart: unless-stopped
+
   api-gateway:
     build: ./backend/apiGateway
     ports:
@@ -210,6 +219,7 @@ services:
       - cad-service
       - notification-service
       - chatbot-service
+      - reporting-service
     restart: unless-stopped
 
 volumes:
