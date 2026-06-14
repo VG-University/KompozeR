@@ -33,9 +33,10 @@ export interface CheckoutCartInput {
 }
 
 export interface CheckoutCartOutput {
-  status: 'CONFIRMED';
+  orderId: string;
+  status: 'SUBMITTED';
   userId: string;
   items: CartItem[];
   total: number;
-  checkedAt: Date;
+  submittedAt: Date;
 }

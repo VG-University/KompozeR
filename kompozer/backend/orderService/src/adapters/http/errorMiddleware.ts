@@ -1,22 +1,12 @@
-import { Request, Response, NextFunction } from 'express';
-import { CartError } from '../../domain/entities/errors';
+import { NextFunction, Request, Response } from 'express';
+import { OrderError } from '../../domain/entities/errors';
 
 const CODE_TO_STATUS: Record<string, number> = {
   VALIDATION_ERROR: 422,
-  CART_EMPTY: 409,
-  ITEM_UNAVAILABLE: 409,
-  PRICE_CHANGED: 409,
-  CATALOG_LOOKUP_FAILED: 503,
-  ORDER_SUBMISSION_FAILED: 503,
+  ORDER_NOT_FOUND: 404,
+  FORBIDDEN: 403,
+  ORDER_ALREADY_CANCELLED: 409,
 };
-
-interface ApiError {
-  error: {
-    code: string;
-    message: string;
-    timestamp: string;
-  };
-}
 
 export function errorMiddleware(
   err: unknown,
@@ -24,20 +14,19 @@ export function errorMiddleware(
   res: Response,
   _next: NextFunction,
 ): void {
-  if (err instanceof CartError) {
+  if (err instanceof OrderError) {
     const status = CODE_TO_STATUS[err.code] ?? 500;
-    const body: ApiError = {
+    res.status(status).json({
       error: {
         code: err.code,
         message: err.message,
         timestamp: new Date().toISOString(),
       },
-    };
-    res.status(status).json(body);
+    });
     return;
   }
 
-  console.error('[cart] Unhandled error:', err);
+  console.error('[order] Unhandled error:', err);
   res.status(500).json({
     error: {
       code: 'INTERNAL_ERROR',

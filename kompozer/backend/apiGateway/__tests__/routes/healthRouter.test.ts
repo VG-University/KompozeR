@@ -12,6 +12,7 @@ const SERVICES: ServiceUrls = {
   catalog:      'http://catalog:3002',
   cad:          'http://cad:3003',
   cart:         'http://cart:3004',
+  order:        'http://order:3008',
   notification: 'http://notification:3005',
   chatbot:      'http://chatbot:3006',
   reporting:    'http://reporting:3007',

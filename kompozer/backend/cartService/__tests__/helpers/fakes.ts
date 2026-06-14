@@ -2,6 +2,7 @@ import { Cart } from '../../src/domain/entities/Cart';
 import { CartEvent } from '../../src/domain/entities/CartEvent';
 import { CatalogItemSnapshot, CatalogSnapshotProvider } from '../../src/domain/ports/CatalogSnapshotProvider';
 import { CartEventPublisher } from '../../src/domain/ports/CartEventPublisher';
+import { OrderServiceClient, SubmitOrderInput, SubmitOrderOutput } from '../../src/domain/ports/OrderServiceClient';
 import { CartRepository } from '../../src/domain/ports/CartRepository';
 
 export class FakeCartRepository implements CartRepository {
@@ -43,5 +44,23 @@ export class FakeCartEventPublisher implements CartEventPublisher {
 
   async publish(event: CartEvent): Promise<void> {
     this.events.push(event);
+  }
+}
+
+export class FakeOrderServiceClient implements OrderServiceClient {
+  readonly calls: SubmitOrderInput[] = [];
+
+  async submitOrder(input: SubmitOrderInput): Promise<SubmitOrderOutput> {
+    this.calls.push({
+      userId: input.userId,
+      items: input.items.map((item) => ({ ...item })),
+      total: input.total,
+    });
+
+    return {
+      orderId: 'ord_1',
+      status: 'SUBMITTED',
+      submittedAt: new Date('2026-01-01T00:00:00.000Z'),
+    };
   }
 }

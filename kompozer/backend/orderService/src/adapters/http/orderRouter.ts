@@ -1,0 +1,93 @@
+import { NextFunction, Request, Response, Router } from 'express';
+import { CancelOrder } from '../../useCases/CancelOrder';
+import { CreateOrder } from '../../useCases/CreateOrder';
+import { GetOrder } from '../../useCases/GetOrder';
+import { ListOrders } from '../../useCases/ListOrders';
+
+export interface OrderRouterDeps {
+  createOrder: CreateOrder;
+  listOrders: ListOrders;
+  getOrder: GetOrder;
+  cancelOrder: CancelOrder;
+}
+
+function wrap(fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) {
+  return (req: Request, res: Response, next: NextFunction) => fn(req, res, next).catch(next);
+}
+
+function requireUserId(req: Request, res: Response, next: NextFunction): void {
+  const userId = req.headers['x-user-id'];
+  if (!userId || typeof userId !== 'string') {
+    res.status(401).json({
+      error: {
+        code: 'UNAUTHORIZED',
+        message: 'Missing identity header X-User-Id',
+        timestamp: new Date().toISOString(),
+      },
+    });
+    return;
+  }
+  next();
+}
+
+export function buildOrderRouter(deps: OrderRouterDeps): Router {
+  const router = Router();
+
+  router.get('/health', (_req, res) => {
+    res.json({ status: 'ok' });
+  });
+
+  router.post(
+    '/',
+    requireUserId,
+    wrap(async (req, res) => {
+      const userId = req.headers['x-user-id'] as string;
+      const body = (req.body ?? {}) as {
+        items?: Array<{ sku: string; name: string; unitPrice: number; quantity: number }>;
+        total?: number;
+      };
+
+      const order = await deps.createOrder.execute({
+        userId,
+        items: body.items ?? [],
+        total: body.total ?? 0,
+      });
+
+      res.status(201).json(order);
+    }),
+  );
+
+  router.get(
+    '/',
+    requireUserId,
+    wrap(async (req, res) => {
+      const userId = req.headers['x-user-id'] as string;
+      const orders = await deps.listOrders.execute({ userId });
+      res.json(orders);
+    }),
+  );
+
+  router.get(
+    '/:orderId',
+    requireUserId,
+    wrap(async (req, res) => {
+      const userId = req.headers['x-user-id'] as string;
+      const orderId = req.params['orderId'] as string;
+      const order = await deps.getOrder.execute({ userId, orderId });
+      res.json(order);
+    }),
+  );
+
+  router.patch(
+    '/:orderId/cancel',
+    requireUserId,
+    wrap(async (req, res) => {
+      const userId = req.headers['x-user-id'] as string;
+      const orderId = req.params['orderId'] as string;
+      const order = await deps.cancelOrder.execute({ userId, orderId });
+      res.json(order);
+    }),
+  );
+
+  return router;
+}

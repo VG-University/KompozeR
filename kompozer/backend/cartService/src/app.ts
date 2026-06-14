@@ -3,6 +3,7 @@ import cors from 'cors';
 import Redis from 'ioredis';
 import { MongoCartRepository } from './adapters/persistence/MongoCartRepository';
 import { HttpCatalogSnapshotProvider } from './adapters/httpClient/HttpCatalogSnapshotProvider';
+import { HttpOrderServiceClient } from './adapters/httpClient/HttpOrderServiceClient';
 import { RedisCartEventPublisher } from './adapters/messaging/publishers/RedisCartEventPublisher';
 import { GetCart } from './useCases/GetCart';
 import { UpsertCartItem } from './useCases/UpsertCartItem';
@@ -16,12 +17,14 @@ import { NoopCartEventPublisher } from './infrastructure/NoopCartEventPublisher'
 
 export interface CartAppConfig {
   catalogBaseUrl?: string;
+  orderBaseUrl?: string;
   redisUrl?: string;
 }
 
 export function buildApp(config: CartAppConfig = {}) {
   const repo = new MongoCartRepository();
   const catalog = new HttpCatalogSnapshotProvider(config.catalogBaseUrl || 'http://catalog-service:3002');
+  const order = new HttpOrderServiceClient(config.orderBaseUrl || 'http://order-service:3008');
   let eventPublisher: CartEventPublisher = new NoopCartEventPublisher();
 
   if (config.redisUrl) {
@@ -33,7 +36,7 @@ export function buildApp(config: CartAppConfig = {}) {
   const upsertCartItem = new UpsertCartItem(repo, eventPublisher);
   const removeCartItem = new RemoveCartItem(repo, eventPublisher);
   const clearCart = new ClearCart(repo, eventPublisher);
-  const checkoutCart = new CheckoutCart(repo, catalog, eventPublisher);
+  const checkoutCart = new CheckoutCart(repo, catalog, order, eventPublisher);
 
   const app = express();
   app.use(cors());

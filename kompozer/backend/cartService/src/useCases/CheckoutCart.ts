@@ -7,12 +7,14 @@ import { CartEvent } from '../domain/entities/CartEvent';
 import { CartRepository } from '../domain/ports/CartRepository';
 import { CartEventPublisher } from '../domain/ports/CartEventPublisher';
 import { CatalogSnapshotProvider } from '../domain/ports/CatalogSnapshotProvider';
+import { OrderServiceClient } from '../domain/ports/OrderServiceClient';
 import { CheckoutCartInput, CheckoutCartOutput } from './types';
 
 export class CheckoutCart {
   constructor(
     private readonly cartRepo: CartRepository,
     private readonly catalog: CatalogSnapshotProvider,
+    private readonly orderServiceClient: OrderServiceClient,
     private readonly eventPublisher: CartEventPublisher = { publish: async () => {} },
   ) {}
 
@@ -32,6 +34,12 @@ export class CheckoutCart {
       }
     }
 
+    const order = await this.orderServiceClient.submitOrder({
+      userId: cart.userId,
+      items: cart.items,
+      total: cart.total,
+    });
+
     await this.eventPublisher.publish(
       this.buildEvent({
         type: 'OrderRequestSubmitted',
@@ -47,11 +55,12 @@ export class CheckoutCart {
     );
 
     return {
-      status: 'CONFIRMED',
+      orderId: order.orderId,
+      status: 'SUBMITTED',
       userId: cart.userId,
       items: cart.items,
       total: cart.total,
-      checkedAt: new Date(),
+      submittedAt: order.submittedAt,
     };
   }
 

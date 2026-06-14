@@ -7,3 +7,12 @@ inserimento figura esempio
 \label{fig:deathstar}
 \end{figure}
 ____________________________________
+
+docker compose -f docker-compose.dev.yml up --build -d
+docker compose -f docker-compose.dev.yml ps
+
+npm run test:backend
+npm run test:e2e
+
+docker compose -f docker-compose.dev.yml down
+docker compose -f docker-compose.dev.yml down -v

@@ -12,6 +12,7 @@ export interface ServiceUrls {
   catalog: string;
   cad: string;
   cart: string;
+  order: string;
   notification: string;
   chatbot: string;
   reporting: string;
@@ -60,6 +61,17 @@ export function buildRoutes(services: ServiceUrls): Router {
       target: services.cart,
       changeOrigin: true,
       pathRewrite: (path) => `/cart${path}`,
+      on: { proxyReq: fixRequestBody },
+    }),
+  );
+
+  // ── orderService ─────────────────────────────────────────────────────────────
+  router.use(
+    '/orders',
+    createProxyMiddleware({
+      target: services.order,
+      changeOrigin: true,
+      pathRewrite: (path) => `/orders${path}`,
       on: { proxyReq: fixRequestBody },
     }),
   );

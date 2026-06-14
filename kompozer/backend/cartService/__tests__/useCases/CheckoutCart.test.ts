@@ -9,15 +9,17 @@ import {
   FakeCartEventPublisher,
   FakeCartRepository,
   FakeCatalogSnapshotProvider,
+  FakeOrderServiceClient,
 } from '../helpers/fakes';
 
 describe('CheckoutCart', () => {
   it('confirms checkout when catalog snapshot matches cart', async () => {
     const repo = new FakeCartRepository();
     const catalog = new FakeCatalogSnapshotProvider();
+    const orderClient = new FakeOrderServiceClient();
     const publisher = new FakeCartEventPublisher();
     const upsert = new UpsertCartItem(repo, publisher);
-    const checkout = new CheckoutCart(repo, catalog, publisher);
+    const checkout = new CheckoutCart(repo, catalog, orderClient, publisher);
 
     await upsert.execute({
       userId: 'usr_1',
@@ -30,8 +32,10 @@ describe('CheckoutCart', () => {
     catalog.set({ sku: 'SKU-001', unitPrice: 1990, isAvailable: true });
 
     const result = await checkout.execute({ userId: 'usr_1' });
-    expect(result.status).toBe('CONFIRMED');
+    expect(result.status).toBe('SUBMITTED');
+    expect(result.orderId).toBe('ord_1');
     expect(result.total).toBe(3980);
+    expect(orderClient.calls).toHaveLength(1);
     expect(publisher.events.map((event) => event.type)).toContain('OrderRequestSubmitted');
     expect(publisher.events.map((event) => event.type)).toContain('OrderConfirmationRequested');
   });
@@ -39,7 +43,8 @@ describe('CheckoutCart', () => {
   it('throws CartEmptyError when cart has no items', async () => {
     const repo = new FakeCartRepository();
     const catalog = new FakeCatalogSnapshotProvider();
-    const checkout = new CheckoutCart(repo, catalog);
+    const orderClient = new FakeOrderServiceClient();
+    const checkout = new CheckoutCart(repo, catalog, orderClient);
 
     await expect(checkout.execute({ userId: 'usr_1' })).rejects.toBeInstanceOf(CartEmptyError);
   });
@@ -47,8 +52,9 @@ describe('CheckoutCart', () => {
   it('throws CartItemUnavailableError when item is unavailable', async () => {
     const repo = new FakeCartRepository();
     const catalog = new FakeCatalogSnapshotProvider();
+    const orderClient = new FakeOrderServiceClient();
     const upsert = new UpsertCartItem(repo);
-    const checkout = new CheckoutCart(repo, catalog);
+    const checkout = new CheckoutCart(repo, catalog, orderClient);
 
     await upsert.execute({
       userId: 'usr_1',
@@ -66,8 +72,9 @@ describe('CheckoutCart', () => {
   it('throws CartItemPriceChangedError when price changed', async () => {
     const repo = new FakeCartRepository();
     const catalog = new FakeCatalogSnapshotProvider();
+    const orderClient = new FakeOrderServiceClient();
     const upsert = new UpsertCartItem(repo);
-    const checkout = new CheckoutCart(repo, catalog);
+    const checkout = new CheckoutCart(repo, catalog, orderClient);
 
     await upsert.execute({
       userId: 'usr_1',

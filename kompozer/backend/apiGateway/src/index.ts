@@ -18,6 +18,7 @@ const app = buildApp({
     catalog:      process.env.CATALOG_SERVICE_URL      || 'http://catalog-service:3002',
     cad:          process.env.CAD_SERVICE_URL          || 'http://cad-service:3003',
     cart:         process.env.CART_SERVICE_URL         || 'http://cart-service:3004',
+    order:        process.env.ORDER_SERVICE_URL        || 'http://order-service:3008',
     notification: process.env.NOTIFICATION_SERVICE_URL || 'http://notification-service:3005',
     chatbot:      process.env.CHATBOT_SERVICE_URL      || 'http://chatbot-service:3006',
     reporting:    process.env.REPORTING_SERVICE_URL    || 'http://reporting-service:3007',

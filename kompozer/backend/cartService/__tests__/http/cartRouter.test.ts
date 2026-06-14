@@ -7,11 +7,12 @@ import { UpsertCartItem } from '../../src/useCases/UpsertCartItem';
 import { RemoveCartItem } from '../../src/useCases/RemoveCartItem';
 import { ClearCart } from '../../src/useCases/ClearCart';
 import { CheckoutCart } from '../../src/useCases/CheckoutCart';
-import { FakeCartRepository, FakeCatalogSnapshotProvider } from '../helpers/fakes';
+import { FakeCartRepository, FakeCatalogSnapshotProvider, FakeOrderServiceClient } from '../helpers/fakes';
 
 function buildTestApp() {
   const repo = new FakeCartRepository();
   const catalog = new FakeCatalogSnapshotProvider();
+  const orderClient = new FakeOrderServiceClient();
 
   const app = express();
   app.use(express.json());
@@ -22,7 +23,7 @@ function buildTestApp() {
       upsertCartItem: new UpsertCartItem(repo),
       removeCartItem: new RemoveCartItem(repo),
       clearCart: new ClearCart(repo),
-      checkoutCart: new CheckoutCart(repo, catalog),
+      checkoutCart: new CheckoutCart(repo, catalog, orderClient),
     }),
   );
   app.use(errorMiddleware);
@@ -162,7 +163,8 @@ describe('cartRouter', () => {
       .set('x-user-id', 'usr_1');
 
     expect(res.status).toBe(200);
-    expect(res.body.status).toBe('CONFIRMED');
+    expect(res.body.status).toBe('SUBMITTED');
+    expect(res.body.orderId).toBe('ord_1');
   });
 
   it('POST /cart/checkout -> 409 when item becomes unavailable', async () => {

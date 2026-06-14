@@ -41,3 +41,9 @@ export class CatalogLookupError extends CartError {
     super('CATALOG_LOOKUP_FAILED', message);
   }
 }
+
+export class OrderSubmissionError extends CartError {
+  constructor(message: string) {
+    super('ORDER_SUBMISSION_FAILED', message);
+  }
+}

@@ -93,6 +93,21 @@
       "connectionOptions": {
         "connectionString": "mongodb://root:changeme@localhost:27022/chatbotdb?authSource=admin"
       }
+    },
+    {
+      "id": "0c1d2e3f-4a5b-4678-9c0d-1e2f3a4b5c7d",
+      "lastUsed": {
+        "$date": {
+          "$numberLong": "1749203200000"
+        }
+      },
+      "favorite": {
+        "name": "KompozeR — orderdb (localhost:27023)"
+      },
+      "savedConnectionType": "favorite",
+      "connectionOptions": {
+        "connectionString": "mongodb://root:changeme@localhost:27023/orderdb?authSource=admin"
+      }
     }
   ]
 }

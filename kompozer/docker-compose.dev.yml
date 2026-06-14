@@ -91,6 +91,18 @@ services:
       - mongo-chat-data:/data/db
     restart: unless-stopped
 
+  mongo-order:
+    image: mongo:7
+    ports:
+      - "27023:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: changeme
+      MONGO_INITDB_DATABASE: orderdb
+    volumes:
+      - mongo-order-data:/data/db
+    restart: unless-stopped
+
   # ── Backend ─────────────────────────────────────────────────────────────────
 
   auth-service:
@@ -121,8 +133,19 @@ services:
       PORT: "3004"
       MONGO_URI: "mongodb://root:changeme@mongo-cart:27017/cartdb?authSource=admin"
       CATALOG_BASE_URL: "http://catalog-service:3002"
+      ORDER_BASE_URL: "http://order-service:3008"
     depends_on:
       - mongo-cart
+      - order-service
+    restart: unless-stopped
+
+  order-service:
+    build: ./backend/orderService
+    environment:
+      ORDER_PORT: "3008"
+      ORDER_MONGO_URI: "mongodb://root:changeme@mongo-order:27017/orderdb?authSource=admin"
+    depends_on:
+      - mongo-order
     restart: unless-stopped
 
   cad-service:
@@ -175,6 +198,7 @@ services:
       CATALOG_SERVICE_URL: "http://catalog-service:3002"
       CAD_SERVICE_URL: "http://cad-service:3003"
       CART_SERVICE_URL: "http://cart-service:3004"
+      ORDER_SERVICE_URL: "http://order-service:3008"
       NOTIFICATION_SERVICE_URL: "http://notification-service:3005"
       CHATBOT_SERVICE_URL: "http://chatbot-service:3006"
       REPORTING_SERVICE_URL: "http://reporting-service:3007"
@@ -182,6 +206,7 @@ services:
       - auth-service
       - catalog-service
       - cart-service
+      - order-service
       - cad-service
       - notification-service
       - chatbot-service
@@ -194,3 +219,4 @@ volumes:
   mongo-cad-data:
   mongo-notification-data:
   mongo-chat-data:
+  mongo-order-data:
