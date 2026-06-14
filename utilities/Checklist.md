@@ -2,11 +2,11 @@
 
 Obiettivo: completare il progetto in modo verificabile rispetto ai requisiti ASW e DS.
 
-Stato di partenza (gia verificato):
-- auth-service, catalog-service e api-gateway funzionanti e testati.
-- cart-service avviato (unit + e2e base).
-- frontend non implementato.
-- cad/chatbot/notification/reporting non implementati.
+Stato di partenza (aggiornato):
+- auth-service, catalog-service, cart-service, cad-service e api-gateway funzionanti e testati.
+- notification-service, chatbot-service, order-service e reporting-service implementati e validati lato backend.
+- endpoint reporting admin trend ordini disponibile (`GET /reports/trends/orders`).
+- frontend ancora da completare (Sprint 4).
 
 ---
 
@@ -188,6 +188,11 @@ Assunzioni:
 - Team: 1 persona.
 - Effort espresso in giorni uomo (gg).
 
+Stato attuale prima dello Sprint 4:
+- Sprint 1 chiuso.
+- Sprint 2 chiuso.
+- Sprint 3 chiuso con estensione scope: nuovo microservizio `order-service` + endpoint trend admin in `reporting-service`.
+
 ### Sprint 1 - Stabilizzazione e hardening base (ASW)
 
 Obiettivo:
@@ -266,22 +271,27 @@ Exit criteria:
 ### Sprint 4 - Frontend MVP completo (ASW)
 
 Obiettivo:
-- Portare online la SPA completa sui flussi core.
+- Portare online la SPA completa sui flussi core utente/admin, includendo ordini e reporting trend.
 
 Backlog sprint:
-- [ ] Bootstrap Vue (router, store, service clients).
-- [ ] Pagine: login/guest, catalogo, configuratore, carrello.
-- [ ] Pagine: configurazioni salvate, notifiche, report admin.
-- [ ] Gestione errori UI e stati loading/empty.
+- [ ] Bootstrap Vue (router, store, service clients) con client separati per auth/catalog/cad/cart/orders/notifications/reports.
+- [ ] Guard ruoli frontend (USER/ADMIN) allineate agli endpoint protetti backend.
+- [ ] Pagine utente: login/guest, catalogo, configuratore, carrello, configurazioni salvate, centro notifiche.
+- [ ] Pagine admin: gestione ordini (lista/dettaglio/azione DONE) e report trend ordini con filtro periodo.
+- [ ] Integrazione pagina report con endpoint `GET /reports/trends/orders` e visualizzazione trend giornaliero.
+- [ ] Gestione errori UI + stati loading/empty + fallback su servizi non disponibili.
 
 Deliverable:
-- Demo end-to-end completa da UI.
+- Demo end-to-end completa da UI per percorso utente + percorso admin (ordine/report).
 
 Stima:
-- 6-7 gg.
+- 7-8 gg.
 
 Exit criteria:
 - Percorso utente principale eseguibile solo da frontend.
+- Percorso admin minimo eseguibile solo da frontend:
+	- consultazione trend ordini da reporting-service;
+	- avanzamento ordine a DONE.
 
 ### Sprint 5 - Qualita ASW (e2e full + rifinitura NFR)
 
@@ -347,7 +357,7 @@ Exit criteria:
 
 ## Priorita immediata (prossimi 3 passi)
 
-- [ ] Step 1: chiudere Sprint 1 task tecnici in sospeso (stabilizzazione baseline).
-- [ ] Step 2: aprire Sprint 2 con dominio CAD step-based, vincoli backend (spessore ripiano incluso) e solver look-ahead.
-- [ ] Step 3: aggiungere e2e CAD iniziali prima di estendere le feature.
+- [ ] Step 1: avviare Sprint 4 con bootstrap frontend (router, store, API clients allineati ai servizi backend attuali).
+- [ ] Step 2: implementare area admin UI per ordini + report trend (`/reports/trends/orders`).
+- [ ] Step 3: aggiungere smoke test frontend sui percorsi core utente/admin prima di estendere gli e2e completi in Sprint 5.
 
