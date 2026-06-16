@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import type { Category, ConfigurationStatus } from '@/types/cad';
+import type { Category, ColumnDesign, ColumnPlan, ConfigurationStatus, Environment } from '@/types/cad';
 import { useCad } from '@/composables/useCad';
 
 const {
@@ -12,6 +12,9 @@ const {
   createLoading,
   finalizeLoading,
   categoryLoading,
+  environmentLoading,
+  columnPlanLoading,
+  designLoading,
   error,
   page,
   total,
@@ -25,6 +28,9 @@ const {
   loadDetail,
   createConfiguration,
   updateCategory,
+  updateEnvironment,
+  updateColumnPlan,
+  updateDesign,
   finalizeSelected,
   setStatusFilter,
   nextPage,
@@ -44,6 +50,19 @@ const statuses: Array<ConfigurationStatus> = [
 const categories: Array<Category> = ['TONDO', 'QUADRO', 'KUBE'];
 const route = useRoute();
 
+const environmentDraft = ref<Environment>({
+  maxWidthMm: 5000,
+  maxHeightMm: 3000,
+  minWidthMm: 600,
+  minHeightMm: 220,
+  unit: 'mm',
+});
+
+const columnCountDraft = ref(2);
+const shelfWidthsDraft = ref<number[]>([800, 800]);
+const shelfThicknessDraft = ref(20);
+const designLevelsDraft = ref<string[]>(['120, 440', '300, 640']);
+
 onMounted(() => {
   void (async () => {
     await loadList();
@@ -54,6 +73,35 @@ onMounted(() => {
   })();
 });
 
+watch(selected, (value) => {
+  if (!value) {
+    return;
+  }
+
+  if (value.environment) {
+    environmentDraft.value = { ...value.environment };
+  }
+
+  if (value.columnPlan) {
+    columnCountDraft.value = value.columnPlan.columnCount;
+    shelfWidthsDraft.value = value.columnPlan.columns
+      .slice()
+      .sort((a, b) => a.index - b.index)
+      .map((column) => column.shelfWidthMm);
+  }
+
+  if (value.columnDesigns.length > 0) {
+    const ordered = value.columnDesigns.slice().sort((a, b) => a.columnIndex - b.columnIndex);
+    designLevelsDraft.value = ordered.map((design) => design.levelsMm.join(', '));
+    shelfThicknessDraft.value = ordered[0]?.shelfThicknessMm ?? 20;
+  } else {
+    designLevelsDraft.value = Array.from(
+      { length: Math.max(1, columnCountDraft.value) },
+      () => '120, 440',
+    );
+  }
+}, { immediate: true });
+
 const canFinalize = computed(() => {
   if (!selected.value) {
     return false;
@@ -61,11 +109,80 @@ const canFinalize = computed(() => {
   return selected.value.status === 'READY_FOR_FINALIZE';
 });
 
+const selectedCategoryDraft = computed(() => selected.value?.category || '');
+
+const parsedDesign = computed(() => {
+  return designLevelsDraft.value.map((text, columnIndex): ColumnDesign => {
+    const levels = text
+      .split(',')
+      .map((part) => Number(part.trim()))
+      .filter((value) => Number.isFinite(value) && value > 0)
+      .sort((a, b) => a - b);
+
+    return {
+      columnIndex,
+      levelsMm: Array.from(new Set(levels)),
+      shelfThicknessMm: shelfThicknessDraft.value,
+    };
+  });
+});
+
+const previewColumns = computed(() => {
+  const columns = selected.value?.columnPlan?.columns;
+  const widths = columns && columns.length > 0
+    ? columns.slice().sort((a, b) => a.index - b.index).map((column) => column.shelfWidthMm)
+    : shelfWidthsDraft.value;
+
+  const design = selected.value?.columnDesigns?.length ? selected.value.columnDesigns : parsedDesign.value;
+  const maxLevels = Math.max(1, ...design.map((d) => d.levelsMm.length));
+
+  return widths.map((width, index) => {
+    const levels = design.find((d) => d.columnIndex === index)?.levelsMm ?? [];
+    return {
+      width,
+      levels,
+      levelCount: levels.length,
+      heightPct: Math.max(20, Math.round((levels.length / maxLevels) * 100)),
+    };
+  });
+});
+
 function formatDate(iso: string): string {
   return new Intl.DateTimeFormat('it-IT', {
     dateStyle: 'short',
     timeStyle: 'short',
   }).format(new Date(iso));
+}
+
+function syncDraftLengths(nextCount: number): void {
+  const safeCount = Math.max(1, Math.min(6, nextCount));
+  columnCountDraft.value = safeCount;
+
+  shelfWidthsDraft.value = Array.from({ length: safeCount }, (_, index) => shelfWidthsDraft.value[index] ?? 800);
+  designLevelsDraft.value = Array.from({ length: safeCount }, (_, index) => designLevelsDraft.value[index] ?? '120, 440');
+}
+
+async function saveEnvironment(): Promise<void> {
+  await updateEnvironment(environmentDraft.value);
+}
+
+async function saveCategory(value: string): Promise<void> {
+  if (!value) {
+    return;
+  }
+  await updateCategory(value as Category);
+}
+
+async function saveColumnPlan(): Promise<void> {
+  const columnPlan: ColumnPlan = {
+    columnCount: columnCountDraft.value,
+    columns: shelfWidthsDraft.value.map((shelfWidthMm, index) => ({ index, shelfWidthMm })),
+  };
+  await updateColumnPlan(columnPlan);
+}
+
+async function saveDesign(): Promise<void> {
+  await updateDesign(parsedDesign.value);
 }
 </script>
 
@@ -165,14 +282,92 @@ function formatDate(iso: string): string {
             <span class="field__label">Categoria</span>
             <select
               class="field__input"
-              :value="selected.category || ''"
+              :value="selectedCategoryDraft"
               :disabled="categoryLoading"
-              @change="updateCategory(($event.target as HTMLSelectElement).value as Category)"
+              @change="saveCategory(($event.target as HTMLSelectElement).value)"
             >
               <option disabled value="">Seleziona categoria</option>
               <option v-for="category in categories" :key="category" :value="category">{{ category }}</option>
             </select>
           </label>
+
+          <section class="wizard-step detail-action">
+            <h3>Step 1 · Ambiente</h3>
+            <div class="two-cols">
+              <label class="field">
+                <span class="field__label">Larghezza max (mm)</span>
+                <input v-model.number="environmentDraft.maxWidthMm" class="field__input" type="number" min="1" />
+              </label>
+              <label class="field">
+                <span class="field__label">Altezza max (mm)</span>
+                <input v-model.number="environmentDraft.maxHeightMm" class="field__input" type="number" min="1" />
+              </label>
+              <label class="field">
+                <span class="field__label">Larghezza min (mm)</span>
+                <input v-model.number="environmentDraft.minWidthMm" class="field__input" type="number" min="1" />
+              </label>
+              <label class="field">
+                <span class="field__label">Altezza min (mm)</span>
+                <input v-model.number="environmentDraft.minHeightMm" class="field__input" type="number" min="1" />
+              </label>
+            </div>
+            <button class="btn btn--light step-btn" :disabled="environmentLoading" @click="saveEnvironment">
+              {{ environmentLoading ? 'Salvataggio...' : 'Salva ambiente' }}
+            </button>
+          </section>
+
+          <section class="wizard-step detail-action">
+            <h3>Step 2 · Piano colonne</h3>
+            <label class="field">
+              <span class="field__label">Numero colonne (1-6)</span>
+              <input
+                :value="columnCountDraft"
+                class="field__input"
+                type="number"
+                min="1"
+                max="6"
+                @change="syncDraftLengths(Number(($event.target as HTMLInputElement).value))"
+              />
+            </label>
+            <div class="stack">
+              <label v-for="(_, i) in columnCountDraft" :key="`col-${i}`" class="field">
+                <span class="field__label">Colonna {{ i + 1 }} · Larghezza ripiano (mm)</span>
+                <input v-model.number="shelfWidthsDraft[i]" class="field__input" type="number" min="100" step="10" />
+              </label>
+            </div>
+            <button class="btn btn--light step-btn" :disabled="columnPlanLoading" @click="saveColumnPlan">
+              {{ columnPlanLoading ? 'Salvataggio...' : 'Salva piano colonne' }}
+            </button>
+          </section>
+
+          <section class="wizard-step detail-action">
+            <h3>Step 3 · Design livelli</h3>
+            <label class="field">
+              <span class="field__label">Spessore ripiano (mm)</span>
+              <input v-model.number="shelfThicknessDraft" class="field__input" type="number" min="1" />
+            </label>
+            <div class="stack">
+              <label v-for="(_, i) in columnCountDraft" :key="`levels-${i}`" class="field">
+                <span class="field__label">Colonna {{ i + 1 }} · Livelli (mm, separati da virgola)</span>
+                <input v-model="designLevelsDraft[i]" class="field__input" type="text" placeholder="Es. 120, 440, 760" />
+              </label>
+            </div>
+            <button class="btn btn--light step-btn" :disabled="designLoading" @click="saveDesign">
+              {{ designLoading ? 'Salvataggio...' : 'Salva design' }}
+            </button>
+          </section>
+
+          <section class="wizard-step detail-action">
+            <h3>Anteprima visuale</h3>
+            <div class="preview">
+              <article v-for="(column, index) in previewColumns" :key="`preview-${index}`" class="preview-column">
+                <div class="preview-bar" :style="{ height: `${column.heightPct}%` }">
+                  <span class="preview-levels">{{ column.levelCount }}</span>
+                </div>
+                <div class="preview-meta">C{{ index + 1 }} · {{ column.width }}mm</div>
+              </article>
+            </div>
+          </section>
 
           <div class="detail-action">
             <button class="btn btn--primary" :disabled="!canFinalize || finalizeLoading" @click="finalizeSelected">
@@ -334,6 +529,67 @@ function formatDate(iso: string): string {
   margin-top: var(--space-4);
 }
 
+.wizard-step {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  background: var(--color-surface-raised);
+}
+
+.wizard-step h3 {
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-3);
+}
+
+.two-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.step-btn {
+  margin-top: var(--space-3);
+}
+
+.preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: var(--space-2);
+  align-items: end;
+  min-height: 180px;
+}
+
+.preview-column {
+  text-align: center;
+}
+
+.preview-bar {
+  min-height: 40px;
+  background: linear-gradient(180deg, var(--color-accent) 0%, var(--color-admin-accent) 100%);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: var(--font-weight-semibold);
+}
+
+.preview-levels {
+  font-size: var(--font-size-lg);
+}
+
+.preview-meta {
+  margin-top: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
 .hint {
   margin-top: var(--space-2);
   color: var(--color-text-muted);
@@ -375,6 +631,10 @@ function formatDate(iso: string): string {
   }
 
   .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .two-cols {
     grid-template-columns: 1fr;
   }
 }

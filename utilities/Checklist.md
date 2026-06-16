@@ -6,7 +6,7 @@ Stato di partenza (aggiornato):
 - auth-service, catalog-service, cart-service, cad-service e api-gateway funzionanti e testati.
 - notification-service, chatbot-service, order-service e reporting-service implementati e validati lato backend.
 - endpoint reporting admin trend ordini disponibile (`GET /reports/trends/orders`).
-- frontend ancora da completare (Sprint 4).
+- frontend Sprint 4 in stato avanzato: flussi principali utente/admin implementati, restano rifinitura CAD visuale e NFR UX/accessibilita.
 
 ---
 
@@ -274,12 +274,20 @@ Obiettivo:
 - Portare online la SPA completa sui flussi core utente/admin, includendo ordini e reporting trend.
 
 Backlog sprint:
-- [ ] Bootstrap Vue (router, store, service clients) con client separati per auth/catalog/cad/cart/orders/notifications/reports.
-- [ ] Guard ruoli frontend (USER/ADMIN) allineate agli endpoint protetti backend.
+- [x] Bootstrap Vue (router, store, service clients) con client separati per auth/catalog/cad/cart/orders/notifications/reports.
+- [x] Guard ruoli frontend (USER/ADMIN) allineate agli endpoint protetti backend.
 - [ ] Pagine utente: login/guest, catalogo, configuratore, carrello, configurazioni salvate, centro notifiche.
-- [ ] Pagine admin: gestione ordini (lista/dettaglio/azione DONE) e report trend ordini con filtro periodo.
-- [ ] Integrazione pagina report con endpoint `GET /reports/trends/orders` e visualizzazione trend giornaliero.
-- [ ] Gestione errori UI + stati loading/empty + fallback su servizi non disponibili.
+- [x] Pagine admin: gestione ordini (lista/dettaglio/azione DONE) e report trend ordini con filtro periodo.
+- [x] Integrazione pagina report con endpoint `GET /reports/trends/orders` e visualizzazione trend giornaliero.
+- [x] Gestione errori UI + stati loading/empty + fallback su servizi non disponibili.
+
+Dettaglio voce ancora aperta (pagine utente):
+- [x] login/guest.
+- [x] catalogo.
+- [x] carrello.
+- [x] configurazioni salvate.
+- [x] centro notifiche.
+- [x] configuratore CAD visuale click-based completo (step ambiente/column-plan/design guidato in UI).
 
 Deliverable:
 - Demo end-to-end completa da UI per percorso utente + percorso admin (ordine/report).
@@ -288,8 +296,9 @@ Stima:
 - 7-8 gg.
 
 Exit criteria:
-- Percorso utente principale eseguibile solo da frontend.
-- Percorso admin minimo eseguibile solo da frontend:
+- [ ] Percorso utente principale eseguibile solo da frontend.
+	Nota: rimangono solo rifiniture UX/NFR (responsive completo, accessibilita e smoke test UI).
+- [x] Percorso admin minimo eseguibile solo da frontend:
 	- consultazione trend ordini da reporting-service;
 	- avanzamento ordine a DONE.
 

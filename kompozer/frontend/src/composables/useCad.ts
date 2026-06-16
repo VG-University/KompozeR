@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue';
 import { cadService, type ConfigurationStatus as ServiceConfigurationStatus } from '@/services/cadService';
 import { useNotificationStore } from '@/store/notificationStore';
-import type { Category, ConfigurationDto } from '@/types/cad';
+import type { Category, ColumnDesign, ColumnPlan, ConfigurationDto, Environment } from '@/types/cad';
 import { ApiError } from '@/types/api';
 
 export function useCad() {
@@ -15,6 +15,9 @@ export function useCad() {
   const createLoading = ref(false);
   const finalizeLoading = ref(false);
   const categoryLoading = ref(false);
+  const environmentLoading = ref(false);
+  const columnPlanLoading = ref(false);
+  const designLoading = ref(false);
 
   const error = ref('');
 
@@ -103,6 +106,57 @@ export function useCad() {
     }
   }
 
+  async function updateEnvironment(environment: Environment): Promise<void> {
+    if (!selected.value) {
+      return;
+    }
+    environmentLoading.value = true;
+    try {
+      selected.value = await cadService.setEnvironment(selected.value.id, environment);
+      notifications.addToast('success', 'Ambiente aggiornato');
+      await loadList();
+    } catch (e) {
+      const msg = e instanceof ApiError ? e.message : 'Errore aggiornamento ambiente';
+      notifications.addToast('error', msg);
+    } finally {
+      environmentLoading.value = false;
+    }
+  }
+
+  async function updateColumnPlan(columnPlan: ColumnPlan): Promise<void> {
+    if (!selected.value) {
+      return;
+    }
+    columnPlanLoading.value = true;
+    try {
+      selected.value = await cadService.setColumnPlan(selected.value.id, columnPlan);
+      notifications.addToast('success', 'Piano colonne aggiornato');
+      await loadList();
+    } catch (e) {
+      const msg = e instanceof ApiError ? e.message : 'Errore aggiornamento piano colonne';
+      notifications.addToast('error', msg);
+    } finally {
+      columnPlanLoading.value = false;
+    }
+  }
+
+  async function updateDesign(columnDesigns: ColumnDesign[]): Promise<void> {
+    if (!selected.value) {
+      return;
+    }
+    designLoading.value = true;
+    try {
+      selected.value = await cadService.updateDesign(selected.value.id, columnDesigns);
+      notifications.addToast('success', 'Design colonne aggiornato');
+      await loadList();
+    } catch (e) {
+      const msg = e instanceof ApiError ? e.message : 'Errore aggiornamento design';
+      notifications.addToast('error', msg);
+    } finally {
+      designLoading.value = false;
+    }
+  }
+
   async function finalizeSelected(): Promise<void> {
     if (!selected.value) {
       return;
@@ -150,6 +204,9 @@ export function useCad() {
     createLoading,
     finalizeLoading,
     categoryLoading,
+    environmentLoading,
+    columnPlanLoading,
+    designLoading,
     error,
     page,
     total,
@@ -163,6 +220,9 @@ export function useCad() {
     loadDetail,
     createConfiguration,
     updateCategory,
+    updateEnvironment,
+    updateColumnPlan,
+    updateDesign,
     finalizeSelected,
     setStatusFilter,
     nextPage,
