@@ -107,6 +107,7 @@ services:
 
   auth-service:
     build: ./backend/authenticationService
+    command: sh -c "node dist/seed.js && node dist/index.js"
     environment:
       PORT: "3001"
       MONGO_URI: "mongodb://root:changeme@mongo-auth:27017/authdb?authSource=admin"
