@@ -4,10 +4,13 @@ export interface Notification {
   id: string;
   userId: string;
   type: NotificationType;
+  title?: string;
   sku: string;
   message: string;
+  contextType?: 'CAD' | 'CART' | 'SUBSCRIPTION';
+  contextId?: string;
   read: boolean;
-  readAt?: string;
+  readAt?: string | null;
   createdAt: string;
 }
 
@@ -16,6 +19,7 @@ export interface NotificationsListDto {
   total: number;
   page: number;
   limit: number;
+  totalPages?: number;
 }
 
 export interface UnreadCountDto {

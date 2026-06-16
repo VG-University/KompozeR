@@ -2,10 +2,11 @@ import { http } from './httpClient';
 import type { NotificationsListDto, UnreadCountDto, Notification } from '@/types/notification';
 
 export const notificationService = {
-  list(params: { unread?: boolean; page?: number } = {}): Promise<NotificationsListDto> {
+  list(params: { unread?: boolean; page?: number; limit?: number } = {}): Promise<NotificationsListDto> {
     const query = new URLSearchParams();
     if (params.unread) query.set('unread', 'true');
     if (params.page) query.set('page', String(params.page));
+    if (params.limit) query.set('limit', String(params.limit));
     const qs = query.toString();
     return http.get<NotificationsListDto>(`/notifications${qs ? `?${qs}` : ''}`);
   },
