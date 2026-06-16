@@ -20,7 +20,7 @@ export interface Order {
 
 export interface OrdersListDto {
   items: Order[];
-  total: number;
-  page: number;
-  limit: number;
+  total?: number;
+  page?: number;
+  limit?: number;
 }
