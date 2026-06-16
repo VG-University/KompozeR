@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import type { Category, ConfigurationStatus } from '@/types/cad';
 import { useCad } from '@/composables/useCad';
 
@@ -41,9 +42,16 @@ const statuses: Array<ConfigurationStatus> = [
 ];
 
 const categories: Array<Category> = ['TONDO', 'QUADRO', 'KUBE'];
+const route = useRoute();
 
 onMounted(() => {
-  void loadList();
+  void (async () => {
+    await loadList();
+    const configurationId = route.query['configurationId'];
+    if (typeof configurationId === 'string' && configurationId.length > 0) {
+      await loadDetail(configurationId);
+    }
+  })();
 });
 
 const canFinalize = computed(() => {
