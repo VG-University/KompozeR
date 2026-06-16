@@ -1,0 +1,55 @@
+import { http } from './httpClient';
+import type {
+  ConfigurationDto,
+  ConfigurationsListDto,
+  NextOptionsDto,
+  Category,
+  Environment,
+  ColumnPlan,
+  ColumnDesign,
+} from '@/types/cad';
+
+export type ConfigurationStatus = ConfigurationDto['status'];
+
+export const cadService = {
+  list(params: { status?: ConfigurationStatus; page?: number; limit?: number } = {}): Promise<ConfigurationsListDto> {
+    const query = new URLSearchParams();
+    if (params.status) query.set('status', params.status);
+    if (params.page) query.set('page', String(params.page));
+    if (params.limit) query.set('limit', String(params.limit));
+    const qs = query.toString();
+    return http.get<ConfigurationsListDto>(`/cad/configurations${qs ? `?${qs}` : ''}`);
+  },
+
+  create(data: { name?: string }): Promise<ConfigurationDto> {
+    return http.post<ConfigurationDto>('/cad/configurations', data);
+  },
+
+  get(id: string): Promise<ConfigurationDto> {
+    return http.get<ConfigurationDto>(`/cad/configurations/${id}`);
+  },
+
+  setEnvironment(id: string, env: Environment): Promise<ConfigurationDto> {
+    return http.patch<ConfigurationDto>(`/cad/configurations/${id}/environment`, env);
+  },
+
+  setCategory(id: string, category: Category): Promise<ConfigurationDto> {
+    return http.patch<ConfigurationDto>(`/cad/configurations/${id}/category`, { category });
+  },
+
+  setColumnPlan(id: string, plan: ColumnPlan): Promise<ConfigurationDto> {
+    return http.patch<ConfigurationDto>(`/cad/configurations/${id}/column-plan`, plan);
+  },
+
+  updateDesign(id: string, columnDesigns: ColumnDesign[]): Promise<ConfigurationDto> {
+    return http.patch<ConfigurationDto>(`/cad/configurations/${id}/design`, { columnDesigns });
+  },
+
+  finalize(id: string): Promise<ConfigurationDto> {
+    return http.post<ConfigurationDto>(`/cad/configurations/${id}/finalize`);
+  },
+
+  nextOptions(id: string, columnIndex: number): Promise<NextOptionsDto> {
+    return http.get<NextOptionsDto>(`/cad/configurations/${id}/next-options?columnIndex=${columnIndex}`);
+  },
+};
