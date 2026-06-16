@@ -21,7 +21,7 @@ export const cadService = {
     return http.get<ConfigurationsListDto>(`/cad/configurations${qs ? `?${qs}` : ''}`);
   },
 
-  create(data: { name?: string }): Promise<ConfigurationDto> {
+  create(data: { name?: string; category?: Category }): Promise<ConfigurationDto> {
     return http.post<ConfigurationDto>('/cad/configurations', data);
   },
 
