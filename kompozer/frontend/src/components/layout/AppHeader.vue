@@ -9,20 +9,33 @@ const notifications = useNotificationStore();
 const router = useRouter();
 
 const navLinks = computed(() => {
-  const links = [
-    { name: 'catalog', label: 'Catalogo' },
+  if (auth.isAdmin) {
+    return [
+      { name: 'catalog', label: 'Catalogo' },
+      { name: 'cad', label: 'Configuratore' },
+      { name: 'cart', label: 'Carrello' },
+      { name: 'admin-orders', label: 'Ordini' },
+      { name: 'admin-reports', label: 'Report' },
+    ];
+  }
+
+  if (auth.isGuest) {
+    return [
+      { name: 'cad', label: 'Configuratore' },
+      { name: 'cart', label: 'Carrello' },
+      { name: 'chatbot', label: 'Chatbot' },
+    ];
+  }
+
+  return [
+    { name: 'configurations', label: 'Configurazioni' },
     { name: 'cad', label: 'Configuratore' },
     { name: 'cart', label: 'Carrello' },
+    { name: 'chatbot', label: 'Chatbot' },
   ];
-  if (!auth.isGuest) {
-    links.push({ name: 'configurations', label: 'Configurazioni' });
-  }
-  if (auth.isAdmin) {
-    links.push({ name: 'admin-orders', label: 'Ordini' });
-    links.push({ name: 'admin-reports', label: 'Report' });
-  }
-  return links;
 });
+
+const homeRoute = computed(() => ({ name: auth.homeRouteName }));
 
 async function logout(): Promise<void> {
   auth.logout();
@@ -33,7 +46,7 @@ async function logout(): Promise<void> {
 <template>
   <header class="app-header">
     <div class="app-header__inner">
-      <RouterLink :to="{ name: 'catalog' }" class="app-header__logo">
+      <RouterLink :to="homeRoute" class="app-header__logo">
         KompozeR
       </RouterLink>
 
@@ -51,7 +64,7 @@ async function logout(): Promise<void> {
 
       <div class="app-header__actions">
         <RouterLink
-          v-if="!auth.isGuest"
+          v-if="auth.isLoggedIn"
           :to="{ name: 'notifications' }"
           class="app-header__bell"
           aria-label="Notifiche"

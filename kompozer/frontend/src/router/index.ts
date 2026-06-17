@@ -1,6 +1,33 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 import { useAuthStore } from '@/store/authStore';
 
+const baseAllowedRoutes = new Set(['cad', 'cart', 'configurations', 'chatbot', 'notifications']);
+const guestAllowedRoutes = new Set(['cad', 'cart', 'chatbot', 'notifications']);
+
+function getAuthenticatedFallbackRoute(auth: ReturnType<typeof useAuthStore>): { name: string } {
+  return { name: auth.homeRouteName };
+}
+
+function canAccessRoute(auth: ReturnType<typeof useAuthStore>, routeName: string | null): boolean {
+  if (!routeName) {
+    return true;
+  }
+
+  if (auth.isAdmin) {
+    return true;
+  }
+
+  if (auth.isGuest) {
+    return guestAllowedRoutes.has(routeName);
+  }
+
+  if (auth.isBaseUser) {
+    return baseAllowedRoutes.has(routeName);
+  }
+
+  return true;
+}
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
@@ -24,6 +51,12 @@ const routes: RouteRecordRaw[] = [
     path: '/cad',
     name: 'cad',
     component: () => import('@/views/CadView.vue'),
+    meta: { requiresToken: true },
+  },
+  {
+    path: '/chatbot',
+    name: 'chatbot',
+    component: () => import('@/views/ChatbotView.vue'),
     meta: { requiresToken: true },
   },
   {
@@ -61,23 +94,32 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const auth = useAuthStore();
+  const routeName = typeof to.name === 'string' ? to.name : null;
+
+  if (auth.isLoggedIn && !auth.isGuest && !auth.user) {
+    await auth.hydrateCurrentUser();
+  }
 
   if (to.meta.requiresAdmin && !auth.isAdmin) {
-    return { name: 'auth' };
+    return auth.isLoggedIn ? getAuthenticatedFallbackRoute(auth) : { name: 'auth' };
   }
 
   if (to.meta.requiresAuth && (!auth.isLoggedIn || auth.isGuest)) {
-    return { name: 'auth' };
+    return auth.isLoggedIn ? getAuthenticatedFallbackRoute(auth) : { name: 'auth' };
   }
 
   if (to.meta.requiresToken && !auth.isLoggedIn) {
     return { name: 'auth' };
   }
 
+  if (auth.isLoggedIn && !to.meta.public && !canAccessRoute(auth, routeName)) {
+    return getAuthenticatedFallbackRoute(auth);
+  }
+
   if (to.meta.public && auth.isLoggedIn) {
-    return { name: 'catalog' };
+    return getAuthenticatedFallbackRoute(auth);
   }
 });
 

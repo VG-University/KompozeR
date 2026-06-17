@@ -59,7 +59,7 @@ async function handleLogin(): Promise<void> {
   loading.value = true;
   try {
     await auth.login(login.username, login.password);
-    await router.push({ name: 'catalog' });
+    await router.push({ name: auth.homeRouteName });
   } catch (e) {
     error.value = mapLoginError(e);
   } finally {
@@ -96,7 +96,7 @@ async function handleGuest(): Promise<void> {
   loading.value = true;
   try {
     await auth.loginAsGuest();
-    await router.push({ name: 'catalog' });
+    await router.push({ name: auth.homeRouteName });
   } catch (e) {
     error.value = e instanceof ApiError ? e.message : 'Errore accesso ospite';
   } finally {
