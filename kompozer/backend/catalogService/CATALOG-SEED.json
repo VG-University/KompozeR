@@ -1,0 +1,39 @@
+##Tondo catalog
+{
+  "components": [
+    {
+      "sku": "TONDO-SKU-PIEDINO-05",
+      "name": "Piedino tondo 5mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "PIEDINO",
+      "price": 0,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 0,
+        "depthMm": 0
+      },
+      "compatibleWith": []
+    },
+    {
+      "sku": "TONDO-SKU-PIEDINO-10",
+      "name": "Piedino tondo 10mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "PIEDINO",
+      "price": 0,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 0,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO-SKU-PIEDINO-05"
+      ]
+    }
+  ]
+}

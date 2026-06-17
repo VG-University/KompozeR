@@ -4,6 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY tsconfig.json ./
+COPY CATALOG-SEED.json ./
 COPY src ./src
 RUN npm run build
 
@@ -13,5 +14,6 @@ ENV NODE_ENV=production
 COPY package*.json ./
 RUN npm ci --omit=dev
 COPY --from=builder /app/dist ./dist
+COPY CATALOG-SEED.json ./CATALOG-SEED.json
 EXPOSE 3002
-CMD ["node", "dist/index.js"]
+CMD ["sh", "-c", "node dist/seed.js && node dist/index.js"]
