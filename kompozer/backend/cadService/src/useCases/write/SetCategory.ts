@@ -32,13 +32,11 @@ export class SetCategory {
       throw new ResourceConflictError('Environment must be defined before category');
     }
 
-    if (configuration.columnPlan || configuration.columnDesigns.length > 0) {
-      throw new ResourceConflictError('Category cannot be changed after columns or design are defined');
-    }
-
     const updated: Configuration = {
       ...configuration,
       category: input.category,
+      columnPlan: null,
+      columnDesigns: [],
       components: [],
       status: 'CATEGORY_SELECTED',
       version: configuration.version + 1,

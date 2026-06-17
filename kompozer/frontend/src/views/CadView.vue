@@ -9,6 +9,8 @@ import type {
   NextOption,
 } from '@/types/cad';
 import { useCad } from '@/composables/useCad';
+import { catalogService } from '@/services/catalogService';
+import type { CatalogItem } from '@/types/catalog';
 
 const {
   items,
@@ -28,7 +30,6 @@ const {
   totalPages,
   statusFilter,
   createName,
-  createCategory,
   nextOptionsByColumn,
   canPrev,
   canNext,
@@ -39,6 +40,7 @@ const {
   updateEnvironment,
   updateColumnPlan,
   fetchNextOptions,
+  setNextOptions,
   addTopShelf,
   removeTopShelf,
   finalizeSelected,
@@ -72,6 +74,9 @@ const columnCountDraft = ref(2);
 const shelfWidthsDraft = ref<number[]>([800, 800]);
 const shelfThicknessDraft = ref(20);
 const selectedGapByColumn = ref<Record<number, number | null>>({});
+const selectedTerminalByColumn = ref<Record<number, number | null>>({});
+const categoryCatalogItems = ref<CatalogItem[]>([]);
+const catalogLoading = ref(false);
 
 const showBomMobile = ref(false);
 const showResetConfirm = ref(false);
@@ -107,18 +112,13 @@ watch(selected, (value) => {
   }
 }, { immediate: true });
 
-watch(columnCountDraft, (count) => {
-  const safeCount = Math.max(1, Math.min(8, count));
-  if (safeCount !== count) {
-    columnCountDraft.value = safeCount;
-    return;
-  }
-
-  shelfWidthsDraft.value = Array.from(
-    { length: safeCount },
-    (_, index) => shelfWidthsDraft.value[index] ?? 800,
-  );
-});
+watch(
+  () => selected.value?.category,
+  (category) => {
+    void loadCatalogForCategory(category ?? null);
+  },
+  { immediate: true },
+);
 
 const currentStepIndex = computed(() => {
   if (!selected.value) return 0;
@@ -181,6 +181,65 @@ const orderedColumns = computed(() => {
   return plan.columns.slice().sort((a, b) => a.index - b.index);
 });
 
+const availableShelfWidths = computed(() =>
+  uniqueSortedNumeric(
+    categoryCatalogItems.value
+      .filter((item) => normalizedType(item) === 'RIPIANO')
+      .map((item) => Number(item.dimensions?.widthMm))
+      .filter((value) => Number.isFinite(value) && value > 0),
+  ),
+);
+
+const availableFootHeights = computed(() =>
+  uniqueSortedNumeric(
+    categoryCatalogItems.value
+      .filter((item) => normalizedType(item) === 'PIEDINO')
+      .map((item) => Number(item.dimensions?.heightMm))
+      .filter((value) => Number.isFinite(value) && value > 0),
+  ),
+);
+
+const availableMountHeights = computed(() =>
+  uniqueSortedNumeric(
+    categoryCatalogItems.value
+      .filter((item) => normalizedType(item) === 'MONTANTE')
+      .map((item) => Number(item.dimensions?.heightMm))
+      .filter((value) => Number.isFinite(value) && value > 0),
+  ),
+);
+
+const availableTerminalHeights = computed(() =>
+  uniqueSortedNumeric(
+    categoryCatalogItems.value
+      .filter((item) => normalizedType(item) === 'TERMINALE')
+      .map((item) => Number(item.dimensions?.heightMm))
+      .filter((value) => Number.isFinite(value) && value > 0),
+  ),
+);
+
+watch(columnCountDraft, (count) => {
+  const safeCount = Math.max(1, Math.min(8, count));
+  if (safeCount !== count) {
+    columnCountDraft.value = safeCount;
+    return;
+  }
+
+  shelfWidthsDraft.value = Array.from(
+    { length: safeCount },
+    (_, index) => shelfWidthsDraft.value[index] ?? availableShelfWidths.value[0] ?? 800,
+  );
+});
+
+watch(() => availableShelfWidths.value, (widths) => {
+  if (widths.length === 0) {
+    return;
+  }
+
+  shelfWidthsDraft.value = shelfWidthsDraft.value.map((width) =>
+    widths.includes(width) ? width : widths[0],
+  );
+});
+
 const designByColumn = computed(() => {
   const map = new Map<number, { levelsMm: number[]; shelfThicknessMm: number }>();
   for (const design of selected.value?.columnDesigns ?? []) {
@@ -224,6 +283,46 @@ function formatPrice(value: number): string {
 function syncDraftLengths(nextCount: number): void {
   const safeCount = Math.max(1, Math.min(8, nextCount));
   columnCountDraft.value = safeCount;
+}
+
+function normalizedType(item: CatalogItem): string {
+  return String(item.Type ?? '').trim().toUpperCase();
+}
+
+function uniqueSortedNumeric(values: number[]): number[] {
+  return Array.from(new Set(values)).sort((a, b) => a - b);
+}
+
+async function loadCatalogForCategory(category: Category | null): Promise<void> {
+  if (!category) {
+    categoryCatalogItems.value = [];
+    return;
+  }
+
+  catalogLoading.value = true;
+  try {
+    const allItems: CatalogItem[] = [];
+    let currentPage = 1;
+    let totalPagesCount = 1;
+
+    do {
+      const response = await catalogService.list({
+        category,
+        available: true,
+        page: currentPage,
+        limit: 200,
+      });
+      allItems.push(...response.items);
+      totalPagesCount = response.totalPages;
+      currentPage += 1;
+    } while (currentPage <= totalPagesCount);
+
+    categoryCatalogItems.value = allItems;
+  } catch {
+    categoryCatalogItems.value = [];
+  } finally {
+    catalogLoading.value = false;
+  }
 }
 
 async function saveEnvironment(): Promise<void> {
@@ -309,12 +408,29 @@ function getOptions(columnIndex: number): NextOption[] {
   return nextOptionsByColumn.value[columnIndex] ?? [];
 }
 
+function fallbackOptions(columnIndex: number): NextOption[] {
+  const levels = designByColumn.value.get(columnIndex)?.levelsMm ?? [];
+  const sourceHeights = levels.length === 0 ? availableFootHeights.value : availableMountHeights.value;
+  return sourceHeights.map((heightMm) => ({
+    heightMm,
+    allowed: true,
+  }));
+}
+
 async function openNextOptions(columnIndex: number): Promise<void> {
-  await fetchNextOptions(columnIndex);
-  const options = getOptions(columnIndex).filter((option) => option.allowed);
+  const fetchedOptions = await fetchNextOptions(columnIndex);
+  const options = (fetchedOptions.length > 0 ? fetchedOptions : fallbackOptions(columnIndex)).filter(
+    (option) => option.allowed,
+  );
+  setNextOptions(columnIndex, options);
   selectedGapByColumn.value = {
     ...selectedGapByColumn.value,
     [columnIndex]: options[0]?.heightMm ?? null,
+  };
+
+  selectedTerminalByColumn.value = {
+    ...selectedTerminalByColumn.value,
+    [columnIndex]: selectedTerminalByColumn.value[columnIndex] ?? availableTerminalHeights.value[0] ?? null,
   };
 }
 
@@ -329,6 +445,16 @@ async function addShelf(columnIndex: number): Promise<void> {
 
 async function removeShelf(columnIndex: number): Promise<void> {
   await removeTopShelf(columnIndex, shelfThicknessDraft.value);
+  await openNextOptions(columnIndex);
+}
+
+async function addTerminal(columnIndex: number): Promise<void> {
+  const terminalHeight = selectedTerminalByColumn.value[columnIndex];
+  if (!terminalHeight) {
+    return;
+  }
+
+  await addTopShelf(columnIndex, terminalHeight, shelfThicknessDraft.value);
   await openNextOptions(columnIndex);
 }
 
@@ -375,13 +501,6 @@ function stepActive(index: number): boolean {
         <label class="field">
           <span class="field__label">Nome</span>
           <input v-model="createName" class="field__input" type="text" placeholder="Es. Libreria soggiorno" />
-        </label>
-        <label class="field">
-          <span class="field__label">Categoria iniziale</span>
-          <select v-model="createCategory" class="field__input">
-            <option value="">Nessuna</option>
-            <option v-for="category in categories" :key="category" :value="category">{{ category }}</option>
-          </select>
         </label>
         <button class="btn btn--primary" :disabled="createLoading" @click="createConfiguration">
           {{ createLoading ? 'Creazione...' : 'Crea configurazione' }}
@@ -536,20 +655,29 @@ function stepActive(index: number): boolean {
                   @change="syncDraftLengths(Number(($event.target as HTMLInputElement).value))"
                 />
               </label>
+              <p class="mini muted" v-if="catalogLoading">Caricamento larghezze da catalogo...</p>
+              <p class="mini muted" v-else-if="availableShelfWidths.length === 0">
+                Nessun RIPIANO disponibile per la categoria selezionata.
+              </p>
               <div class="column-widths">
                 <label v-for="(_, i) in columnCountDraft" :key="`col-width-${i}`" class="field">
                   <span class="field__label">Colonna {{ i + 1 }}</span>
-                  <input
+                  <select
                     v-model.number="shelfWidthsDraft[i]"
                     class="field__input"
-                    type="number"
-                    min="100"
-                    step="10"
-                    :disabled="!canEditColumns"
-                  />
+                    :disabled="!canEditColumns || availableShelfWidths.length === 0"
+                  >
+                    <option v-for="width in availableShelfWidths" :key="`width-${i}-${width}`" :value="width">
+                      {{ width }} mm
+                    </option>
+                  </select>
                 </label>
               </div>
-              <button class="btn btn--light" :disabled="!canEditColumns || columnPlanLoading" @click="saveColumnPlan">
+              <button
+                class="btn btn--light"
+                :disabled="!canEditColumns || columnPlanLoading || availableShelfWidths.length === 0"
+                @click="saveColumnPlan"
+              >
                 {{ columnPlanLoading ? 'Salvataggio...' : 'Salva piano colonne' }}
               </button>
             </article>
@@ -575,6 +703,9 @@ function stepActive(index: number): boolean {
                   </header>
 
                   <p class="mini muted">Livelli correnti: {{ column.levels.join(', ') || 'nessuno' }}</p>
+                  <p class="mini muted">
+                    {{ column.levels.length === 0 ? 'Livello 0: opzioni PIEDINO' : 'Livelli successivi: opzioni MONTANTE' }}
+                  </p>
 
                   <button
                     class="btn btn--light btn--small"
@@ -602,6 +733,23 @@ function stepActive(index: number): boolean {
                     </select>
                   </label>
 
+                  <label class="field" v-if="availableTerminalHeights.length > 0 && column.levels.length > 0">
+                    <span class="field__label">Terminale finale</span>
+                    <select
+                      class="field__input"
+                      :disabled="!canEditDesign || designLoading"
+                      v-model.number="selectedTerminalByColumn[column.index]"
+                    >
+                      <option
+                        v-for="height in availableTerminalHeights"
+                        :key="`terminal-${column.index}-${height}`"
+                        :value="height"
+                      >
+                        {{ height }}mm
+                      </option>
+                    </select>
+                  </label>
+
                   <div class="actions-row">
                     <button
                       class="btn btn--primary btn--small"
@@ -616,6 +764,14 @@ function stepActive(index: number): boolean {
                       @click="removeShelf(column.index)"
                     >
                       - Ultimo
+                    </button>
+                    <button
+                      class="btn btn--light btn--small"
+                      v-if="availableTerminalHeights.length > 0 && column.levels.length > 0"
+                      :disabled="!canEditDesign || designLoading || !selectedTerminalByColumn[column.index]"
+                      @click="addTerminal(column.index)"
+                    >
+                      + Terminale
                     </button>
                   </div>
                 </article>
@@ -760,7 +916,7 @@ function stepActive(index: number): boolean {
 .create-grid {
   margin-top: var(--space-3);
   display: grid;
-  grid-template-columns: 2fr 1fr auto;
+  grid-template-columns: 1fr auto;
   gap: var(--space-3);
   align-items: end;
 }

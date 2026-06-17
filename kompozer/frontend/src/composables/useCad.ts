@@ -37,7 +37,6 @@ export function useCad() {
   const nextOptionsByColumn = ref<Record<number, NextOptionsDto['options']>>({});
 
   const createName = ref('Nuova configurazione');
-  const createCategory = ref<Category | ''>('');
 
   const canPrev = computed(() => page.value > 1);
   const canNext = computed(() => page.value < totalPages.value);
@@ -85,7 +84,6 @@ export function useCad() {
     try {
       const created = await cadService.create({
         name: createName.value.trim() || undefined,
-        category: createCategory.value || undefined,
       });
       notifications.addToast('success', `Configurazione creata: ${created.name}`);
       selected.value = created;
@@ -180,12 +178,21 @@ export function useCad() {
       };
       return result.options;
     } catch (e) {
-      const msg = e instanceof ApiError ? e.message : 'Errore recupero opzioni disponibili';
-      notifications.addToast('error', msg);
+      if (!(e instanceof ApiError) || e.status !== 404) {
+        const msg = e instanceof ApiError ? e.message : 'Errore recupero opzioni disponibili';
+        notifications.addToast('error', msg);
+      }
       return [];
     } finally {
       nextOptionsLoading.value = false;
     }
+  }
+
+  function setNextOptions(columnIndex: number, options: NextOptionsDto['options']): void {
+    nextOptionsByColumn.value = {
+      ...nextOptionsByColumn.value,
+      [columnIndex]: options,
+    };
   }
 
   function createDesignDraft(defaultShelfThicknessMm = 20): ColumnDesign[] {
@@ -300,7 +307,6 @@ export function useCad() {
     totalPages,
     statusFilter,
     createName,
-    createCategory,
     nextOptionsByColumn,
     canPrev,
     canNext,
@@ -312,6 +318,7 @@ export function useCad() {
     updateColumnPlan,
     updateDesign,
     fetchNextOptions,
+    setNextOptions,
     addTopShelf,
     removeTopShelf,
     finalizeSelected,

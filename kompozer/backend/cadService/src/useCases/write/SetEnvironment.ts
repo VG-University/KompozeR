@@ -22,13 +22,11 @@ export class SetEnvironment {
       throw new ResourceConflictError('Cannot change environment for a finalized configuration');
     }
 
-    if (configuration.columnPlan || configuration.columnDesigns.length > 0) {
-      throw new ResourceConflictError('Environment cannot be changed after columns or design are defined');
-    }
-
     const updated: Configuration = {
       ...configuration,
       environment: input.environment,
+      columnPlan: null,
+      columnDesigns: [],
       components: [],
       status: configuration.category ? 'CATEGORY_SELECTED' : 'ENVIRONMENT_DEFINED',
       version: configuration.version + 1,
