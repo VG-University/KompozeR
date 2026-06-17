@@ -32,12 +32,12 @@ export function buildApp(deps: BuildAppDeps = {}) {
 
   const createConfiguration = new CreateConfiguration(configurationRepository);
   const listConfigurations = new ListConfigurations(configurationRepository);
-  const getConfiguration = new GetConfiguration(configurationRepository);
+  const getConfiguration = new GetConfiguration(configurationRepository, catalogRulesProvider);
   const setEnvironment = new SetEnvironment(configurationRepository);
   const setCategory = new SetCategory(configurationRepository);
   const setColumnPlan = new SetColumnPlan(configurationRepository, catalogRulesProvider);
   const updateDesign = new UpdateDesign(configurationRepository, catalogRulesProvider);
-  const finalizeConfiguration = new FinalizeConfiguration(configurationRepository, catalogRulesProvider, cartServiceClient);
+  const finalizeConfiguration = new FinalizeConfiguration(configurationRepository, cartServiceClient);
 
   const app = express();
 

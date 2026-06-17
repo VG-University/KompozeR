@@ -1,4 +1,5 @@
 import { ConfigurationRepository } from '../../domain/ports/ConfigurationRepository';
+import { CatalogRulesProvider } from '../../domain/ports/CatalogRulesProvider';
 import {
   GetConfigurationInput,
   ConfigurationDto,
@@ -8,9 +9,13 @@ import {
   ResourceNotFoundError,
   ValidationError,
 } from '../../domain/entities/errors';
+import { deriveBom } from '../../domain/services/deriveBom';
 
 export class GetConfiguration {
-  constructor(private readonly configurationRepository: ConfigurationRepository) {}
+  constructor(
+    private readonly configurationRepository: ConfigurationRepository,
+    private readonly catalogRulesProvider?: CatalogRulesProvider,
+  ) {}
 
   async execute(input: GetConfigurationInput): Promise<ConfigurationDto> {
     if (!input.id?.trim()) {
@@ -24,6 +29,24 @@ export class GetConfiguration {
     const configuration = await this.configurationRepository.findById(input.id);
     if (!configuration || configuration.ownerId !== input.ownerId) {
       throw new ResourceNotFoundError('Configuration not found');
+    }
+
+    // Lazy migration: if components are missing/empty but design is complete, rederive on-the-fly
+    if (
+      configuration.components.length === 0 &&
+      configuration.columnDesigns.length > 0 &&
+      configuration.category &&
+      configuration.columnPlan &&
+      this.catalogRulesProvider
+    ) {
+      try {
+        console.warn(`[CAD] Lazy migrating components for configuration ${configuration.id}`);
+        const rules = await this.catalogRulesProvider.getRules(configuration.category);
+        configuration.components = deriveBom(configuration, rules);
+      } catch (err) {
+        // Log but don't fail — return configuration as-is if deriveBom fails
+        console.error(`[CAD] Lazy migration failed for configuration ${configuration.id}:`, err);
+      }
     }
 
     return toConfigurationDto(configuration);

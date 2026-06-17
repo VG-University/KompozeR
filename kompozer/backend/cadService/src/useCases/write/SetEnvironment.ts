@@ -29,6 +29,7 @@ export class SetEnvironment {
     const updated: Configuration = {
       ...configuration,
       environment: input.environment,
+      components: [],
       status: configuration.category ? 'CATEGORY_SELECTED' : 'ENVIRONMENT_DEFINED',
       version: configuration.version + 1,
       updatedAt: new Date(),

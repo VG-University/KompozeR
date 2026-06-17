@@ -16,3 +16,5 @@ npm run test:e2e
 
 docker compose -f docker-compose.dev.yml down
 docker compose -f docker-compose.dev.yml down -v
+
+"%ProgramFiles%\nodejs\npm.cmd" run dev

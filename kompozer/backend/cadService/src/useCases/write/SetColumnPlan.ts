@@ -80,6 +80,7 @@ export class SetColumnPlan {
     const updated: Configuration = {
       ...configuration,
       columnPlan: input.columnPlan,
+      components: [],
       status: 'COLUMNS_DEFINED',
       version: configuration.version + 1,
       updatedAt: new Date(),

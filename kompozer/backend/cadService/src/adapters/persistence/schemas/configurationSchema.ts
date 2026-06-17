@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { Category } from '../../../domain/entities/Category';
 import { ConfigurationStatus } from '../../../domain/entities/ConfigurationStatus';
+import { CatalogComponentType } from '../../../domain/ports/CatalogRulesProvider';
 
 type EnvironmentDoc = {
   maxWidthMm: number;
@@ -26,6 +27,14 @@ type ColumnDesignDoc = {
   shelfThicknessMm: number;
 };
 
+type BomItemDoc = {
+  sku: string;
+  name: string;
+  quantity: number;
+  unitPriceCents: number;
+  componentType: CatalogComponentType;
+};
+
 export type ConfigurationDoc = {
   _id: string;
   ownerId: string;
@@ -35,6 +44,7 @@ export type ConfigurationDoc = {
   environment: EnvironmentDoc | null;
   columnPlan: ColumnPlanDoc | null;
   columnDesigns: ColumnDesignDoc[];
+  components: BomItemDoc[];
   version: number;
   createdAt: Date;
   updatedAt: Date;
@@ -76,6 +86,17 @@ const columnDesignSchema = new Schema<ColumnDesignDoc>(
   { _id: false },
 );
 
+const bomItemSchema = new Schema<BomItemDoc>(
+  {
+    sku: { type: String, required: true },
+    name: { type: String, required: true },
+    quantity: { type: Number, required: true },
+    unitPriceCents: { type: Number, required: true },
+    componentType: { type: String, required: true },
+  },
+  { _id: false },
+);
+
 const configurationSchema = new Schema<ConfigurationDoc>(
   {
     _id: { type: String, required: true },
@@ -112,6 +133,10 @@ const configurationSchema = new Schema<ConfigurationDoc>(
     },
     columnDesigns: {
       type: [columnDesignSchema],
+      default: [],
+    },
+    components: {
+      type: [bomItemSchema],
       default: [],
     },
     version: { type: Number, required: true, default: 1 },

@@ -12,7 +12,7 @@ import {
   FakeClock,
   FakeIdGenerator,
 } from '../helpers/fakes';
-import { InvalidPasswordError, UserNotFoundError } from '../../src/domain/entities/errors';
+import { InvalidCredentialsError, InvalidPasswordError } from '../../src/domain/entities/errors';
 import { UserRole } from '../../src/domain/entities/UserRole';
 
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000; // 8 hours
@@ -90,12 +90,12 @@ describe('LoginUser', () => {
     ).rejects.toThrow(InvalidPasswordError);
   });
 
-  it('throws UserNotFoundError when user does not exist', async () => {
+  it('throws InvalidCredentialsError when user does not exist', async () => {
     const { login } = makeUseCase();
 
     await expect(
       login.execute({ username: 'ghost', password: 'Password123!' }),
-    ).rejects.toThrow(UserNotFoundError);
+    ).rejects.toThrow(InvalidCredentialsError);
   });
 
   it('persists the session in the repository', async () => {

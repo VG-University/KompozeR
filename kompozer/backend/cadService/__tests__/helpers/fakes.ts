@@ -47,6 +47,7 @@ export class FakeConfigurationRepository implements ConfigurationRepository {
         ...design,
         levelsMm: [...design.levelsMm],
       })),
+      components: configuration.components.map((comp) => ({ ...comp })),
       createdAt: new Date(configuration.createdAt),
       updatedAt: new Date(configuration.updatedAt),
     };
@@ -64,6 +65,7 @@ export function buildConfiguration(overrides: Partial<Configuration> = {}): Conf
     environment: null,
     columnPlan: null,
     columnDesigns: [],
+    components: [],
     version: 1,
     createdAt: now,
     updatedAt: now,

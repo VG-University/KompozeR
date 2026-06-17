@@ -20,7 +20,7 @@ export class InvalidCredentialsError extends AuthError {
 
 export class InvalidPasswordError extends AuthError {
   constructor() {
-    super('INVALID_PASSWORD', 'Invalid username or password');
+    super('INVALID_CREDENTIALS', 'Invalid username or password');
   }
 }
 

@@ -102,9 +102,68 @@ function withNodeInPath(env) {
   };
 }
 
+function detectTargetNeeds() {
+  const rawArgs = [process.argv.join(' '), process.env.npm_config_argv || '']
+    .join(' ')
+    .toLowerCase();
+
+  const hasFilter = rawArgs.includes('testpathpattern') || rawArgs.includes('runtestsbypath');
+
+  if (!hasFilter) {
+    return {
+      needsAuth: true,
+      needsCatalog: true,
+      needsCad: true,
+      needsReporting: true,
+      needsAdminSeed: true,
+    };
+  }
+
+  const wants = {
+    auth: rawArgs.includes('auth.integration.test'),
+    catalog: rawArgs.includes('catalog.integration.test'),
+    cad: rawArgs.includes('cad.integration.test'),
+    cart: rawArgs.includes('cart.integration.test'),
+    reporting: rawArgs.includes('reporting.integration.test'),
+    order: rawArgs.includes('order.integration.test'),
+    notifications: rawArgs.includes('notifications.integration.test'),
+    chatbot: rawArgs.includes('chatbot.integration.test'),
+  };
+
+  const hasKnownTarget = Object.values(wants).some(Boolean);
+  if (!hasKnownTarget) {
+    return {
+      needsAuth: true,
+      needsCatalog: true,
+      needsCad: true,
+      needsReporting: true,
+      needsAdminSeed: true,
+    };
+  }
+
+  const needsCatalog =
+    wants.catalog || wants.cad || wants.cart || wants.reporting || wants.order;
+  const needsCad = wants.cad;
+  const needsReporting = wants.reporting;
+  const needsAuth =
+    wants.auth || needsCatalog || wants.notifications || wants.chatbot;
+  const needsAdminSeed =
+    wants.catalog || wants.cart || wants.reporting || wants.order;
+
+  return {
+    needsAuth,
+    needsCatalog,
+    needsCad,
+    needsReporting,
+    needsAdminSeed,
+  };
+}
+
 // ── globalSetup ──────────────────────────────────────────────────────────────
 
 module.exports = async function globalSetup() {
+  const targets = detectTargetNeeds();
+
   // ── 1. Attendi il gateway (max 30 s) ─────────────────────────────────────
   const timeoutMs = 30000;
   const start     = Date.now();
@@ -128,76 +187,92 @@ module.exports = async function globalSetup() {
   }
 
   // ── 1b. Attendi auth via endpoint pubblico reale: POST /auth/guest ─────
-  process.stdout.write('[e2e] Attendo auth (POST /auth/guest)');
   let guestToken = '';
-  while (Date.now() - start < timeoutMs) {
-    const res = await requestGateway('/auth/guest', 'POST', {
-      'Content-Type': 'application/json',
-    });
-    if (res.status === 200 && res.body && typeof res.body.token === 'string') {
-      guestToken = res.body.token;
-      break;
+  if (targets.needsAuth) {
+    process.stdout.write('[e2e] Attendo auth (POST /auth/guest)');
+    while (Date.now() - start < timeoutMs) {
+      const res = await requestGateway('/auth/guest', 'POST', {
+        'Content-Type': 'application/json',
+      });
+      if (res.status === 200 && res.body && typeof res.body.token === 'string') {
+        guestToken = res.body.token;
+        break;
+      }
+      process.stdout.write('.');
+      await sleep(1000);
     }
-    process.stdout.write('.');
-    await sleep(1000);
-  }
-  process.stdout.write(guestToken ? ' OK\n' : ' FAIL\n');
+    process.stdout.write(guestToken ? ' OK\n' : ' FAIL\n');
 
-  if (!guestToken) {
-    throw new Error(
-      '\n[e2e] auth non pronto entro timeout (POST /auth/guest non riuscito).\n',
-    );
+    if (!guestToken) {
+      throw new Error(
+        '\n[e2e] auth non pronto entro timeout (POST /auth/guest non riuscito).\n',
+      );
+    }
+  } else {
+    process.stdout.write('[e2e] Skip auth readiness (non richiesto dai test selezionati)\n');
   }
 
   // ── 1c. Attendi catalog via endpoint reale protetto: GET /catalog ───────
-  process.stdout.write('[e2e] Attendo catalog (GET /catalog con token guest)');
-  let catalogReady = false;
-  while (Date.now() - start < timeoutMs) {
-    const res = await requestGateway('/catalog', 'GET', {
-      Authorization: `Bearer ${guestToken}`,
-    });
-    if (res.status === 200) {
-      catalogReady = true;
-      break;
+  if (targets.needsCatalog) {
+    process.stdout.write('[e2e] Attendo catalog (GET /catalog con token guest)');
+    let catalogReady = false;
+    while (Date.now() - start < timeoutMs) {
+      const res = await requestGateway('/catalog', 'GET', {
+        Authorization: `Bearer ${guestToken}`,
+      });
+      if (res.status === 200) {
+        catalogReady = true;
+        break;
+      }
+      process.stdout.write('.');
+      await sleep(1000);
     }
-    process.stdout.write('.');
-    await sleep(1000);
-  }
-  process.stdout.write(catalogReady ? ' OK\n' : ' FAIL\n');
+    process.stdout.write(catalogReady ? ' OK\n' : ' FAIL\n');
 
-  if (!catalogReady) {
-    throw new Error(
-      '\n[e2e] catalog non pronto entro timeout (GET /catalog non riuscito).\n',
-    );
+    if (!catalogReady) {
+      throw new Error(
+        '\n[e2e] catalog non pronto entro timeout (GET /catalog non riuscito).\n',
+      );
+    }
+  } else {
+    process.stdout.write('[e2e] Skip catalog readiness (non richiesto dai test selezionati)\n');
   }
 
   // ── 1d. Attendi CAD service via healthcheck ──────────────────────────────
-  process.stdout.write('[e2e] Attendo cad-service (GET /cad/health)');
-  let cadReady = false;
-  while (Date.now() - start < timeoutMs) {
-    const res = await requestGateway('/cad/health', 'GET', {});
-    if (res.status === 200) {
-      cadReady = true;
-      break;
+  if (targets.needsCad) {
+    process.stdout.write('[e2e] Attendo cad-service (GET /cad/health)');
+    let cadReady = false;
+    while (Date.now() - start < timeoutMs) {
+      const res = await requestGateway('/cad/health', 'GET', {});
+      if (res.status === 200) {
+        cadReady = true;
+        break;
+      }
+      process.stdout.write('.');
+      await sleep(1000);
     }
-    process.stdout.write('.');
-    await sleep(1000);
+    process.stdout.write(cadReady ? ' OK\n' : ' WARN (cad test potrebbero fallire)\n');
+  } else {
+    process.stdout.write('[e2e] Skip cad readiness (non richiesto dai test selezionati)\n');
   }
-  process.stdout.write(cadReady ? ' OK\n' : ' WARN (cad test potrebbero fallire)\n');
 
   // ── 1e. Attendi reporting service via healthcheck ────────────────────────
-  process.stdout.write('[e2e] Attendo reporting-service (GET /reports/health)');
-  let reportingReady = false;
-  while (Date.now() - start < timeoutMs) {
-    const res = await requestGateway('/reports/health', 'GET', {});
-    if (res.status === 200) {
-      reportingReady = true;
-      break;
+  if (targets.needsReporting) {
+    process.stdout.write('[e2e] Attendo reporting-service (GET /reports/health)');
+    let reportingReady = false;
+    while (Date.now() - start < timeoutMs) {
+      const res = await requestGateway('/reports/health', 'GET', {});
+      if (res.status === 200) {
+        reportingReady = true;
+        break;
+      }
+      process.stdout.write('.');
+      await sleep(1000);
     }
-    process.stdout.write('.');
-    await sleep(1000);
+    process.stdout.write(reportingReady ? ' OK\n' : ' WARN (reporting test potrebbero fallire)\n');
+  } else {
+    process.stdout.write('[e2e] Skip reporting readiness (non richiesto dai test selezionati)\n');
   }
-  process.stdout.write(reportingReady ? ' OK\n' : ' WARN (reporting test potrebbero fallire)\n');
 
   // ── 2. Seed admin idempotente ─────────────────────────────────────────────
   // Crea/aggiorna devuser (ADMIN) in authdb usando lo script seed del servizio.
@@ -206,25 +281,29 @@ module.exports = async function globalSetup() {
     __dirname, '..', 'backend', 'authenticationService',
   );
 
-  process.stdout.write('[e2e] Seed admin (devuser in authdb)...');
-  try {
-    const npmCmd = resolveNpmCommand();
-    execSync(`${npmCmd} run seed`, {
-      cwd:   authServiceDir,
-      shell: true,
-      env: withNodeInPath({
-        ...process.env,
-        MONGO_URI:   'mongodb://root:changeme@localhost:27017/authdb?authSource=admin',
-        JWT_SECRET:  'kompozer-dev-secret-key-32-chars!!',
-      }),
-      stdio: 'pipe',
-    });
-    process.stdout.write(' OK\n');
-  } catch (err) {
-    process.stdout.write(' WARN\n');
-    const msg = err.stderr ? err.stderr.toString().trim() : String(err.message);
-    process.stderr.write(
-      `[e2e] Seed fallito — i test ADMIN potrebbero fallire.\n  ${msg}\n`,
-    );
+  if (targets.needsAdminSeed) {
+    process.stdout.write('[e2e] Seed admin (devuser in authdb)...');
+    try {
+      const npmCmd = resolveNpmCommand();
+      execSync(`${npmCmd} run seed`, {
+        cwd:   authServiceDir,
+        shell: true,
+        env: withNodeInPath({
+          ...process.env,
+          MONGO_URI:   'mongodb://root:changeme@localhost:27017/authdb?authSource=admin',
+          JWT_SECRET:  'kompozer-dev-secret-key-32-chars!!',
+        }),
+        stdio: 'pipe',
+      });
+      process.stdout.write(' OK\n');
+    } catch (err) {
+      process.stdout.write(' WARN\n');
+      const msg = err.stderr ? err.stderr.toString().trim() : String(err.message);
+      process.stderr.write(
+        `[e2e] Seed fallito — i test ADMIN potrebbero fallire.\n  ${msg}\n`,
+      );
+    }
+  } else {
+    process.stdout.write('[e2e] Skip admin seed (non richiesto dai test selezionati)\n');
   }
 };

@@ -39,6 +39,7 @@ export class SetCategory {
     const updated: Configuration = {
       ...configuration,
       category: input.category,
+      components: [],
       status: 'CATEGORY_SELECTED',
       version: configuration.version + 1,
       updatedAt: new Date(),

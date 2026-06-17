@@ -63,7 +63,6 @@ describe('CAD command use cases', () => {
 
   it('FinalizeConfiguration marks configuration as FINALIZED and pushes BOM to cart', async () => {
     const repo = new FakeConfigurationRepository();
-    const catalog = new FakeCatalogRulesProvider();
     const cart = new FakeCartServiceClient();
     repo.seed(
       buildConfiguration({
@@ -87,10 +86,14 @@ describe('CAD command use cases', () => {
           { columnIndex: 0, levelsMm: [120, 440], shelfThicknessMm: 20 },
           { columnIndex: 1, levelsMm: [300, 640], shelfThicknessMm: 20 },
         ],
+        components: [
+          { sku: 'RIP-800', name: 'Ripiano 800', quantity: 2, unitPriceCents: 3490, componentType: 'RIPIANO' },
+          { sku: 'PIE-120', name: 'Piedino', quantity: 8, unitPriceCents: 490, componentType: 'PIEDINO' },
+        ],
       }),
     );
 
-    const useCase = new FinalizeConfiguration(repo, catalog, cart);
+    const useCase = new FinalizeConfiguration(repo, cart);
     const result = await useCase.execute({ id: 'cfg_test', ownerId: 'usr_1' });
 
     expect(result.status).toBe('FINALIZED');
@@ -340,6 +343,114 @@ describe('CAD command use cases', () => {
         ownerId: 'usr_1',
         columnDesigns: [{ columnIndex: 0, levelsMm: [120], shelfThicknessMm: 20 }],
       }),
-    ).rejects.toMatchObject({ code: 'VALIDATION_ERROR' });
+    ).rejects.toMatchObject({ code: 'VALIDATION_ERROR' });  });
+
+  it('SetEnvironment initializes components to empty array', async () => {
+    const repo = new FakeConfigurationRepository();
+    repo.seed(buildConfiguration());
+
+    const useCase = new SetEnvironment(repo);
+    const result = await useCase.execute({
+      id: 'cfg_test',
+      ownerId: 'usr_1',
+      environment: {
+        maxWidthMm: 5000,
+        maxHeightMm: 3000,
+        minWidthMm: 600,
+        minHeightMm: 220,
+        unit: 'mm',
+      },
+    });
+
+    expect(result.bom).toEqual([]);
+  });
+
+  it('SetCategory initializes components to empty array', async () => {
+    const repo = new FakeConfigurationRepository();
+    repo.seed(
+      buildConfiguration({
+        status: 'ENVIRONMENT_DEFINED',
+        environment: {
+          maxWidthMm: 5000,
+          maxHeightMm: 3000,
+          minWidthMm: 600,
+          minHeightMm: 220,
+          unit: 'mm',
+        },
+      }),
+    );
+
+    const useCase = new SetCategory(repo);
+    const result = await useCase.execute({
+      id: 'cfg_test',
+      ownerId: 'usr_1',
+      category: 'TONDO',
+    });
+
+    expect(result.bom).toEqual([]);
+  });
+
+  it('SetColumnPlan initializes components to empty array', async () => {
+    const repo = new FakeConfigurationRepository();
+    repo.seed(
+      buildConfiguration({
+        status: 'CATEGORY_SELECTED',
+        category: 'TONDO',
+        environment: {
+          maxWidthMm: 5000,
+          maxHeightMm: 3000,
+          minWidthMm: 600,
+          minHeightMm: 220,
+          unit: 'mm',
+        },
+      }),
+    );
+
+    const useCase = new SetColumnPlan(repo, new FakeCatalogRulesProvider());
+    const result = await useCase.execute({
+      id: 'cfg_test',
+      ownerId: 'usr_1',
+      columnPlan: {
+        columnCount: 1,
+        columns: [{ index: 0, shelfWidthMm: 800 }],
+      },
+    });
+
+    expect(result.bom).toEqual([]);
+  });
+
+  it('UpdateDesign derives and persists components when design is complete', async () => {
+    const repo = new FakeConfigurationRepository();
+    repo.seed(
+      buildConfiguration({
+        status: 'COLUMNS_DEFINED',
+        category: 'TONDO',
+        environment: {
+          maxWidthMm: 5000,
+          maxHeightMm: 3000,
+          minWidthMm: 600,
+          minHeightMm: 220,
+          unit: 'mm',
+        },
+        columnPlan: {
+          columnCount: 1,
+          columns: [{ index: 0, shelfWidthMm: 800 }],
+        },
+      }),
+    );
+
+    const useCase = new UpdateDesign(repo, new FakeCatalogRulesProvider());
+    const result = await useCase.execute({
+      id: 'cfg_test',
+      ownerId: 'usr_1',
+      columnDesigns: [{ columnIndex: 0, levelsMm: [120, 440], shelfThicknessMm: 20 }],
+    });
+
+    expect(result.bom!.length).toBeGreaterThan(0);
+    expect(result.status).toBe('DESIGN_IN_PROGRESS');
+    // Verify specific components were derived
+    const skus = result.bom!.map((c) => c.sku);
+    expect(skus).toContain('RIP-800'); // Ripiano
+    expect(skus.some((s) => s.startsWith('MON-'))).toBe(true); // Montante
   });
 });

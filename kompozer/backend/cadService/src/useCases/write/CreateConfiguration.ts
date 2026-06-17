@@ -29,6 +29,7 @@ export class CreateConfiguration {
       environment: null,
       columnPlan: null,
       columnDesigns: [],
+      components: [],
       version: 1,
       createdAt: now,
       updatedAt: now,

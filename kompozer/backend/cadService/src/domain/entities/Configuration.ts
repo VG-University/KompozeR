@@ -1,6 +1,7 @@
 import { Category } from './Category';
 import { ConfigurationStatus } from './ConfigurationStatus';
 import { ValidationError } from './errors';
+import { BomItem } from './Bom';
 
 export type Unit = 'mm';
 
@@ -37,6 +38,7 @@ export interface Configuration {
   environment: Environment | null;
   columnPlan: ColumnPlan | null;
   columnDesigns: ColumnDesign[];
+  components: BomItem[];
   version: number;
   createdAt: Date;
   updatedAt: Date;

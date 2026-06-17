@@ -91,5 +91,6 @@ export function toConfigurationDto(configuration: Configuration): ConfigurationD
     version: configuration.version,
     createdAt: configuration.createdAt,
     updatedAt: configuration.updatedAt,
+    bom: configuration.components,
   };
 }

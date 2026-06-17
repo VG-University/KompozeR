@@ -11,6 +11,7 @@ import {
   toConfigurationDto,
 } from '../types';
 import { CatalogRules, CatalogRulesProvider } from '../../domain/ports/CatalogRulesProvider';
+import { deriveBom } from '../../domain/services/deriveBom';
 
 export class UpdateDesign {
   constructor(
@@ -100,7 +101,18 @@ export class UpdateDesign {
       status: input.columnDesigns.length > 0 ? 'DESIGN_IN_PROGRESS' : 'COLUMNS_DEFINED',
       version: configuration.version + 1,
       updatedAt: new Date(),
+      components: [],
     };
+
+    // Derive BOM if design is complete
+    if (input.columnDesigns.length > 0) {
+      try {
+        updated.components = deriveBom(updated, rules);
+      } catch (err) {
+        // If deriveBom fails (missing catalog rules, etc.), leave components empty
+        // This is a graceful fallback; the configuration is still valid geometrically
+      }
+    }
 
     await this.configurationRepository.update(updated);
     return toConfigurationDto(updated);
