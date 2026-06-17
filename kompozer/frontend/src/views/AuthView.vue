@@ -3,6 +3,7 @@ import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/store/authStore';
 import { ApiError } from '@/types/api';
+import appLogo from '@/assets/images/kompozer-logo.png';
 
 const router = useRouter();
 const auth = useAuthStore();
@@ -11,9 +12,47 @@ type Mode = 'login' | 'register';
 const mode = ref<Mode>('login');
 const error = ref('');
 const loading = ref(false);
+const showRegistrationSuccess = ref(false);
 
 const login = reactive({ username: '', password: '' });
 const register = reactive({ username: '', email: '', password: '' });
+
+function mapLoginError(err: unknown): string {
+  if (!(err instanceof ApiError)) {
+    return 'Errore di accesso';
+  }
+
+  if (err.code === 'RESOURCE_NOT_FOUND') {
+    return 'Utente Non Trovato';
+  }
+
+  if (err.code === 'INVALID_PASSWORD') {
+    return 'Password Errata';
+  }
+
+  return 'Invalid username or password';
+}
+
+function mapRegisterError(err: unknown): string {
+  if (!(err instanceof ApiError)) {
+    return 'Errore di registrazione';
+  }
+
+  if (err.code === 'VALIDATION_ERROR') {
+    const passwordReasons = Array.isArray(err.details)
+      ? err.details
+          .filter((detail): detail is { field?: unknown; reason?: unknown } => typeof detail === 'object' && detail !== null)
+          .filter((detail) => detail.field === 'password' && typeof detail.reason === 'string')
+          .map((detail) => detail.reason)
+      : [];
+
+    if (passwordReasons.length > 0) {
+      return `Password non valida, si richiedono 8 caratteri. ${passwordReasons.join(' ')}`;
+    }
+  }
+
+  return err.message;
+}
 
 async function handleLogin(): Promise<void> {
   error.value = '';
@@ -22,7 +61,7 @@ async function handleLogin(): Promise<void> {
     await auth.login(login.username, login.password);
     await router.push({ name: 'catalog' });
   } catch (e) {
-    error.value = e instanceof ApiError ? e.message : 'Errore di accesso';
+    error.value = mapLoginError(e);
   } finally {
     loading.value = false;
   }
@@ -33,12 +72,23 @@ async function handleRegister(): Promise<void> {
   loading.value = true;
   try {
     await auth.register(register.username, register.email, register.password);
-    await router.push({ name: 'catalog' });
+    auth.logout();
+    login.username = register.username;
+    login.password = '';
+    register.password = '';
+    mode.value = 'login';
+    showRegistrationSuccess.value = true;
   } catch (e) {
-    error.value = e instanceof ApiError ? e.message : 'Errore di registrazione';
+    error.value = mapRegisterError(e);
   } finally {
     loading.value = false;
   }
+}
+
+function handleRegistrationSuccessAcknowledge(): void {
+  showRegistrationSuccess.value = false;
+  error.value = '';
+  mode.value = 'login';
 }
 
 async function handleGuest(): Promise<void> {
@@ -58,7 +108,7 @@ async function handleGuest(): Promise<void> {
 <template>
   <div class="auth-view">
     <div class="auth-card">
-      <h1 class="auth-title">KompozeR</h1>
+      <img :src="appLogo" alt="KompozeR" class="auth-logo" />
       <p class="auth-subtitle">Configura la tua scaffalatura ideale</p>
 
       <div class="auth-tabs">
@@ -106,6 +156,15 @@ async function handleGuest(): Promise<void> {
         Continua come ospite
       </button>
     </div>
+
+    <div v-if="showRegistrationSuccess" class="auth-modal-backdrop" role="presentation">
+      <div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="registration-success-title">
+        <h2 id="registration-success-title" class="auth-modal__title">Registrazione effettuata</h2>
+        <button class="btn btn--primary" type="button" @click="handleRegistrationSuccessAcknowledge">
+          Accedi
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -129,10 +188,10 @@ async function handleGuest(): Promise<void> {
   box-shadow: var(--shadow-md);
 }
 
-.auth-title {
-  font-size: var(--font-size-2xl);
-  text-align: center;
-  margin-bottom: var(--space-1);
+.auth-logo {
+  display: block;
+  width: min(220px, 70%);
+  margin: 0 auto var(--space-3);
 }
 
 .auth-subtitle {
@@ -212,4 +271,30 @@ async function handleGuest(): Promise<void> {
 .btn--primary:hover:not(:disabled) { background: var(--color-accent-hover); }
 .btn--secondary { background: var(--color-surface-raised); color: var(--color-text-primary); border: 1px solid var(--color-border); }
 .btn--secondary:hover:not(:disabled) { background: var(--color-border-subtle); }
+
+.auth-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: rgb(15 23 42 / 0.45);
+}
+
+.auth-modal {
+  width: min(360px, 100%);
+  padding: var(--space-8);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.auth-modal__title {
+  margin: 0 0 var(--space-6);
+  text-align: center;
+  font-size: var(--font-size-xl);
+  color: var(--color-text-primary);
+}
 </style>

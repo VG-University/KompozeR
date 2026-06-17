@@ -17,6 +17,12 @@ services:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
     restart: unless-stopped
 
   mongo-auth:
@@ -29,6 +35,12 @@ services:
       MONGO_INITDB_DATABASE: authdb
     volumes:
       - mongo-auth-data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"db.adminCommand('ping').ok\" mongodb://root:changeme@localhost:27017/admin -u root -p changeme | grep 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
     restart: unless-stopped
 
   mongo-catalog:
@@ -41,6 +53,12 @@ services:
       MONGO_INITDB_DATABASE: catalogdb
     volumes:
       - mongo-catalog-data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"db.adminCommand('ping').ok\" mongodb://root:changeme@localhost:27017/admin -u root -p changeme | grep 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
     restart: unless-stopped
 
   mongo-cart:
@@ -53,6 +71,12 @@ services:
       MONGO_INITDB_DATABASE: cartdb
     volumes:
       - mongo-cart-data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"db.adminCommand('ping').ok\" mongodb://root:changeme@localhost:27017/admin -u root -p changeme | grep 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
     restart: unless-stopped
 
   mongo-cad:
@@ -65,6 +89,12 @@ services:
       MONGO_INITDB_DATABASE: caddb
     volumes:
       - mongo-cad-data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"db.adminCommand('ping').ok\" mongodb://root:changeme@localhost:27017/admin -u root -p changeme | grep 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
     restart: unless-stopped
 
   mongo-notification:
@@ -77,6 +107,12 @@ services:
       MONGO_INITDB_DATABASE: notificationdb
     volumes:
       - mongo-notification-data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"db.adminCommand('ping').ok\" mongodb://root:changeme@localhost:27017/admin -u root -p changeme | grep 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
     restart: unless-stopped
 
   mongo-chat:
@@ -89,6 +125,12 @@ services:
       MONGO_INITDB_DATABASE: chatbotdb
     volumes:
       - mongo-chat-data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"db.adminCommand('ping').ok\" mongodb://root:changeme@localhost:27017/admin -u root -p changeme | grep 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
     restart: unless-stopped
 
   mongo-order:
@@ -101,6 +143,12 @@ services:
       MONGO_INITDB_DATABASE: orderdb
     volumes:
       - mongo-order-data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"db.adminCommand('ping').ok\" mongodb://root:changeme@localhost:27017/admin -u root -p changeme | grep 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
     restart: unless-stopped
 
   # ── Backend ─────────────────────────────────────────────────────────────────
@@ -114,7 +162,8 @@ services:
       JWT_SECRET: "kompozer-dev-secret-key-32-chars!!"
       SESSION_TTL_HOURS: "8"
     depends_on:
-      - mongo-auth
+      mongo-auth:
+        condition: service_healthy
     restart: unless-stopped
 
   catalog-service:
@@ -124,8 +173,10 @@ services:
       MONGO_URI: "mongodb://root:changeme@mongo-catalog:27017/catalogdb?authSource=admin"
       REDIS_URL: "redis://redis:6379"
     depends_on:
-      - mongo-catalog
-      - redis
+      mongo-catalog:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: unless-stopped
 
   cart-service:
@@ -136,8 +187,10 @@ services:
       CATALOG_BASE_URL: "http://catalog-service:3002"
       ORDER_BASE_URL: "http://order-service:3008"
     depends_on:
-      - mongo-cart
-      - order-service
+      mongo-cart:
+        condition: service_healthy
+      order-service:
+        condition: service_started
     restart: unless-stopped
 
   order-service:
@@ -146,7 +199,8 @@ services:
       ORDER_PORT: "3008"
       ORDER_MONGO_URI: "mongodb://root:changeme@mongo-order:27017/orderdb?authSource=admin"
     depends_on:
-      - mongo-order
+      mongo-order:
+        condition: service_healthy
     restart: unless-stopped
 
   cad-service:
@@ -157,9 +211,12 @@ services:
       CATALOG_BASE_URL: "http://catalog-service:3002"
       CART_BASE_URL: "http://cart-service:3004"
     depends_on:
-      - mongo-cad
-      - catalog-service
-      - cart-service
+      mongo-cad:
+        condition: service_healthy
+      catalog-service:
+        condition: service_started
+      cart-service:
+        condition: service_started
     restart: unless-stopped
 
   notification-service:
@@ -171,10 +228,14 @@ services:
       CART_MONGO_URI: "mongodb://root:changeme@mongo-cart:27017/cartdb?authSource=admin"
       CAD_MONGO_URI: "mongodb://root:changeme@mongo-cad:27017/caddb?authSource=admin"
     depends_on:
-      - mongo-notification
-      - mongo-cart
-      - mongo-cad
-      - redis
+      mongo-notification:
+        condition: service_healthy
+      mongo-cart:
+        condition: service_healthy
+      mongo-cad:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: unless-stopped
 
   chatbot-service:
@@ -184,8 +245,10 @@ services:
       CHAT_MONGO_URI: "mongodb://root:changeme@mongo-chat:27017/chatbotdb?authSource=admin"
       CATALOG_BASE_URL: "http://catalog-service:3002"
     depends_on:
-      - mongo-chat
-      - catalog-service
+      mongo-chat:
+        condition: service_healthy
+      catalog-service:
+        condition: service_started
     restart: unless-stopped
 
   reporting-service:
@@ -194,7 +257,8 @@ services:
       REPORTING_PORT: "3007"
       ORDER_MONGO_URI: "mongodb://root:changeme@mongo-order:27017/orderdb?authSource=admin"
     depends_on:
-      - mongo-order
+      mongo-order:
+        condition: service_healthy
     restart: unless-stopped
 
   api-gateway:
@@ -213,14 +277,22 @@ services:
       CHATBOT_SERVICE_URL: "http://chatbot-service:3006"
       REPORTING_SERVICE_URL: "http://reporting-service:3007"
     depends_on:
-      - auth-service
-      - catalog-service
-      - cart-service
-      - order-service
-      - cad-service
-      - notification-service
-      - chatbot-service
-      - reporting-service
+      auth-service:
+        condition: service_started
+      catalog-service:
+        condition: service_started
+      cart-service:
+        condition: service_started
+      order-service:
+        condition: service_started
+      cad-service:
+        condition: service_started
+      notification-service:
+        condition: service_started
+      chatbot-service:
+        condition: service_started
+      reporting-service:
+        condition: service_started
     restart: unless-stopped
 
 volumes:

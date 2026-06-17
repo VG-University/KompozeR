@@ -7,7 +7,7 @@ import { PasswordHasher } from '../domain/ports/PasswordHasher';
 import { TokenSigner } from '../domain/ports/TokenSigner';
 import { Clock } from '../domain/ports/Clock';
 import { IdGenerator } from '../domain/ports/IdGenerator';
-import { InvalidCredentialsError } from '../domain/entities/errors';
+import { InvalidPasswordError, UserNotFoundError } from '../domain/entities/errors';
 import { LoginUserInput, LoginUserOutput } from './types';
 
 export class LoginUser {
@@ -25,10 +25,10 @@ export class LoginUser {
   async execute(input: LoginUserInput): Promise<LoginUserOutput> {
     const user = await this.userRepo.findByUsername(input.username);
 
-    if (!user) throw new InvalidCredentialsError();
+    if (!user) throw new UserNotFoundError();
 
     const passwordValid = await this.hasher.compare(input.password, user.passwordHash);
-    if (!passwordValid) throw new InvalidCredentialsError();
+    if (!passwordValid) throw new InvalidPasswordError();
 
     const now = this.clock.now();
     const sessionId = this.sessionIdGen.generate();

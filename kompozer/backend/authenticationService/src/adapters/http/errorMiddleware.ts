@@ -9,6 +9,7 @@ import {
   DuplicateUsernameError,
   DuplicateEmailError,
   InvalidCredentialsError,
+  InvalidPasswordError,
   SessionNotFoundError,
   UserNotFoundError,
   SessionRevokedError,
@@ -28,7 +29,7 @@ interface ApiError {
 function statusFor(err: AuthError): number {
   if (err instanceof ValidationError) return 422;
   if (err instanceof DuplicateUsernameError || err instanceof DuplicateEmailError) return 409;
-  if (err instanceof InvalidCredentialsError) return 401;
+  if (err instanceof InvalidCredentialsError || err instanceof InvalidPasswordError) return 401;
   if (err instanceof SessionNotFoundError || err instanceof UserNotFoundError) return 404;
   if (err instanceof SessionRevokedError) return 401;
   if (err instanceof ForbiddenError) return 403;

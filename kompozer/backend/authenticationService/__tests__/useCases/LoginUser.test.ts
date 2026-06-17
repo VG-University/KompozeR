@@ -12,7 +12,7 @@ import {
   FakeClock,
   FakeIdGenerator,
 } from '../helpers/fakes';
-import { InvalidCredentialsError } from '../../src/domain/entities/errors';
+import { InvalidPasswordError, UserNotFoundError } from '../../src/domain/entities/errors';
 import { UserRole } from '../../src/domain/entities/UserRole';
 
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000; // 8 hours
@@ -76,7 +76,7 @@ describe('LoginUser', () => {
     expect(result.session.expiresAt).toEqual(expectedExpiry);
   });
 
-  it('throws InvalidCredentialsError when password is wrong', async () => {
+  it('throws InvalidPasswordError when password is wrong', async () => {
     const { register, login } = makeUseCase();
 
     await register.execute({
@@ -87,15 +87,15 @@ describe('LoginUser', () => {
 
     await expect(
       login.execute({ username: 'valerio', password: 'WrongPassword!' }),
-    ).rejects.toThrow(InvalidCredentialsError);
+    ).rejects.toThrow(InvalidPasswordError);
   });
 
-  it('throws InvalidCredentialsError when user does not exist', async () => {
+  it('throws UserNotFoundError when user does not exist', async () => {
     const { login } = makeUseCase();
 
     await expect(
       login.execute({ username: 'ghost', password: 'Password123!' }),
-    ).rejects.toThrow(InvalidCredentialsError);
+    ).rejects.toThrow(UserNotFoundError);
   });
 
   it('persists the session in the repository', async () => {

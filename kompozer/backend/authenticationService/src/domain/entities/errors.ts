@@ -18,6 +18,12 @@ export class InvalidCredentialsError extends AuthError {
   }
 }
 
+export class InvalidPasswordError extends AuthError {
+  constructor() {
+    super('INVALID_PASSWORD', 'Invalid username or password');
+  }
+}
+
 export class DuplicateUsernameError extends AuthError {
   constructor(username: string) {
     super('DUPLICATE_USERNAME', `Username "${username}" is already taken`);
