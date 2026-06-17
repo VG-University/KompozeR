@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { cartService } from '@/services/cartService';
 import { useNotificationStore } from '@/store/notificationStore';
+import { useCartStore } from '@/store/cartStore';
 import type { Cart, CartItem } from '@/types/cart';
 import { ApiError } from '@/types/api';
 
@@ -12,12 +13,14 @@ export function useCart() {
   const error = ref('');
 
   const notifications = useNotificationStore();
+  const cartStore = useCartStore();
 
   async function load(): Promise<void> {
     loading.value = true;
     error.value = '';
     try {
       cart.value = await cartService.get();
+      cartStore.setFromCart(cart.value);
     } catch (e) {
       error.value = e instanceof ApiError ? e.message : 'Errore caricamento carrello';
     } finally {
@@ -37,6 +40,7 @@ export function useCart() {
           quantity: safeQuantity,
         });
       }
+      cartStore.setFromCart(cart.value);
     } catch (e) {
       const msg = e instanceof ApiError ? e.message : 'Errore aggiornamento quantità';
       notifications.addToast('error', msg);
@@ -47,6 +51,7 @@ export function useCart() {
     checkoutLoading.value = true;
     try {
       const result = await cartService.checkout();
+      cartStore.clearCount();
       notifications.addToast('success', `Ordine ${result.orderId} creato con successo`);
       await load();
     } catch (e) {
@@ -61,6 +66,7 @@ export function useCart() {
     clearLoading.value = true;
     try {
       await cartService.clear();
+      cartStore.clearCount();
       notifications.addToast('success', 'Carrello svuotato');
       await load();
     } catch (e) {

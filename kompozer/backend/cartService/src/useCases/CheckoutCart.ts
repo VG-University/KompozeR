@@ -40,6 +40,8 @@ export class CheckoutCart {
       total: cart.total,
     });
 
+    await this.cartRepo.clear(cart.userId);
+
     await this.eventPublisher.publish(
       this.buildEvent({
         type: 'OrderRequestSubmitted',

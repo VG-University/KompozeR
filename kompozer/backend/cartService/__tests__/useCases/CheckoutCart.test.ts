@@ -38,6 +38,11 @@ describe('CheckoutCart', () => {
     expect(orderClient.calls).toHaveLength(1);
     expect(publisher.events.map((event) => event.type)).toContain('OrderRequestSubmitted');
     expect(publisher.events.map((event) => event.type)).toContain('OrderConfirmationRequested');
+
+    const cartAfterCheckout = await repo.findByUserId('usr_1');
+    expect(cartAfterCheckout).not.toBeNull();
+    expect(cartAfterCheckout?.items).toHaveLength(0);
+    expect(cartAfterCheckout?.total).toBe(0);
   });
 
   it('throws CartEmptyError when cart has no items', async () => {

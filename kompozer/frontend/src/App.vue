@@ -3,15 +3,17 @@ import { onMounted } from 'vue';
 import { RouterView } from 'vue-router';
 import { useAuthStore } from '@/store/authStore';
 import { useNotificationStore } from '@/store/notificationStore';
+import { useCartStore } from '@/store/cartStore';
 import AppHeader from '@/components/layout/AppHeader.vue';
 import ToastHost from '@/components/notifications/ToastHost.vue';
 
 const auth = useAuthStore();
 const notifications = useNotificationStore();
+const cart = useCartStore();
 
 onMounted(async () => {
   if (auth.isLoggedIn) {
-    await notifications.refreshUnreadCount();
+    await Promise.all([notifications.refreshUnreadCount(), cart.refreshItemCount()]);
   }
 });
 </script>

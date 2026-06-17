@@ -165,6 +165,11 @@ describe('cartRouter', () => {
     expect(res.status).toBe(200);
     expect(res.body.status).toBe('SUBMITTED');
     expect(res.body.orderId).toBe('ord_1');
+
+    const cartAfterCheckout = await request(app).get('/cart').set('x-user-id', 'usr_1');
+    expect(cartAfterCheckout.status).toBe(200);
+    expect(cartAfterCheckout.body.items).toHaveLength(0);
+    expect(cartAfterCheckout.body.total).toBe(0);
   });
 
   it('POST /cart/checkout -> 409 when item becomes unavailable', async () => {

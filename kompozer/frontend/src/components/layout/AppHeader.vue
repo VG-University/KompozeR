@@ -3,10 +3,12 @@ import { computed } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 import { useAuthStore } from '@/store/authStore';
 import { useNotificationStore } from '@/store/notificationStore';
+import { useCartStore } from '@/store/cartStore';
 import appLogo from '@/assets/images/kompozer-logo.png';
 
 const auth = useAuthStore();
 const notifications = useNotificationStore();
+const cart = useCartStore();
 const router = useRouter();
 
 const navLinks = computed(() => {
@@ -68,6 +70,9 @@ async function logout(): Promise<void> {
           aria-label="Carrello"
         >
           🛒
+          <span v-if="cart.itemCount > 0" class="app-header__badge">
+            {{ cart.itemCount }}
+          </span>
         </RouterLink>
 
         <RouterLink

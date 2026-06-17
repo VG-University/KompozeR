@@ -2,6 +2,7 @@ import { ref } from 'vue';
 import { catalogService } from '@/services/catalogService';
 import { cartService } from '@/services/cartService';
 import { useNotificationStore } from '@/store/notificationStore';
+import { useCartStore } from '@/store/cartStore';
 import type { CatalogItem } from '@/types/catalog';
 import { ApiError } from '@/types/api';
 
@@ -12,6 +13,7 @@ export function useCatalog() {
 
   const search = ref('');
   const category = ref('');
+  const cart = useCartStore();
   const availableOnly = ref(false);
 
   const notifications = useNotificationStore();
@@ -37,11 +39,12 @@ export function useCatalog() {
 
   async function addToCart(item: CatalogItem): Promise<void> {
     try {
-      await cartService.addItem(item.sku, {
+      const updatedCart = await cartService.addItem(item.sku, {
         name: item.name,
         unitPrice: item.price,
         quantity: 1,
       });
+      cart.setFromCart(updatedCart);
       notifications.addToast('success', `Aggiunto al carrello: ${item.name}`);
     } catch (e) {
       const msg = e instanceof ApiError ? e.message : 'Errore aggiunta al carrello';
