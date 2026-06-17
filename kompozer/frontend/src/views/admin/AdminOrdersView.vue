@@ -12,6 +12,7 @@ const loading = ref(false);
 const error = ref('');
 const updatingOrderId = ref('');
 const statusFilter = ref<OrderStatus | ''>('');
+const orderToConfirmDone = ref<Order | null>(null);
 
 const filteredItems = computed(() => {
   if (!statusFilter.value) {
@@ -64,12 +65,46 @@ async function markDone(order: Order): Promise<void> {
     const updated = await orderService.markDone(order.id);
     items.value = items.value.map((current) => (current.id === updated.id ? updated : current));
     notifications.addToast('success', `Ordine ${order.id} marcato come DONE`);
+    orderToConfirmDone.value = null;
   } catch (e) {
     const msg = e instanceof ApiError ? e.message : 'Errore aggiornamento stato ordine';
     notifications.addToast('error', msg);
   } finally {
     updatingOrderId.value = '';
   }
+}
+
+async function markCancelled(order: Order): Promise<void> {
+  updatingOrderId.value = order.id;
+  try {
+    const updated = await orderService.markCancelled(order.id);
+    items.value = items.value.map((current) => (current.id === updated.id ? updated : current));
+    notifications.addToast('success', `Ordine ${order.id} marcato come CANCELLED`);
+  } catch (e) {
+    const msg = e instanceof ApiError ? e.message : 'Errore aggiornamento stato ordine';
+    notifications.addToast('error', msg);
+  } finally {
+    updatingOrderId.value = '';
+  }
+}
+
+function setStatusFilter(status: OrderStatus | ''): void {
+  statusFilter.value = status;
+}
+
+function openDoneConfirmation(order: Order): void {
+  orderToConfirmDone.value = order;
+}
+
+function closeDoneConfirmation(): void {
+  orderToConfirmDone.value = null;
+}
+
+function confirmMarkDone(): void {
+  if (!orderToConfirmDone.value) {
+    return;
+  }
+  void markDone(orderToConfirmDone.value);
 }
 </script>
 
@@ -84,34 +119,50 @@ async function markDone(order: Order): Promise<void> {
     </header>
 
     <section class="metrics">
-      <article class="metric-card">
+      <article
+        :class="['metric-card', { 'metric-card--active': statusFilter === '' }]"
+        role="button"
+        tabindex="0"
+        @click="setStatusFilter('')"
+        @keydown.enter.prevent="setStatusFilter('')"
+        @keydown.space.prevent="setStatusFilter('')"
+      >
         <span class="metric-label">Totali</span>
         <strong class="metric-value">{{ items.length }}</strong>
       </article>
-      <article class="metric-card">
+      <article
+        :class="['metric-card', { 'metric-card--active': statusFilter === 'SUBMITTED' }]"
+        role="button"
+        tabindex="0"
+        @click="setStatusFilter('SUBMITTED')"
+        @keydown.enter.prevent="setStatusFilter('SUBMITTED')"
+        @keydown.space.prevent="setStatusFilter('SUBMITTED')"
+      >
         <span class="metric-label">SUBMITTED</span>
         <strong class="metric-value">{{ submittedCount }}</strong>
       </article>
-      <article class="metric-card">
+      <article
+        :class="['metric-card', { 'metric-card--active': statusFilter === 'DONE' }]"
+        role="button"
+        tabindex="0"
+        @click="setStatusFilter('DONE')"
+        @keydown.enter.prevent="setStatusFilter('DONE')"
+        @keydown.space.prevent="setStatusFilter('DONE')"
+      >
         <span class="metric-label">DONE</span>
         <strong class="metric-value">{{ doneCount }}</strong>
       </article>
-      <article class="metric-card">
+      <article
+        :class="['metric-card', { 'metric-card--active': statusFilter === 'CANCELLED' }]"
+        role="button"
+        tabindex="0"
+        @click="setStatusFilter('CANCELLED')"
+        @keydown.enter.prevent="setStatusFilter('CANCELLED')"
+        @keydown.space.prevent="setStatusFilter('CANCELLED')"
+      >
         <span class="metric-label">CANCELLED</span>
         <strong class="metric-value">{{ cancelledCount }}</strong>
       </article>
-    </section>
-
-    <section class="toolbar">
-      <label class="field">
-        <span class="field__label">Filtra stato</span>
-        <select v-model="statusFilter" class="field__input">
-          <option value="">Tutti</option>
-          <option value="SUBMITTED">SUBMITTED</option>
-          <option value="DONE">DONE</option>
-          <option value="CANCELLED">CANCELLED</option>
-        </select>
-      </label>
     </section>
 
     <p v-if="error" class="error">{{ error }}</p>
@@ -160,13 +211,33 @@ async function markDone(order: Order): Promise<void> {
           <button
             class="btn btn--primary"
             :disabled="order.status !== 'SUBMITTED' || updatingOrderId === order.id"
-            @click="markDone(order)"
+            @click="openDoneConfirmation(order)"
           >
             {{ updatingOrderId === order.id ? 'Aggiornamento...' : 'Segna come DONE' }}
+          </button>
+          <button
+            class="btn btn--danger"
+            :disabled="order.status !== 'SUBMITTED' || updatingOrderId === order.id"
+            @click="markCancelled(order)"
+          >
+            {{ updatingOrderId === order.id ? 'Aggiornamento...' : 'Segna come CANCELLED' }}
           </button>
         </div>
       </article>
     </section>
+
+    <div v-if="orderToConfirmDone" class="modal-backdrop" role="presentation">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="done-confirm-title">
+        <h2 id="done-confirm-title" class="modal__title">Conferma aggiornamento</h2>
+        <p class="modal__text">Vuoi segnare l'ordine {{ orderToConfirmDone.id }} come DONE?</p>
+        <div class="modal__actions">
+          <button class="btn btn--light" type="button" @click="closeDoneConfirmation">Annulla</button>
+          <button class="btn btn--primary" type="button" :disabled="updatingOrderId === orderToConfirmDone.id" @click="confirmMarkDone">
+            Conferma
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -204,6 +275,18 @@ async function markDone(order: Order): Promise<void> {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.metric-card:hover,
+.metric-card:focus-visible {
+  border-color: var(--color-admin-accent);
+}
+
+.metric-card--active {
+  border-color: var(--color-admin-accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-admin-accent) 30%, transparent);
 }
 
 .metric-label {
@@ -213,29 +296,6 @@ async function markDone(order: Order): Promise<void> {
 
 .metric-value {
   font-size: var(--font-size-xl);
-}
-
-.toolbar {
-  margin-top: var(--space-4);
-}
-
-.field {
-  display: inline-flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.field__label {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-}
-
-.field__input {
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  border-radius: var(--radius-md);
-  padding: var(--space-2) var(--space-3);
-  min-width: 220px;
 }
 
 .error {
@@ -333,6 +393,9 @@ async function markDone(order: Order): Promise<void> {
 
 .order__actions {
   margin-top: var(--space-4);
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
 }
 
 .btn {
@@ -356,6 +419,48 @@ async function markDone(order: Order): Promise<void> {
   background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   color: var(--color-text-primary);
+}
+
+.btn--danger {
+  background: var(--color-error-subtle);
+  color: var(--color-error);
+  border: 1px solid #f0cccc;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: rgb(15 23 42 / 0.45);
+  z-index: 120;
+}
+
+.modal {
+  width: min(420px, 100%);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-md);
+}
+
+.modal__title {
+  margin: 0;
+  font-size: var(--font-size-xl);
+}
+
+.modal__text {
+  margin: var(--space-3) 0 var(--space-5);
+  color: var(--color-text-secondary);
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
 }
 
 @media (max-width: 1000px) {

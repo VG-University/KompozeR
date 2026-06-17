@@ -17,4 +17,8 @@ export const orderService = {
   markDone(id: string): Promise<Order> {
     return http.patch<Order>(`/orders/${id}/status`, { status: 'DONE' });
   },
+
+  markCancelled(id: string): Promise<Order> {
+    return http.patch<Order>(`/orders/${id}/status`, { status: 'CANCELLED' });
+  },
 };
