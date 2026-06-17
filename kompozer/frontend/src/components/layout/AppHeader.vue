@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 import { useAuthStore } from '@/store/authStore';
 import { useNotificationStore } from '@/store/notificationStore';
+import appLogo from '@/assets/images/kompozer-logo.png';
 
 const auth = useAuthStore();
 const notifications = useNotificationStore();
@@ -13,7 +14,6 @@ const navLinks = computed(() => {
     return [
       { name: 'catalog', label: 'Catalogo' },
       { name: 'cad', label: 'Configuratore' },
-      { name: 'cart', label: 'Carrello' },
       { name: 'admin-orders', label: 'Ordini' },
       { name: 'admin-reports', label: 'Report' },
     ];
@@ -22,7 +22,6 @@ const navLinks = computed(() => {
   if (auth.isGuest) {
     return [
       { name: 'cad', label: 'Configuratore' },
-      { name: 'cart', label: 'Carrello' },
       { name: 'chatbot', label: 'Chatbot' },
     ];
   }
@@ -30,7 +29,6 @@ const navLinks = computed(() => {
   return [
     { name: 'configurations', label: 'Configurazioni' },
     { name: 'cad', label: 'Configuratore' },
-    { name: 'cart', label: 'Carrello' },
     { name: 'chatbot', label: 'Chatbot' },
   ];
 });
@@ -47,7 +45,7 @@ async function logout(): Promise<void> {
   <header class="app-header">
     <div class="app-header__inner">
       <RouterLink :to="homeRoute" class="app-header__logo">
-        KompozeR
+        <img :src="appLogo" alt="KompozeR" class="app-header__logo-image" />
       </RouterLink>
 
       <nav class="app-header__nav">
@@ -64,9 +62,17 @@ async function logout(): Promise<void> {
 
       <div class="app-header__actions">
         <RouterLink
+          :to="{ name: 'cart' }"
+          class="app-header__icon-link"
+          aria-label="Carrello"
+        >
+          🛒
+        </RouterLink>
+
+        <RouterLink
           v-if="auth.isLoggedIn"
           :to="{ name: 'notifications' }"
-          class="app-header__bell"
+          class="app-header__icon-link app-header__bell"
           aria-label="Notifiche"
         >
           🔔
@@ -108,10 +114,15 @@ async function logout(): Promise<void> {
 }
 
 .app-header__logo {
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-lg);
-  color: var(--color-text-primary);
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.app-header__logo-image {
+  height: 34px;
+  width: auto;
+  display: block;
 }
 
 .app-header__nav {
@@ -141,10 +152,18 @@ async function logout(): Promise<void> {
   gap: var(--space-4);
 }
 
-.app-header__bell {
+.app-header__icon-link {
   position: relative;
   font-size: var(--font-size-lg);
   text-decoration: none;
+  color: var(--color-text-secondary);
+  line-height: 1;
+}
+
+.app-header__icon-link:hover,
+.app-header__icon-link.router-link-active,
+.app-header__icon-link.router-link-exact-active {
+  color: var(--color-accent);
 }
 
 .app-header__badge {
