@@ -79,18 +79,7 @@ async function load(): Promise<void> {
   }
 }
 
-async function applyPreset(days: 7 | 30): Promise<void> {
-  const end = new Date();
-  end.setUTCHours(0, 0, 0, 0);
-  const start = new Date(end);
-  start.setUTCDate(start.getUTCDate() - (days - 1));
-
-  from.value = start.toISOString().slice(0, 10);
-  to.value = end.toISOString().slice(0, 10);
-  await load();
-}
-
-async function resetRange(): Promise<void> {
+async function setAllTime(): Promise<void> {
   from.value = '';
   to.value = '';
   await load();
@@ -102,7 +91,6 @@ async function resetRange(): Promise<void> {
     <header class="header">
       <div>
         <h1>Report ordini</h1>
-        <p class="subtitle">Trend giornaliero ordini e fatturato per analisi operativa</p>
       </div>
       <button class="btn btn--light" :disabled="loading" @click="load">Aggiorna</button>
     </header>
@@ -117,9 +105,7 @@ async function resetRange(): Promise<void> {
         <input v-model="to" class="field__input" type="date" />
       </label>
       <button class="btn btn--primary" :disabled="loading" @click="load">Applica range</button>
-      <button class="btn btn--light" :disabled="loading" @click="applyPreset(7)">Ultimi 7 giorni</button>
-      <button class="btn btn--light" :disabled="loading" @click="applyPreset(30)">Ultimi 30 giorni</button>
-      <button class="btn btn--light" :disabled="loading" @click="resetRange">Reset</button>
+      <button class="btn btn--light" :disabled="loading" @click="setAllTime">Di Sempre</button>
     </section>
 
     <p v-if="error" class="error">{{ error }}</p>
@@ -139,12 +125,6 @@ async function resetRange(): Promise<void> {
         <article class="kpi-card">
           <span class="kpi-label">Fatturato totale</span>
           <strong class="kpi-value">{{ formatCurrency(trend.totals.totalRevenue) }}</strong>
-        </article>
-        <article class="kpi-card">
-          <span class="kpi-label">Distribuzione stati</span>
-          <strong class="kpi-value">
-            S {{ trend.totals.submitted }} · D {{ trend.totals.done }} · C {{ trend.totals.cancelled }}
-          </strong>
         </article>
       </section>
 
@@ -223,15 +203,10 @@ async function resetRange(): Promise<void> {
   gap: var(--space-4);
 }
 
-.subtitle {
-  margin-top: var(--space-1);
-  color: var(--color-text-muted);
-}
-
 .filters {
   margin-top: var(--space-5);
   display: grid;
-  grid-template-columns: 180px 180px auto auto auto auto;
+  grid-template-columns: 180px 180px auto auto;
   gap: var(--space-3);
   align-items: end;
 }
@@ -271,7 +246,7 @@ async function resetRange(): Promise<void> {
 .kpis {
   margin-top: var(--space-5);
   display: grid;
-  grid-template-columns: repeat(4, minmax(170px, 1fr));
+  grid-template-columns: repeat(3, minmax(170px, 1fr));
   gap: var(--space-3);
 }
 
