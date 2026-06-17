@@ -5,7 +5,7 @@
       "name": "Piede tondo 50mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
-      "Type": "PIEDE",
+      "Type": "PIEDINO",
       "price": 3,
       "isAvailable": true,
       "imageUrl": "",
@@ -23,7 +23,7 @@
       "name": "Piede tondo 80mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
-      "Type": "PIEDE",
+      "Type": "PIEDINO",
       "price": 3,
       "isAvailable": true,
       "imageUrl": "",
@@ -41,7 +41,7 @@
       "name": "Piede tondo 140mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
-      "Type": "PIEDE",
+      "Type": "PIEDINO",
       "price": 3,
       "isAvailable": true,
       "imageUrl": "",
@@ -59,13 +59,13 @@
       "name": "Piede tondo 180mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
-      "Type": "PIEDE",
+      "Type": "PIEDINO",
       "price": 3,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
         "widthMm": 0,
-        "heightMm": 80,
+        "heightMm": 180,
         "depthMm": 0
       },
       "compatibleWith": [
@@ -77,7 +77,7 @@
       "name": "Piede tondo 240mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
-      "Type": "PIEDE",
+      "Type": "PIEDINO",
       "price": 3,
       "isAvailable": true,
       "imageUrl": "",
@@ -95,7 +95,7 @@
       "name": "Piede tondo 300mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
-      "Type": "PIEDE",
+      "Type": "PIEDINO",
       "price": 3,
       "isAvailable": true,
       "imageUrl": "",
@@ -113,7 +113,7 @@
       "name": "Piede tondo 380mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
-      "Type": "PIEDE",
+      "Type": "PIEDINO",
       "price": 3,
       "isAvailable": true,
       "imageUrl": "",
@@ -131,7 +131,7 @@
       "name": "Piede tondo 500mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
-      "Type": "PIEDE",
+      "Type": "PIEDINO",
       "price": 3,
       "isAvailable": true,
       "imageUrl": "",
@@ -343,7 +343,7 @@
       ]
     },
     {
-      "sku": "TONDO-SKU-RIPIANO-00x200",
+      "sku": "TONDO-SKU-RIPIANO-500x200",
       "name": "Ripiano tondo 500x200mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
@@ -515,7 +515,7 @@
       "imageUrl": "",
       "dimensions": {
         "widthMm": 0,
-        "heightMm": 80,
+        "heightMm": 180,
         "depthMm": 0
       },
       "compatibleWith": [
@@ -523,8 +523,8 @@
       ]
     },
     {
-      "sku": "TONDO-SKU-TERMINALE-140",
-      "name": "Terminale tondo 140mm",
+      "sku": "TONDO-SKU-TERMINALE-240",
+      "name": "Terminale tondo 240mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "TERMINALE",
@@ -596,3 +596,4 @@
     }
   ]
 }
+

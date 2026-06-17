@@ -32,6 +32,8 @@ type SeedFile = {
 const MONGO_URI = process.env['CATALOG_MONGO_URI'] ?? process.env['MONGO_URI'] ?? 'mongodb://localhost:27017/kompozer-catalog';
 const SEED_PATH = path.resolve(__dirname, '..', 'CATALOG-SEED.json');
 const CATEGORY_TOKENS = Object.values(ComponentCategory) as string[];
+const CONNECT_RETRIES = Number(process.env['SEED_CONNECT_RETRIES'] ?? 20);
+const CONNECT_RETRY_DELAY_MS = Number(process.env['SEED_CONNECT_RETRY_DELAY_MS'] ?? 2000);
 
 function assertNumber(value: unknown, field: string, sku: string): number {
   if (typeof value !== 'number' || Number.isNaN(value) || !Number.isFinite(value)) {
@@ -144,7 +146,7 @@ function expandCompatibleWith(
 
 async function seed(): Promise<void> {
   console.log(`[seed] Connessione a MongoDB: ${MONGO_URI}`);
-  await mongoose.connect(MONGO_URI);
+  await connectWithRetry();
 
   const items = readSeedFile().map((it) => validateComponent(it));
   const seen = new Set<string>();
@@ -204,6 +206,33 @@ async function seed(): Promise<void> {
 
   await mongoose.disconnect();
   console.log(`[seed] completato. creati=${created}, aggiornati=${updated}, totali=${items.length}`);
+}
+
+async function connectWithRetry(): Promise<void> {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= CONNECT_RETRIES; attempt += 1) {
+    try {
+      await mongoose.connect(MONGO_URI);
+      if (attempt > 1) {
+        console.log(`[seed] MongoDB disponibile al tentativo ${attempt}/${CONNECT_RETRIES}`);
+      }
+      return;
+    } catch (err) {
+      lastError = err;
+      const isLast = attempt === CONNECT_RETRIES;
+      if (isLast) {
+        break;
+      }
+
+      console.warn(
+        `[seed] MongoDB non pronto (tentativo ${attempt}/${CONNECT_RETRIES}), retry in ${CONNECT_RETRY_DELAY_MS}ms...`,
+      );
+      await new Promise((resolve) => setTimeout(resolve, CONNECT_RETRY_DELAY_MS));
+    }
+  }
+
+  throw new Error(`[seed] impossibile connettersi a MongoDB dopo ${CONNECT_RETRIES} tentativi: ${String(lastError)}`);
 }
 
 seed().catch(async (err: unknown) => {
