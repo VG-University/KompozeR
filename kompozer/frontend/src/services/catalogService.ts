@@ -9,6 +9,29 @@ export interface CatalogListParams {
   limit?: number;
 }
 
+export interface CreateCatalogComponentInput {
+  sku: string;
+  name: string;
+  description: string;
+  category: string;
+  Type: string;
+  price: number;
+  isAvailable: boolean;
+  imageUrl: string;
+  dimensions: {
+    widthMm: number;
+    heightMm: number;
+    depthMm: number;
+  };
+  compatibleWith: string[];
+}
+
+export interface UpdateCatalogComponentInput {
+  expectedVersion: number;
+  price?: number;
+  isAvailable?: boolean;
+}
+
 export const catalogService = {
   list(params: CatalogListParams = {}): Promise<CatalogListDto> {
     const query = new URLSearchParams();
@@ -23,5 +46,17 @@ export const catalogService = {
 
   get(id: string): Promise<CatalogItem> {
     return http.get<CatalogItem>(`/catalog/${id}`);
+  },
+
+  create(input: CreateCatalogComponentInput): Promise<CatalogItem> {
+    return http.post<CatalogItem>('/catalog', input);
+  },
+
+  update(id: string, input: UpdateCatalogComponentInput): Promise<CatalogItem> {
+    return http.put<CatalogItem>(`/catalog/${id}`, input);
+  },
+
+  remove(id: string): Promise<void> {
+    return http.delete<void>(`/catalog/${id}`);
   },
 };

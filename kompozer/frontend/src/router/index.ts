@@ -84,6 +84,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAdmin: true },
   },
   {
+    path: '/admin/catalog',
+    name: 'admin-catalog',
+    component: () => import('@/views/admin/AdminCatalogView.vue'),
+    meta: { requiresAdmin: true },
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/',
   },

@@ -13,6 +13,7 @@ const navLinks = computed(() => {
   if (auth.isAdmin) {
     return [
       { name: 'catalog', label: 'Catalogo' },
+      { name: 'admin-catalog', label: 'Catalogo Admin' },
       { name: 'cad', label: 'Configuratore' },
       { name: 'admin-orders', label: 'Ordini' },
       { name: 'admin-reports', label: 'Report' },
