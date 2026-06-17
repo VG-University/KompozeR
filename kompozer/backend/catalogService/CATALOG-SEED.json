@@ -35,6 +35,78 @@
       "compatibleWith": [
         "TONDO"
       ]
+    },
+    {
+      "sku": "TONDO-SKU-MONTANTE-10",
+      "name": "Montante tondo 10mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "MONTANTE",
+      "price": 0,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 0,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-MONTANTE-20",
+      "name": "Montante tondo 20mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "MONTANTE",
+      "price": 0,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 0,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-RIPIANO-30",
+      "name": "Ripiano tondo 30mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "RIPIANO",
+      "price": 0,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 0,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-TERMINALE-05",
+      "name": "Terminale tondo 5mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "TERMINALE",
+      "price": 0,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 0,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
     }
   ]
 }
