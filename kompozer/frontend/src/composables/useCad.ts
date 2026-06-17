@@ -1,7 +1,14 @@
 import { computed, ref } from 'vue';
 import { cadService, type ConfigurationStatus as ServiceConfigurationStatus } from '@/services/cadService';
 import { useNotificationStore } from '@/store/notificationStore';
-import type { Category, ColumnDesign, ColumnPlan, ConfigurationDto, Environment } from '@/types/cad';
+import type {
+  Category,
+  ColumnDesign,
+  ColumnPlan,
+  ConfigurationDto,
+  Environment,
+  NextOptionsDto,
+} from '@/types/cad';
 import { ApiError } from '@/types/api';
 
 export function useCad() {
@@ -18,6 +25,7 @@ export function useCad() {
   const environmentLoading = ref(false);
   const columnPlanLoading = ref(false);
   const designLoading = ref(false);
+  const nextOptionsLoading = ref(false);
 
   const error = ref('');
 
@@ -26,6 +34,7 @@ export function useCad() {
   const total = ref(0);
   const totalPages = ref(1);
   const statusFilter = ref<ServiceConfigurationStatus | ''>('');
+  const nextOptionsByColumn = ref<Record<number, NextOptionsDto['options']>>({});
 
   const createName = ref('Nuova configurazione');
   const createCategory = ref<Category | ''>('');
@@ -157,6 +166,83 @@ export function useCad() {
     }
   }
 
+  async function fetchNextOptions(columnIndex: number): Promise<NextOptionsDto['options']> {
+    if (!selected.value) {
+      return [];
+    }
+
+    nextOptionsLoading.value = true;
+    try {
+      const result = await cadService.nextOptions(selected.value.id, columnIndex);
+      nextOptionsByColumn.value = {
+        ...nextOptionsByColumn.value,
+        [columnIndex]: result.options,
+      };
+      return result.options;
+    } catch (e) {
+      const msg = e instanceof ApiError ? e.message : 'Errore recupero opzioni disponibili';
+      notifications.addToast('error', msg);
+      return [];
+    } finally {
+      nextOptionsLoading.value = false;
+    }
+  }
+
+  function createDesignDraft(defaultShelfThicknessMm = 20): ColumnDesign[] {
+    if (!selected.value?.columnPlan) {
+      return [];
+    }
+
+    const existingByColumn = new Map(
+      selected.value.columnDesigns.map((design) => [design.columnIndex, design] as const),
+    );
+
+    return selected.value.columnPlan.columns
+      .slice()
+      .sort((a, b) => a.index - b.index)
+      .map(({ index }) => {
+        const existing = existingByColumn.get(index);
+        return {
+          columnIndex: index,
+          levelsMm: existing ? [...existing.levelsMm].sort((a, b) => a - b) : [],
+          shelfThicknessMm: existing?.shelfThicknessMm ?? defaultShelfThicknessMm,
+        };
+      });
+  }
+
+  async function addTopShelf(columnIndex: number, gapHeightMm: number, shelfThicknessMm = 20): Promise<void> {
+    if (!selected.value) {
+      return;
+    }
+
+    const draft = createDesignDraft(shelfThicknessMm);
+    const target = draft.find((design) => design.columnIndex === columnIndex);
+    if (!target) {
+      notifications.addToast('error', `Colonna ${columnIndex + 1} non trovata`);
+      return;
+    }
+
+    const lastLevel = target.levelsMm.length > 0 ? target.levelsMm[target.levelsMm.length - 1] : 0;
+    target.levelsMm = [...target.levelsMm, lastLevel + gapHeightMm].sort((a, b) => a - b);
+
+    await updateDesign(draft);
+  }
+
+  async function removeTopShelf(columnIndex: number, shelfThicknessMm = 20): Promise<void> {
+    if (!selected.value) {
+      return;
+    }
+
+    const draft = createDesignDraft(shelfThicknessMm);
+    const target = draft.find((design) => design.columnIndex === columnIndex);
+    if (!target || target.levelsMm.length === 0) {
+      return;
+    }
+
+    target.levelsMm = target.levelsMm.slice(0, -1);
+    await updateDesign(draft);
+  }
+
   async function finalizeSelected(): Promise<void> {
     if (!selected.value) {
       return;
@@ -207,6 +293,7 @@ export function useCad() {
     environmentLoading,
     columnPlanLoading,
     designLoading,
+    nextOptionsLoading,
     error,
     page,
     total,
@@ -214,6 +301,7 @@ export function useCad() {
     statusFilter,
     createName,
     createCategory,
+    nextOptionsByColumn,
     canPrev,
     canNext,
     loadList,
@@ -223,6 +311,9 @@ export function useCad() {
     updateEnvironment,
     updateColumnPlan,
     updateDesign,
+    fetchNextOptions,
+    addTopShelf,
+    removeTopShelf,
     finalizeSelected,
     setStatusFilter,
     nextPage,
