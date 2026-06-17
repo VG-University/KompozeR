@@ -13,6 +13,7 @@ const error = ref('');
 const updatingOrderId = ref('');
 const statusFilter = ref<OrderStatus | ''>('');
 const orderToConfirmDone = ref<Order | null>(null);
+const blockedActionMessage = ref('');
 
 const filteredItems = computed(() => {
   if (!statusFilter.value) {
@@ -105,6 +106,26 @@ function confirmMarkDone(): void {
     return;
   }
   void markDone(orderToConfirmDone.value);
+}
+
+function closeBlockedActionModal(): void {
+  blockedActionMessage.value = '';
+}
+
+function requestMarkDone(order: Order): void {
+  if (order.status !== 'SUBMITTED') {
+    blockedActionMessage.value = `Operazione non consentita: l'ordine ${order.id} e' in stato ${order.status}.`;
+    return;
+  }
+  openDoneConfirmation(order);
+}
+
+function requestMarkCancelled(order: Order): void {
+  if (order.status !== 'SUBMITTED') {
+    blockedActionMessage.value = `Operazione non consentita: l'ordine ${order.id} e' in stato ${order.status}.`;
+    return;
+  }
+  void markCancelled(order);
 }
 </script>
 
@@ -210,15 +231,15 @@ function confirmMarkDone(): void {
         <div class="order__actions">
           <button
             class="btn btn--primary"
-            :disabled="order.status !== 'SUBMITTED' || updatingOrderId === order.id"
-            @click="openDoneConfirmation(order)"
+            :disabled="updatingOrderId === order.id"
+            @click="requestMarkDone(order)"
           >
             {{ updatingOrderId === order.id ? 'Aggiornamento...' : 'Segna come DONE' }}
           </button>
           <button
             class="btn btn--danger"
-            :disabled="order.status !== 'SUBMITTED' || updatingOrderId === order.id"
-            @click="markCancelled(order)"
+            :disabled="updatingOrderId === order.id"
+            @click="requestMarkCancelled(order)"
           >
             {{ updatingOrderId === order.id ? 'Aggiornamento...' : 'Segna come CANCELLED' }}
           </button>
@@ -235,6 +256,16 @@ function confirmMarkDone(): void {
           <button class="btn btn--primary" type="button" :disabled="updatingOrderId === orderToConfirmDone.id" @click="confirmMarkDone">
             Conferma
           </button>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="blockedActionMessage" class="modal-backdrop" role="presentation">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="blocked-action-title">
+        <h2 id="blocked-action-title" class="modal__title">Operazione non disponibile</h2>
+        <p class="modal__text">{{ blockedActionMessage }}</p>
+        <div class="modal__actions">
+          <button class="btn btn--primary" type="button" @click="closeBlockedActionModal">Chiudi</button>
         </div>
       </div>
     </div>
