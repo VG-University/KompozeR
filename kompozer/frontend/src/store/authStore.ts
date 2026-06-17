@@ -29,7 +29,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoggedIn = computed(() => !!token.value);
   const isAdmin = computed(() => user.value?.role === 'ADMIN');
   const isBaseUser = computed(() => isLoggedIn.value && !isGuest.value && !isAdmin.value);
-  const homeRouteName = computed(() => (isAdmin.value ? 'catalog' : 'cad'));
+  const homeRouteName = computed(() => (isAdmin.value ? 'admin-orders' : 'cad'));
 
   function persistToken(t: string): void {
     token.value = t;
