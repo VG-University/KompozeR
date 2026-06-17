@@ -1,4 +1,3 @@
-##Tondo catalog
 {
   "components": [
     {
@@ -15,7 +14,9 @@
         "heightMm": 0,
         "depthMm": 0
       },
-      "compatibleWith": []
+      "compatibleWith": [
+        "TONDO"
+      ]
     },
     {
       "sku": "TONDO-SKU-PIEDINO-10",
@@ -32,7 +33,7 @@
         "depthMm": 0
       },
       "compatibleWith": [
-        "TONDO-SKU-PIEDINO-05"
+        "TONDO"
       ]
     }
   ]

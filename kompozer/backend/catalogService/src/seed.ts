@@ -31,6 +31,7 @@ type SeedFile = {
 
 const MONGO_URI = process.env['CATALOG_MONGO_URI'] ?? process.env['MONGO_URI'] ?? 'mongodb://localhost:27017/kompozer-catalog';
 const SEED_PATH = path.resolve(__dirname, '..', 'CATALOG-SEED.json');
+const CATEGORY_TOKENS = Object.values(ComponentCategory) as string[];
 
 function assertNumber(value: unknown, field: string, sku: string): number {
   if (typeof value !== 'number' || Number.isNaN(value) || !Number.isFinite(value)) {
@@ -102,22 +103,63 @@ function readSeedFile(): SeedComponent[] {
   return parsed.components;
 }
 
+function expandCompatibleWith(
+  component: SeedComponent,
+  allSeedComponents: SeedComponent[],
+  allSkus: Set<string>,
+): string[] {
+  const skusByCategory = new Map<ComponentCategory, string[]>();
+
+  for (const seedComp of allSeedComponents) {
+    const current = skusByCategory.get(seedComp.category) ?? [];
+    current.push(seedComp.sku);
+    skusByCategory.set(seedComp.category, current);
+  }
+
+  const expanded = new Set<string>();
+  for (const token of component.compatibleWith ?? []) {
+    if (CATEGORY_TOKENS.includes(token)) {
+      const category = token as ComponentCategory;
+      const skus = skusByCategory.get(category) ?? [];
+      for (const sku of skus) {
+        if (sku !== component.sku) {
+          expanded.add(sku);
+        }
+      }
+      continue;
+    }
+
+    if (!allSkus.has(token)) {
+      throw new Error(
+        `[seed] ${component.sku}: token compatibleWith "${token}" non riconosciuto. Usa SKU esistente o category valida (${CATEGORY_TOKENS.join(', ')})`,
+      );
+    }
+    if (token !== component.sku) {
+      expanded.add(token);
+    }
+  }
+
+  return Array.from(expanded);
+}
+
 async function seed(): Promise<void> {
   console.log(`[seed] Connessione a MongoDB: ${MONGO_URI}`);
   await mongoose.connect(MONGO_URI);
 
-  const items = readSeedFile();
+  const items = readSeedFile().map((it) => validateComponent(it));
   const seen = new Set<string>();
   let created = 0;
   let updated = 0;
 
-  for (const rawItem of items) {
-    const item = validateComponent(rawItem);
-
+  for (const item of items) {
     if (seen.has(item.sku)) {
       throw new Error(`[seed] SKU duplicato nel file seed: ${item.sku}`);
     }
     seen.add(item.sku);
+  }
+
+  for (const item of items) {
+    const compatibleWith = expandCompatibleWith(item, items, seen);
 
     const now = new Date();
     const existing = await ComponentModel.findOne({ sku: item.sku }).lean();
@@ -132,7 +174,7 @@ async function seed(): Promise<void> {
         isAvailable: item.isAvailable,
         imageUrl: item.imageUrl,
         dimensions: item.dimensions,
-        compatibleWith: item.compatibleWith,
+        compatibleWith,
         updatedAt: now,
       });
       updated += 1;
@@ -151,7 +193,7 @@ async function seed(): Promise<void> {
       isAvailable: item.isAvailable,
       imageUrl: item.imageUrl,
       dimensions: item.dimensions,
-      compatibleWith: item.compatibleWith,
+      compatibleWith,
       version: 1,
       createdAt: now,
       updatedAt: now,
