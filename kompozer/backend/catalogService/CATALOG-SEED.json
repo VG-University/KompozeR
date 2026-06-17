@@ -1,17 +1,17 @@
 {
   "components": [
     {
-      "sku": "TONDO-SKU-PIEDINO-05",
-      "name": "Piedino tondo 5mm",
+      "sku": "TONDO-SKU-PIEDE-50",
+      "name": "Piede tondo 50mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
-      "Type": "PIEDINO",
-      "price": 0,
+      "Type": "PIEDE",
+      "price": 3,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
         "widthMm": 0,
-        "heightMm": 0,
+        "heightMm": 50,
         "depthMm": 0
       },
       "compatibleWith": [
@@ -19,17 +19,17 @@
       ]
     },
     {
-      "sku": "TONDO-SKU-PIEDINO-10",
-      "name": "Piedino tondo 10mm",
+      "sku": "TONDO-SKU-PIEDE-80",
+      "name": "Piede tondo 80mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
-      "Type": "PIEDINO",
-      "price": 0,
+      "Type": "PIEDE",
+      "price": 3,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
         "widthMm": 0,
-        "heightMm": 0,
+        "heightMm": 80,
         "depthMm": 0
       },
       "compatibleWith": [
@@ -37,35 +37,143 @@
       ]
     },
     {
-      "sku": "TONDO-SKU-MONTANTE-10",
-      "name": "Montante tondo 10mm",
+      "sku": "TONDO-SKU-PIEDE-140",
+      "name": "Piede tondo 140mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "PIEDE",
+      "price": 3,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 140,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-PIEDE-180",
+      "name": "Piede tondo 180mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "PIEDE",
+      "price": 3,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 80,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-PIEDE-240",
+      "name": "Piede tondo 240mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "PIEDE",
+      "price": 3,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 240,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-PIEDE-300",
+      "name": "Piede tondo 300mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "PIEDE",
+      "price": 3,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 300,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-PIEDE-380",
+      "name": "Piede tondo 380mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "PIEDE",
+      "price": 3,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 380,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-PIEDE-500",
+      "name": "Piede tondo 500mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "PIEDE",
+      "price": 3,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 500,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-MONTANTE-80",
+      "name": "Montante tondo 80mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "MONTANTE",
-      "price": 0,
+      "price": 4,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
         "widthMm": 0,
-        "heightMm": 0,
+        "heightMm": 80,
         "depthMm": 0
       },
       "compatibleWith": [
         "TONDO"
       ]
     },
-    {
-      "sku": "TONDO-SKU-MONTANTE-20",
-      "name": "Montante tondo 20mm",
+   {
+      "sku": "TONDO-SKU-MONTANTE-140",
+      "name": "Montante tondo 140mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "MONTANTE",
-      "price": 0,
+      "price": 4,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
         "widthMm": 0,
-        "heightMm": 0,
+        "heightMm": 140,
         "depthMm": 0
       },
       "compatibleWith": [
@@ -73,17 +181,287 @@
       ]
     },
     {
-      "sku": "TONDO-SKU-RIPIANO-30",
-      "name": "Ripiano tondo 30mm",
+      "sku": "TONDO-SKU-MONTANTE-180",
+      "name": "Montante tondo 180mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "MONTANTE",
+      "price": 4,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 180,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-MONTANTE-240",
+      "name": "Montante tondo 240mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "MONTANTE",
+      "price": 4,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 240,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-MONTANTE-300",
+      "name": "Montante tondo 300mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "MONTANTE",
+      "price": 4,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 300,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-MONTANTE-380",
+      "name": "Montante tondo 380mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "MONTANTE",
+      "price": 4,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 380,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-MONTANTE-500",
+      "name": "Montante tondo 500mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "MONTANTE",
+      "price": 4,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 500,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-RIPIANO-200x200",
+      "name": "Ripiano tondo 200x200mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "RIPIANO",
-      "price": 0,
+      "price": 5,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 200,
+        "heightMm": 18,
+        "depthMm": 200
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-RIPIANO-250x200",
+      "name": "Ripiano tondo 250x200mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "RIPIANO",
+      "price": 5,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 250,
+        "heightMm": 18,
+        "depthMm": 200
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-RIPIANO-300x200",
+      "name": "Ripiano tondo 300x200mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "RIPIANO",
+      "price": 5,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 300,
+        "heightMm": 18,
+        "depthMm": 200
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-RIPIANO-400x200",
+      "name": "Ripiano tondo 400x200mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "RIPIANO",
+      "price": 6,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 400,
+        "heightMm": 18,
+        "depthMm": 200
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-RIPIANO-00x200",
+      "name": "Ripiano tondo 500x200mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "RIPIANO",
+      "price": 7,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 500,
+        "heightMm": 18,
+        "depthMm": 200
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-RIPIANO-600x200",
+      "name": "Ripiano tondo 600x200mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "RIPIANO",
+      "price": 8,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 600,
+        "heightMm": 18,
+        "depthMm": 200
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-RIPIANO-700x200",
+      "name": "Ripiano tondo 700x200mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "RIPIANO",
+      "price": 9,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 700,
+        "heightMm": 18,
+        "depthMm": 200
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-RIPIANO-800x200",
+      "name": "Ripiano tondo 800x200mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "RIPIANO",
+      "price": 10,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 800,
+        "heightMm": 18,
+        "depthMm": 200
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-RIPIANO-900x200",
+      "name": "Ripiano tondo 900x200mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "RIPIANO",
+      "price": 11,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 900,
+        "heightMm": 18,
+        "depthMm": 200
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-RIPIANO-1000x200",
+      "name": "Ripiano tondo 1000x200mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "RIPIANO",
+      "price": 12,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 1000,
+        "heightMm": 18,
+        "depthMm": 200
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-TERMINALE-50",
+      "name": "Terminale tondo 50mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "TERMINALE",
+      "price": 3,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
         "widthMm": 0,
-        "heightMm": 0,
+        "heightMm": 50,
         "depthMm": 0
       },
       "compatibleWith": [
@@ -91,17 +469,125 @@
       ]
     },
     {
-      "sku": "TONDO-SKU-TERMINALE-05",
-      "name": "Terminale tondo 5mm",
+      "sku": "TONDO-SKU-TERMINALE-80",
+      "name": "Terminale tondo 80mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "TERMINALE",
-      "price": 0,
+      "price": 3,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
         "widthMm": 0,
-        "heightMm": 0,
+        "heightMm": 80,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-TERMINALE-140",
+      "name": "Terminale tondo 140mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "TERMINALE",
+      "price": 3,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 140,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-TERMINALE-180",
+      "name": "Terminale tondo 180mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "TERMINALE",
+      "price": 3,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 80,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-TERMINALE-140",
+      "name": "Terminale tondo 140mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "TERMINALE",
+      "price": 3,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 240,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-TERMINALE-300",
+      "name": "Terminale tondo 300mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "TERMINALE",
+      "price": 3,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 300,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-TERMINALE-380",
+      "name": "Terminale tondo 380mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "TERMINALE",
+      "price": 3,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 380,
+        "depthMm": 0
+      },
+      "compatibleWith": [
+        "TONDO"
+      ]
+    },
+    {
+      "sku": "TONDO-SKU-TERMINALE-500",
+      "name": "Terminale tondo 500mm",
+      "description": "TODO Descrizione componente",
+      "category": "TONDO",
+      "Type": "TERMINALE",
+      "price": 3,
+      "isAvailable": true,
+      "imageUrl": "",
+      "dimensions": {
+        "widthMm": 0,
+        "heightMm": 500,
         "depthMm": 0
       },
       "compatibleWith": [
