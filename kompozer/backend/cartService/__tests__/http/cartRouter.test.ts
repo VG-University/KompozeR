@@ -190,7 +190,7 @@ describe('cartRouter', () => {
     expect(res.body.error.code).toBe('ITEM_UNAVAILABLE');
   });
 
-  it('POST /cart/checkout -> 409 when price changed', async () => {
+  it('POST /cart/checkout -> 200 with updated price when catalog price changed (auto-sync)', async () => {
     const { app, catalog } = buildTestApp();
 
     await request(app)
@@ -204,7 +204,8 @@ describe('cartRouter', () => {
       .post('/cart/checkout')
       .set('x-user-id', 'usr_1');
 
-    expect(res.status).toBe(409);
-    expect(res.body.error.code).toBe('PRICE_CHANGED');
+    expect(res.status).toBe(200);
+    expect(res.body.status).toBe('SUBMITTED');
+    expect(res.body.total).toBe(2090);
   });
 });

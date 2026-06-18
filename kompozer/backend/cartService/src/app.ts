@@ -32,7 +32,7 @@ export function buildApp(config: CartAppConfig = {}) {
     eventPublisher = new RedisCartEventPublisher(redis);
   }
 
-  const getCart = new GetCart(repo);
+  const getCart = new GetCart(repo, catalog, eventPublisher);
   const upsertCartItem = new UpsertCartItem(repo, eventPublisher);
   const removeCartItem = new RemoveCartItem(repo, eventPublisher);
   const clearCart = new ClearCart(repo, eventPublisher);

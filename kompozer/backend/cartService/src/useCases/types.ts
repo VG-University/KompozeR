@@ -28,6 +28,10 @@ export interface ClearCartInput {
   userId: string;
 }
 
+export interface SyncCartInput {
+  userId: string;
+}
+
 export interface CheckoutCartInput {
   userId: string;
 }

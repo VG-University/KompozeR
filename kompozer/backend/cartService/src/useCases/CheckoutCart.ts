@@ -1,6 +1,5 @@
 import {
   CartEmptyError,
-  CartItemPriceChangedError,
   CartItemUnavailableError,
 } from '../domain/entities/errors';
 import { CartEvent } from '../domain/entities/CartEvent';
@@ -24,15 +23,25 @@ export class CheckoutCart {
       throw new CartEmptyError();
     }
 
+    // Sync prices from catalog before checkout: update stale prices, remove unavailable items.
+    const syncedItems = [];
     for (const item of cart.items) {
       const snapshot = await this.catalog.getBySku(item.sku);
       if (!snapshot || !snapshot.isAvailable) {
         throw new CartItemUnavailableError(item.sku);
       }
       if (snapshot.unitPrice !== item.unitPrice) {
-        throw new CartItemPriceChangedError(item.sku, item.unitPrice, snapshot.unitPrice);
+        syncedItems.push({
+          ...item,
+          unitPrice: snapshot.unitPrice,
+          lineTotal: snapshot.unitPrice * item.quantity,
+        });
+      } else {
+        syncedItems.push(item);
       }
     }
+    cart.items = syncedItems;
+    cart.total = cart.items.reduce((sum, it) => sum + it.lineTotal, 0);
 
     const order = await this.orderServiceClient.submitOrder({
       userId: cart.userId,

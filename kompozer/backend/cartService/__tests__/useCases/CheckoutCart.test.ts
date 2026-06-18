@@ -1,7 +1,6 @@
 import { CheckoutCart } from '../../src/useCases/CheckoutCart';
 import {
   CartEmptyError,
-  CartItemPriceChangedError,
   CartItemUnavailableError,
 } from '../../src/domain/entities/errors';
 import { UpsertCartItem } from '../../src/useCases/UpsertCartItem';
@@ -74,7 +73,7 @@ describe('CheckoutCart', () => {
     await expect(checkout.execute({ userId: 'usr_1' })).rejects.toBeInstanceOf(CartItemUnavailableError);
   });
 
-  it('throws CartItemPriceChangedError when price changed', async () => {
+  it('auto-updates price at checkout when catalog price changed and proceeds to order', async () => {
     const repo = new FakeCartRepository();
     const catalog = new FakeCatalogSnapshotProvider();
     const orderClient = new FakeOrderServiceClient();
@@ -91,6 +90,9 @@ describe('CheckoutCart', () => {
 
     catalog.set({ sku: 'SKU-001', unitPrice: 2090, isAvailable: true });
 
-    await expect(checkout.execute({ userId: 'usr_1' })).rejects.toBeInstanceOf(CartItemPriceChangedError);
+    const result = await checkout.execute({ userId: 'usr_1' });
+    expect(result.status).toBe('SUBMITTED');
+    expect(result.total).toBe(2090);
+    expect(orderClient.calls[0].items[0].unitPrice).toBe(2090);
   });
 });

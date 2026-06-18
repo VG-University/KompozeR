@@ -3,6 +3,8 @@ export type CartEventType =
   | 'ItemAddedToCart'
   | 'ItemRemovedFromCart'
   | 'CartUpdatedFromConfiguration'
+  | 'CartItemsRemovedUnavailable'
+  | 'CartPricesUpdated'
   | 'OrderRequestSubmitted'
   | 'OrderConfirmationRequested';
 
@@ -15,4 +17,6 @@ export interface CartEvent {
   quantity?: number;
   unitPrice?: number;
   source?: 'MANUAL' | 'CONFIGURATION';
+  removedSkus?: string[];
+  updatedSkus?: string[];
 }
