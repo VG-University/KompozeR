@@ -447,7 +447,7 @@ describe('CAD command use cases', () => {
     });
 
     expect(result.bom!.length).toBeGreaterThan(0);
-    expect(result.status).toBe('DESIGN_IN_PROGRESS');
+    expect(result.status).toBe('READY_FOR_FINALIZE');
     // Verify specific components were derived
     const skus = result.bom!.map((c) => c.sku);
     expect(skus).toContain('RIP-800'); // Ripiano

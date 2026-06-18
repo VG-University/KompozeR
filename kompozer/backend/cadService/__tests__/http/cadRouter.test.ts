@@ -107,7 +107,7 @@ describe('cadRouter', () => {
       });
 
     expect(design.status).toBe(200);
-    expect(design.body.status).toBe('DESIGN_IN_PROGRESS');
+    expect(design.body.status).toBe('READY_FOR_FINALIZE');
 
     const finalized = await request(app)
       .post(`/cad/configurations/${configurationId}/finalize`)

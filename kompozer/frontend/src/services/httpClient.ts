@@ -43,47 +43,59 @@ async function handleResponse<T>(res: Response): Promise<T> {
   );
 }
 
+async function request<T>(path: string, init: RequestInit): Promise<T> {
+  try {
+    const res = await fetch(`${BASE_URL}${path}`, init);
+    return handleResponse<T>(res);
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+
+    throw new ApiError(
+      'NETWORK_ERROR',
+      'Servizio non raggiungibile. Verifica che API Gateway sia avviato su localhost:3000.',
+      0,
+    );
+  }
+}
+
 export const http = {
   async get<T>(path: string): Promise<T> {
-    const res = await fetch(`${BASE_URL}${path}`, {
+    return request<T>(path, {
       method: 'GET',
       headers: buildHeaders(),
     });
-    return handleResponse<T>(res);
   },
 
   async post<T>(path: string, body?: unknown): Promise<T> {
-    const res = await fetch(`${BASE_URL}${path}`, {
+    return request<T>(path, {
       method: 'POST',
       headers: buildHeaders(),
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
-    return handleResponse<T>(res);
   },
 
   async put<T>(path: string, body?: unknown): Promise<T> {
-    const res = await fetch(`${BASE_URL}${path}`, {
+    return request<T>(path, {
       method: 'PUT',
       headers: buildHeaders(),
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
-    return handleResponse<T>(res);
   },
 
   async patch<T>(path: string, body?: unknown): Promise<T> {
-    const res = await fetch(`${BASE_URL}${path}`, {
+    return request<T>(path, {
       method: 'PATCH',
       headers: buildHeaders(),
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
-    return handleResponse<T>(res);
   },
 
   async delete<T>(path: string): Promise<T> {
-    const res = await fetch(`${BASE_URL}${path}`, {
+    return request<T>(path, {
       method: 'DELETE',
       headers: buildHeaders(),
     });
-    return handleResponse<T>(res);
   },
 };

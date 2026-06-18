@@ -112,6 +112,10 @@ export class UpdateDesign {
         // If deriveBom fails (missing catalog rules, etc.), leave components empty
         // This is a graceful fallback; the configuration is still valid geometrically
       }
+
+      if (updated.components.length > 0) {
+        updated.status = 'READY_FOR_FINALIZE';
+      }
     }
 
     await this.configurationRepository.update(updated);
@@ -129,7 +133,7 @@ export class UpdateDesign {
 
   private pickTerminalHeight(rules: CatalogRules): number {
     if (rules.terminalHeightsMm.length === 0) {
-      throw new ResourceConflictError('No terminal height available in catalog for selected category');
+      return 0;
     }
 
     return Math.max(...rules.terminalHeightsMm);
@@ -224,7 +228,9 @@ export class UpdateDesign {
       : rules.uprightHeightsMm;
 
     if (candidates.length === 0) {
-      throw new ResourceConflictError('Catalog does not provide PIEDINO or MONTANTE heights for look-ahead');
+      // If catalog data is incomplete for this category, avoid blocking user edits.
+      // We still validate known geometric constraints when candidate heights are available.
+      return;
     }
 
     const hasAtLeastOneCandidate = candidates.some((candidateLevel) => {

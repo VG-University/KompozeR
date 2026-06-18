@@ -23,7 +23,6 @@ const {
   environmentLoading,
   columnPlanLoading,
   designLoading,
-  nextOptionsLoading,
   error,
   page,
   total,
@@ -72,9 +71,9 @@ const environmentDraft = ref<Environment>({
 
 const columnCountDraft = ref(2);
 const shelfWidthsDraft = ref<number[]>([800, 800]);
-const shelfThicknessDraft = ref(20);
+const SHELF_THICKNESS_MM = 18;
+const shelfThicknessDraft = ref(SHELF_THICKNESS_MM);
 const selectedGapByColumn = ref<Record<number, number | null>>({});
-const selectedTerminalByColumn = ref<Record<number, number | null>>({});
 const categoryCatalogItems = ref<CatalogItem[]>([]);
 const catalogLoading = ref(false);
 
@@ -208,15 +207,6 @@ const availableMountHeights = computed(() =>
   ),
 );
 
-const availableTerminalHeights = computed(() =>
-  uniqueSortedNumeric(
-    categoryCatalogItems.value
-      .filter((item) => normalizedType(item) === 'TERMINALE')
-      .map((item) => Number(item.dimensions?.heightMm))
-      .filter((value) => Number.isFinite(value) && value > 0),
-  ),
-);
-
 watch(columnCountDraft, (count) => {
   const safeCount = Math.max(1, Math.min(8, count));
   if (safeCount !== count) {
@@ -264,6 +254,20 @@ const canvasColumns = computed(() => {
     };
   });
 });
+
+watch(
+  () => [selected.value?.id, selected.value?.status, canvasColumns.value.length] as const,
+  ([, status]) => {
+    if (status !== 'COLUMNS_DEFINED' && status !== 'DESIGN_IN_PROGRESS' && status !== 'READY_FOR_FINALIZE') {
+      return;
+    }
+
+    for (const column of canvasColumns.value) {
+      void openNextOptions(column.index);
+    }
+  },
+  { immediate: true },
+);
 
 function formatDate(iso: string): string {
   return new Intl.DateTimeFormat('it-IT', {
@@ -408,6 +412,14 @@ function getOptions(columnIndex: number): NextOption[] {
   return nextOptionsByColumn.value[columnIndex] ?? [];
 }
 
+function effectiveOptions(columnIndex: number): NextOption[] {
+  const remote = getOptions(columnIndex).filter((option) => option.allowed);
+  if (remote.length > 0) {
+    return remote;
+  }
+  return fallbackOptions(columnIndex);
+}
+
 function fallbackOptions(columnIndex: number): NextOption[] {
   const levels = designByColumn.value.get(columnIndex)?.levelsMm ?? [];
   const sourceHeights = levels.length === 0 ? availableFootHeights.value : availableMountHeights.value;
@@ -427,34 +439,23 @@ async function openNextOptions(columnIndex: number): Promise<void> {
     ...selectedGapByColumn.value,
     [columnIndex]: options[0]?.heightMm ?? null,
   };
-
-  selectedTerminalByColumn.value = {
-    ...selectedTerminalByColumn.value,
-    [columnIndex]: selectedTerminalByColumn.value[columnIndex] ?? availableTerminalHeights.value[0] ?? null,
-  };
 }
 
 async function addShelf(columnIndex: number): Promise<void> {
-  const gap = selectedGapByColumn.value[columnIndex];
+  const gap = selectedGapByColumn.value[columnIndex] ?? effectiveOptions(columnIndex)[0]?.heightMm ?? null;
   if (!gap) {
     return;
   }
+  selectedGapByColumn.value = {
+    ...selectedGapByColumn.value,
+    [columnIndex]: gap,
+  };
   await addTopShelf(columnIndex, gap, shelfThicknessDraft.value);
   await openNextOptions(columnIndex);
 }
 
 async function removeShelf(columnIndex: number): Promise<void> {
   await removeTopShelf(columnIndex, shelfThicknessDraft.value);
-  await openNextOptions(columnIndex);
-}
-
-async function addTerminal(columnIndex: number): Promise<void> {
-  const terminalHeight = selectedTerminalByColumn.value[columnIndex];
-  if (!terminalHeight) {
-    return;
-  }
-
-  await addTopShelf(columnIndex, terminalHeight, shelfThicknessDraft.value);
   await openNextOptions(columnIndex);
 }
 
@@ -684,16 +685,7 @@ function stepActive(index: number): boolean {
 
             <article class="control-card">
               <h3>Step 4 - Design ripiani (+ / -)</h3>
-              <label class="field">
-                <span class="field__label">Spessore ripiano (mm)</span>
-                <input
-                  v-model.number="shelfThicknessDraft"
-                  class="field__input"
-                  type="number"
-                  min="1"
-                  :disabled="!canEditDesign"
-                />
-              </label>
+              <p class="mini muted">Spessore ripiano fisso: {{ shelfThicknessDraft }} mm</p>
 
               <div class="design-columns">
                 <article v-for="column in canvasColumns" :key="`design-col-${column.index}`" class="design-column">
@@ -707,15 +699,7 @@ function stepActive(index: number): boolean {
                     {{ column.levels.length === 0 ? 'Livello 0: opzioni PIEDINO' : 'Livelli successivi: opzioni MONTANTE' }}
                   </p>
 
-                  <button
-                    class="btn btn--light btn--small"
-                    :disabled="!canEditDesign || nextOptionsLoading"
-                    @click="openNextOptions(column.index)"
-                  >
-                    {{ nextOptionsLoading ? 'Carico...' : 'Mostra opzioni +' }}
-                  </button>
-
-                  <label class="field" v-if="getOptions(column.index).length > 0">
+                  <label class="field" v-if="effectiveOptions(column.index).length > 0">
                     <span class="field__label">Gap da aggiungere</span>
                     <select
                       class="field__input"
@@ -723,29 +707,12 @@ function stepActive(index: number): boolean {
                       v-model.number="selectedGapByColumn[column.index]"
                     >
                       <option
-                        v-for="option in getOptions(column.index)"
+                        v-for="option in effectiveOptions(column.index)"
                         :key="`opt-${column.index}-${option.heightMm}`"
                         :value="option.allowed ? option.heightMm : null"
                         :disabled="!option.allowed"
                       >
                         {{ option.heightMm }}mm{{ option.allowed ? '' : ` - ${option.reason || 'non consentito'}` }}
-                      </option>
-                    </select>
-                  </label>
-
-                  <label class="field" v-if="availableTerminalHeights.length > 0 && column.levels.length > 0">
-                    <span class="field__label">Terminale finale</span>
-                    <select
-                      class="field__input"
-                      :disabled="!canEditDesign || designLoading"
-                      v-model.number="selectedTerminalByColumn[column.index]"
-                    >
-                      <option
-                        v-for="height in availableTerminalHeights"
-                        :key="`terminal-${column.index}-${height}`"
-                        :value="height"
-                      >
-                        {{ height }}mm
                       </option>
                     </select>
                   </label>
@@ -764,14 +731,6 @@ function stepActive(index: number): boolean {
                       @click="removeShelf(column.index)"
                     >
                       - Ultimo
-                    </button>
-                    <button
-                      class="btn btn--light btn--small"
-                      v-if="availableTerminalHeights.length > 0 && column.levels.length > 0"
-                      :disabled="!canEditDesign || designLoading || !selectedTerminalByColumn[column.index]"
-                      @click="addTerminal(column.index)"
-                    >
-                      + Terminale
                     </button>
                   </div>
                 </article>
