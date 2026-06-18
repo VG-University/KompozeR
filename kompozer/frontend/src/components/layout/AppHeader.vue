@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 import { useAuthStore } from '@/store/authStore';
 import { useNotificationStore } from '@/store/notificationStore';
@@ -10,6 +10,24 @@ const auth = useAuthStore();
 const notifications = useNotificationStore();
 const cart = useCartStore();
 const router = useRouter();
+
+// Polling badge: aggiorna il contatore non lette ogni 30 secondi senza
+// che l'utente debba aprire la pagina notifiche.
+const POLL_INTERVAL_MS = 30_000;
+let pollTimer: ReturnType<typeof setInterval> | null = null;
+
+onMounted(() => {
+  // Prima chiamata immediata all'avvio
+  void notifications.refreshUnreadCount();
+  pollTimer = setInterval(() => void notifications.refreshUnreadCount(), POLL_INTERVAL_MS);
+});
+
+onUnmounted(() => {
+  if (pollTimer !== null) {
+    clearInterval(pollTimer);
+    pollTimer = null;
+  }
+});
 
 const navLinks = computed(() => {
   if (auth.isAdmin) {
