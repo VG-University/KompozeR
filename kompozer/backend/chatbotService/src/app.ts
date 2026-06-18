@@ -1,5 +1,6 @@
 import cors from 'cors';
 import express from 'express';
+import { HttpCadConfigurationProvider } from './adapters/httpClient/HttpCadConfigurationProvider';
 import { buildChatbotRouter } from './adapters/http/chatbotRouter';
 import { errorMiddleware } from './adapters/http/errorMiddleware';
 import { HttpCatalogQaProvider } from './adapters/httpClient/HttpCatalogQaProvider';
@@ -12,17 +13,27 @@ import { SendSessionMessage } from './useCases/SendSessionMessage';
 
 export interface ChatbotAppConfig {
   catalogBaseUrl?: string;
+  cadBaseUrl?: string;
 }
 
 export function buildApp(config: ChatbotAppConfig = {}) {
   const repo = new MongoChatRepository();
   const catalog = new HttpCatalogQaProvider(config.catalogBaseUrl ?? 'http://catalog-service:3002');
+  const cad = new HttpCadConfigurationProvider(config.cadBaseUrl ?? 'http://cad-service:3003');
 
   const createSession = new CreateSession(repo);
   const getSession = new GetSession(repo);
   const listSessionMessages = new ListSessionMessages(repo);
   const closeSession = new CloseSession(repo);
-  const sendSessionMessage = new SendSessionMessage(repo, catalog);
+  const sendSessionMessage = new SendSessionMessage(repo, catalog, cad);
+
+  const deps = {
+    createSession,
+    getSession,
+    listSessionMessages,
+    closeSession,
+    sendSessionMessage,
+  };
 
   const app = express();
   app.use(cors());
@@ -34,16 +45,13 @@ export function buildApp(config: ChatbotAppConfig = {}) {
 
   app.use(
     '/chatbot',
-    buildChatbotRouter({
-      createSession,
-      getSession,
-      listSessionMessages,
-      closeSession,
-      sendSessionMessage,
-    }),
+    buildChatbotRouter(deps),
   );
 
   app.use(errorMiddleware);
 
-  return app;
+  return {
+    app,
+    deps,
+  };
 }

@@ -93,6 +93,7 @@ export function buildRoutes(services: ServiceUrls): Router {
     createProxyMiddleware({
       target: services.chatbot,
       changeOrigin: true,
+      ws: true,
       pathRewrite: (path) => `/chatbot${path}`,
       on: { proxyReq: fixRequestBody },
     }),

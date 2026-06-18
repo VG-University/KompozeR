@@ -7,6 +7,7 @@ import {
   SessionNotFoundError,
   ValidationError,
 } from '../domain/entities/errors';
+import { CadConfigurationProvider } from '../domain/ports/CadConfigurationProvider';
 import { CatalogQaProvider } from '../domain/ports/CatalogQaProvider';
 import { ChatRepository } from '../domain/ports/ChatRepository';
 import { ChatMessageDto, toMessageDto } from './types';
@@ -27,6 +28,7 @@ export class SendSessionMessage {
   constructor(
     private readonly repo: ChatRepository,
     private readonly catalog: CatalogQaProvider,
+    private readonly cad?: CadConfigurationProvider,
   ) {}
 
   async execute(input: SendSessionMessageInput): Promise<SendSessionMessageOutput> {
@@ -62,7 +64,7 @@ export class SendSessionMessage {
     };
     await this.repo.saveMessage(userMessage);
 
-    const answer = await this.generateAnswer(input.content);
+    const answer = await this.generateAnswer(input.content, session.userId, session.configurationId);
     const botMessage: ChatMessage = {
       id: randomUUID(),
       sessionId: input.sessionId,
@@ -84,18 +86,34 @@ export class SendSessionMessage {
     };
   }
 
-  private async generateAnswer(question: string): Promise<string> {
+  private async generateAnswer(
+    question: string,
+    userId: string,
+    configurationId?: string,
+  ): Promise<string> {
     const normalized = question.trim();
+
+    const configurationContext =
+      configurationId && this.cad ? await this.cad.getById(userId, configurationId) : null;
+
+    const searchQuery =
+      configurationContext?.category && normalized.length > 0
+        ? `${normalized} ${configurationContext.category}`
+        : normalized;
 
     let items;
     try {
-      items = await this.catalog.search(normalized);
+      items = await this.catalog.search(searchQuery);
     } catch {
       throw new CatalogLookupError('Unable to retrieve catalog data for chatbot response');
     }
 
+    const contextPrefix = configurationContext
+      ? `Contesto configurazione attiva: categoria ${configurationContext.category ?? 'N/D'}, stato ${configurationContext.status}, colonne ${configurationContext.columnCount}, componenti ${configurationContext.componentCount}.`
+      : '';
+
     if (items.length === 0) {
-      return 'Non trovo componenti corrispondenti alla tua domanda nel catalogo corrente.';
+      return `${contextPrefix}${contextPrefix ? '\n' : ''}Non trovo componenti corrispondenti alla tua domanda nel catalogo corrente.`;
     }
 
     const top = items.slice(0, 3);
@@ -105,6 +123,6 @@ export class SendSessionMessage {
       return `- ${item.name} (${item.sku}): ${euro} EUR, ${availability}`;
     });
 
-    return `Ho trovato questi componenti nel catalogo:\n${lines.join('\n')}`;
+    return `${contextPrefix}${contextPrefix ? '\n' : ''}Ho trovato questi componenti nel catalogo:\n${lines.join('\n')}`;
   }
 }

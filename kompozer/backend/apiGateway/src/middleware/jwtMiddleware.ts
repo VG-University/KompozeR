@@ -44,11 +44,24 @@ export function buildJwtMiddleware(jwtSecret: string) {
     }
 
     const authHeader = req.headers['authorization'];
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return next(new MissingTokenError());
+    let token = '';
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.slice(7);
     }
 
-    const token = authHeader.slice(7);
+    // Browser Socket.io clients cannot reliably set Authorization headers.
+    // For chatbot polling handshake, allow `?token=<jwt>` fallback.
+    if (!token && req.path.startsWith('/chatbot/socket.io')) {
+      const queryToken = req.query['token'];
+      if (typeof queryToken === 'string' && queryToken.trim()) {
+        token = queryToken;
+      }
+    }
+
+    if (!token) {
+      return next(new MissingTokenError());
+    }
 
     let payload: JwtPayload;
     try {

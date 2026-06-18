@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { chatbotService } from '@/services/chatbotService';
+import { chatbotSocket } from '@/services/chatbotSocket';
 import { ApiError } from '@/types/api';
 import type { ChatMessageDto, ChatSessionDto } from '@/types/chatbot';
 
@@ -14,6 +15,13 @@ const sending = ref(false);
 const closing = ref(false);
 const error = ref('');
 const draft = ref('');
+const botTyping = ref(false);
+let removeNewMessageListener: (() => void) | null = null;
+let removeSocketErrorListener: (() => void) | null = null;
+let removeTypingListener: (() => void) | null = null;
+const MIN_TYPING_VISIBLE_MS = 450;
+let typingVisibleSince = 0;
+let typingHideTimer: ReturnType<typeof setTimeout> | null = null;
 
 const configurationId = computed(() => {
   const raw = route.query['configurationId'];
@@ -21,6 +29,46 @@ const configurationId = computed(() => {
 });
 
 const isClosed = computed(() => session.value?.status === 'CLOSED');
+
+function resetTypingIndicator(): void {
+  if (typingHideTimer) {
+    clearTimeout(typingHideTimer);
+    typingHideTimer = null;
+  }
+  botTyping.value = false;
+  typingVisibleSince = 0;
+}
+
+function setTypingIndicator(active: boolean): void {
+  if (active) {
+    if (typingHideTimer) {
+      clearTimeout(typingHideTimer);
+      typingHideTimer = null;
+    }
+    if (!botTyping.value) {
+      botTyping.value = true;
+      typingVisibleSince = Date.now();
+    }
+    return;
+  }
+
+  if (!botTyping.value) {
+    return;
+  }
+
+  const elapsed = Date.now() - typingVisibleSince;
+  const wait = Math.max(0, MIN_TYPING_VISIBLE_MS - elapsed);
+
+  if (typingHideTimer) {
+    clearTimeout(typingHideTimer);
+  }
+
+  typingHideTimer = setTimeout(() => {
+    botTyping.value = false;
+    typingVisibleSince = 0;
+    typingHideTimer = null;
+  }, wait);
+}
 
 function formatTime(iso: string): string {
   return new Intl.DateTimeFormat('it-IT', {
@@ -32,6 +80,7 @@ function formatTime(iso: string): string {
 async function openFreshSession(): Promise<void> {
   loading.value = true;
   error.value = '';
+  resetTypingIndicator();
   try {
     session.value = await chatbotService.createSession(configurationId.value);
     messages.value = [];
@@ -51,6 +100,7 @@ async function initializeChat(): Promise<void> {
 
   loading.value = true;
   error.value = '';
+  resetTypingIndicator();
   try {
     const [sessionData, messageData] = await Promise.all([
       chatbotService.getSession(sessionId),
@@ -74,13 +124,30 @@ async function sendMessage(): Promise<void> {
   sending.value = true;
   error.value = '';
   try {
-    const result = await chatbotService.sendMessage(session.value.id, content);
-    messages.value = [...messages.value, result.userMessage, result.botMessage];
+    const result = await chatbotSocket.sendMessage(session.value.id, content);
+    pushMessageIfMissing(result.userMessage);
+    pushMessageIfMissing(result.botMessage);
     draft.value = '';
   } catch (e) {
-    error.value = e instanceof ApiError ? e.message : 'Errore invio messaggio';
+    error.value = e instanceof Error ? e.message : 'Errore invio messaggio';
   } finally {
     sending.value = false;
+  }
+}
+
+function pushMessageIfMissing(message: ChatMessageDto): void {
+  if (!session.value || message.sessionId !== session.value.id) {
+    return;
+  }
+
+  if (messages.value.some((existing) => existing.id === message.id)) {
+    return;
+  }
+
+  messages.value = [...messages.value, message];
+
+  if (message.role === 'BOT') {
+    setTypingIndicator(false);
   }
 }
 
@@ -101,7 +168,37 @@ async function closeChat(): Promise<void> {
 }
 
 onMounted(() => {
+  chatbotSocket.connect();
+
+  removeNewMessageListener = chatbotSocket.onNewMessage((message) => {
+    pushMessageIfMissing(message);
+  });
+
+  removeSocketErrorListener = chatbotSocket.onError((payload) => {
+    error.value = payload.message;
+    resetTypingIndicator();
+  });
+
+  removeTypingListener = chatbotSocket.onTyping((payload) => {
+    if (!session.value || payload.sessionId !== session.value.id) {
+      return;
+    }
+
+    setTypingIndicator(payload.active);
+  });
+
   void initializeChat();
+});
+
+onUnmounted(() => {
+  removeNewMessageListener?.();
+  removeSocketErrorListener?.();
+  removeTypingListener?.();
+  resetTypingIndicator();
+  removeNewMessageListener = null;
+  removeSocketErrorListener = null;
+  removeTypingListener = null;
+  chatbotSocket.disconnect();
 });
 </script>
 
@@ -143,6 +240,15 @@ onMounted(() => {
           </div>
           <p class="chat-message__content">{{ message.content }}</p>
         </article>
+
+        <div v-if="botTyping" class="chatbot-typing" aria-live="polite">
+          <span>KompozeR Bot sta scrivendo</span>
+          <span class="chatbot-typing__dots" aria-hidden="true">
+            <span class="chatbot-typing__dot"></span>
+            <span class="chatbot-typing__dot"></span>
+            <span class="chatbot-typing__dot"></span>
+          </span>
+        </div>
       </section>
 
       <form class="chat-compose" @submit.prevent="sendMessage">
@@ -240,6 +346,50 @@ onMounted(() => {
 
 .chat-message__content {
   margin: 0;
+}
+
+.chatbot-typing {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.chatbot-typing__dots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.chatbot-typing__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+  opacity: 0.3;
+  animation: chatbotTypingPulse 1s infinite ease-in-out;
+}
+
+.chatbot-typing__dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.chatbot-typing__dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes chatbotTypingPulse {
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
 }
 
 .chat-compose {
