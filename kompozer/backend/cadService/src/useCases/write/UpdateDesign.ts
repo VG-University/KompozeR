@@ -13,6 +13,7 @@ import {
 import { CatalogRules, CatalogRulesProvider } from '../../domain/ports/CatalogRulesProvider';
 import { deriveBom } from '../../domain/services/deriveBom';
 import {
+  resolveFirstLevelHeightsMm,
   SHELF_THICKNESS_MM,
   validateColumnDesigns,
 } from '../../domain/services/SpineModel';
@@ -114,7 +115,10 @@ export class UpdateDesign {
         levelsMm: byIndex.get(column.index)?.levelsMm ?? [],
       })),
       {
-        footHeightsMm: rules.footHeightsMm,
+        footHeightsMm: resolveFirstLevelHeightsMm({
+          footHeightsMm: rules.footHeightsMm,
+          uprightHeightsMm: rules.uprightHeightsMm,
+        }),
         uprightHeightsMm: rules.uprightHeightsMm,
         terminalHeightsMm: rules.terminalHeightsMm,
         maxHeightMm: configuration.environment.maxHeightMm,

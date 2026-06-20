@@ -6,6 +6,7 @@ import {
   SPINE_COMPONENT_MULTIPLIER,
   buildSpines,
   deriveSpineBom,
+  resolveFirstLevelHeightsMm,
 } from './SpineModel';
 
 /**
@@ -83,7 +84,10 @@ export function deriveBom(configuration: Configuration, rules: CatalogRules): Bo
 
   for (const spine of spines) {
     const spineBom = deriveSpineBom(spine.levelsMm, {
-      footHeightsMm: rules.footHeightsMm,
+      footHeightsMm: resolveFirstLevelHeightsMm({
+        footHeightsMm: rules.footHeightsMm,
+        uprightHeightsMm: rules.uprightHeightsMm,
+      }),
       uprightHeightsMm: rules.uprightHeightsMm,
       terminalHeightsMm: rules.terminalHeightsMm,
       maxHeightMm: configuration.environment?.maxHeightMm ?? Number.MAX_SAFE_INTEGER,

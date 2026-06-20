@@ -6,7 +6,7 @@ import {
 import { CatalogRules, CatalogRulesProvider } from '../../domain/ports/CatalogRulesProvider';
 import { ConfigurationRepository } from '../../domain/ports/ConfigurationRepository';
 import {
-  SHELF_THICKNESS_MM,
+  resolveFirstLevelHeightsMm,
   validateColumnCandidate,
 } from '../../domain/services/SpineModel';
 import {
@@ -90,7 +90,11 @@ export class ListNextOptions {
 
     const current = byIndex.get(input.columnIndex);
     const levels = current?.levelsMm ?? [];
-    const candidates = levels.length === 0 ? rules.footHeightsMm : rules.uprightHeightsMm;
+    const firstLevelHeightsMm = resolveFirstLevelHeightsMm({
+      footHeightsMm: rules.footHeightsMm,
+      uprightHeightsMm: rules.uprightHeightsMm,
+    });
+    const candidates = levels.length === 0 ? firstLevelHeightsMm : rules.uprightHeightsMm;
     const columnLevels = [...columnPlan.columns]
       .sort((left, right) => left.index - right.index)
       .map((column) => ({
@@ -115,7 +119,7 @@ export class ListNextOptions {
           .findIndex((column) => column.index === input.columnIndex),
         heightMm,
         {
-          footHeightsMm: rules.footHeightsMm,
+          footHeightsMm: firstLevelHeightsMm,
           uprightHeightsMm: rules.uprightHeightsMm,
           terminalHeightsMm: rules.terminalHeightsMm,
           maxHeightMm: environment.maxHeightMm,

@@ -1,8 +1,8 @@
 {
   "components": [
     {
-      "sku": "TONDO-SKU-PIEDE-50",
-      "name": "Piede tondo 50mm",
+      "sku": "TONDO-SKU-PIEDINO-50",
+      "name": "Piedino tondo 50mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
@@ -19,8 +19,8 @@
       ]
     },
     {
-      "sku": "TONDO-SKU-PIEDE-80",
-      "name": "Piede tondo 80mm",
+      "sku": "TONDO-SKU-PIEDINO-80",
+      "name": "Piedino tondo 80mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
@@ -37,8 +37,8 @@
       ]
     },
     {
-      "sku": "TONDO-SKU-PIEDE-140",
-      "name": "Piede tondo 140mm",
+      "sku": "TONDO-SKU-PIEDINO-140",
+      "name": "Piedino tondo 140mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
@@ -55,8 +55,8 @@
       ]
     },
     {
-      "sku": "TONDO-SKU-PIEDE-180",
-      "name": "Piede tondo 180mm",
+      "sku": "TONDO-SKU-PIEDINO-180",
+      "name": "Piedino tondo 180mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
@@ -73,8 +73,8 @@
       ]
     },
     {
-      "sku": "TONDO-SKU-PIEDE-240",
-      "name": "Piede tondo 240mm",
+      "sku": "TONDO-SKU-PIEDINO-240",
+      "name": "Piedino tondo 240mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
@@ -91,8 +91,8 @@
       ]
     },
     {
-      "sku": "TONDO-SKU-PIEDE-300",
-      "name": "Piede tondo 300mm",
+      "sku": "TONDO-SKU-PIEDINO-300",
+      "name": "Piedino tondo 300mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
@@ -109,8 +109,8 @@
       ]
     },
     {
-      "sku": "TONDO-SKU-PIEDE-380",
-      "name": "Piede tondo 380mm",
+      "sku": "TONDO-SKU-PIEDINO-380",
+      "name": "Piedino tondo 380mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
@@ -127,8 +127,8 @@
       ]
     },
     {
-      "sku": "TONDO-SKU-PIEDE-500",
-      "name": "Piede tondo 500mm",
+      "sku": "TONDO-SKU-PIEDINO-500",
+      "name": "Piedino tondo 500mm",
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",

@@ -585,4 +585,42 @@ describe('CAD command use cases', () => {
     expect(allowedHeights).toContain(300);
     expect(allowedHeights).not.toContain(280);
   });
+
+  it('ListNextOptions falls back to upright heights when no foot heights are available', async () => {
+    const repo = new FakeConfigurationRepository();
+    repo.seed(
+      buildConfiguration({
+        status: 'COLUMNS_DEFINED',
+        category: 'TONDO',
+        environment: {
+          maxWidthMm: 5000,
+          maxHeightMm: 3000,
+          minWidthMm: 600,
+          minHeightMm: 220,
+          unit: 'mm',
+        },
+        columnPlan: {
+          columnCount: 1,
+          columns: [{ index: 0, shelfWidthMm: 800 }],
+        },
+      }),
+    );
+
+    const useCase = new ListNextOptions(
+      repo,
+      new FakeCatalogRulesProvider(buildCatalogRules({
+        footHeightsMm: [],
+        uprightHeightsMm: [120, 300, 400],
+      })),
+    );
+
+    const result = await useCase.execute({
+      id: 'cfg_test',
+      ownerId: 'usr_1',
+      columnIndex: 0,
+    });
+
+    expect(result.options.map((option) => option.heightMm)).toEqual([120, 300, 400]);
+    expect(result.options.some((option) => option.allowed)).toBe(true);
+  });
 });

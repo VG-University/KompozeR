@@ -3,6 +3,7 @@ import {
   buildSpines,
   computeNextLevelMm,
   deriveSpineBom,
+  resolveFirstLevelHeightsMm,
   validateColumnCandidate,
   validateSpine,
 } from "../../src/domain/services/SpineModel";
@@ -65,6 +66,20 @@ describe("SpineModel", () => {
     expect(deriveSpineBom([80, 180], rules)).toEqual({
       footHeightMm: 80,
       uprightHeightsMm: [80],
+      terminalHeightMm: 40,
+    });
+  });
+
+  it("falls back to upright heights when the catalog has no feet", () => {
+    const fallbackRules = {
+      ...rules,
+      footHeightsMm: [],
+      uprightHeightsMm: [80, 180],
+    };
+
+    expect(resolveFirstLevelHeightsMm(fallbackRules)).toEqual([80, 180]);
+    expect(validateSpine([80, 180], fallbackRules)).toEqual({
+      valid: true,
       terminalHeightMm: 40,
     });
   });

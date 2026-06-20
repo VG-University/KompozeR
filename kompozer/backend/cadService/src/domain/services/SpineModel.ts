@@ -42,6 +42,10 @@ export interface SpineBom {
   terminalHeightMm: number;
 }
 
+export function resolveFirstLevelHeightsMm(rules: Pick<SpineRules, 'footHeightsMm' | 'uprightHeightsMm'>): readonly number[] {
+  return rules.footHeightsMm.length > 0 ? rules.footHeightsMm : rules.uprightHeightsMm;
+}
+
 export interface ColumnSpineValidationResult {
   valid: boolean;
   spineIndex?: number;
@@ -83,7 +87,9 @@ export function validateSpine(levelsMm: readonly number[], rules: SpineRules): S
     return { valid: true };
   }
 
-  if (!rules.footHeightsMm.includes(sortedLevels[0])) {
+  const firstLevelHeightsMm = resolveFirstLevelHeightsMm(rules);
+
+  if (!firstLevelHeightsMm.includes(sortedLevels[0])) {
     return {
       valid: false,
       reasonCode: "INVALID_FIRST_LEVEL",
