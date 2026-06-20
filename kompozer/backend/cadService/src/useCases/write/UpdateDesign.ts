@@ -12,13 +12,38 @@ import {
 } from '../types';
 import { CatalogRules, CatalogRulesProvider } from '../../domain/ports/CatalogRulesProvider';
 import { deriveBom } from '../../domain/services/deriveBom';
+import {
+  SHELF_THICKNESS_MM,
+  validateColumnDesigns,
+} from '../../domain/services/SpineModel';
 
+/**
+ * Write use case for Step 4 (design): validates and persists column shelf levels.
+ *
+ * Responsibilities:
+ * - enforce geometric/domain constraints for every submitted column design,
+ * - validate the merged shared spines induced by adjacent columns,
+ * - keep shelf thickness server-driven and constant,
+ * - derive BOM preview and promote status when configuration becomes finalizable.
+ *
+ * Important design choice:
+ * This use case validates the *entire* submitted `columnDesigns` snapshot.
+ * The frontend may execute add/remove operations, but backend remains source of truth.
+ */
 export class UpdateDesign {
   constructor(
     private readonly configurationRepository: ConfigurationRepository,
     private readonly catalogRulesProvider: CatalogRulesProvider,
   ) {}
 
+  /**
+   * Validates a full design snapshot and saves it.
+   *
+   * Status transitions:
+   * - no designs -> `COLUMNS_DEFINED`
+   * - designs present -> `DESIGN_IN_PROGRESS`
+   * - designs present + BOM derived -> `READY_FOR_FINALIZE`
+   */
   async execute(input: UpdateDesignInput): Promise<ConfigurationDto> {
     if (!input.id?.trim()) {
       throw new ValidationError('configurationId is required');
@@ -38,13 +63,17 @@ export class UpdateDesign {
     }
 
     const rules = await this.catalogRulesProvider.getRules(configuration.category);
-    const terminalHeightMm = this.pickTerminalHeight(rules);
+    const normalizedDesigns = input.columnDesigns.map((design) => ({
+      ...design,
+      shelfThicknessMm: SHELF_THICKNESS_MM,
+    }));
 
     const validIndices = new Set(configuration.columnPlan.columns.map((column) => column.index));
     const seen = new Set<number>();
     const byIndex = new Map<number, ColumnDesign>();
 
-    for (const design of input.columnDesigns) {
+    // Per-column validation: structure, dimensions, monotonic levels and global height.
+    for (const design of normalizedDesigns) {
       if (!validIndices.has(design.columnIndex)) {
         throw new ValidationError('columnDesign references an unknown column index');
       }
@@ -67,45 +96,49 @@ export class UpdateDesign {
         );
       }
 
-      if (design.shelfThicknessMm !== shelfRule.heightMm) {
+      if (design.shelfThicknessMm !== SHELF_THICKNESS_MM) {
         throw new ValidationError(
-          `column ${design.columnIndex} shelfThicknessMm must match shelf thickness ${shelfRule.heightMm}`,
+          `column ${design.columnIndex} shelfThicknessMm must match shelf thickness ${SHELF_THICKNESS_MM}`,
         );
       }
 
-      const topLevel = design.levelsMm.length > 0 ? design.levelsMm[design.levelsMm.length - 1] : 0;
-      if (topLevel > 0) {
-        const totalHeight = topLevel + design.shelfThicknessMm + terminalHeightMm;
-        if (totalHeight > configuration.environment.maxHeightMm) {
-          throw new ValidationError(
-            `column ${design.columnIndex} exceeds maxHeightMm with terminal and shelf thickness`,
-          );
-        }
-      }
+      // Levels are absolute heights from floor and must strictly increase.
+      this.ensureStrictlyIncreasingLevels(design.columnIndex, design.levelsMm);
 
       byIndex.set(design.columnIndex, design);
     }
 
-    this.ensureAdjacencyConstraint(configuration.columnPlan, byIndex);
-    this.ensureImmediateLookAhead(
-      configuration.columnPlan,
-      byIndex,
-      rules,
-      terminalHeightMm,
-      configuration.environment.maxHeightMm,
+    const sortedColumns = [...configuration.columnPlan.columns].sort((left, right) => left.index - right.index);
+    const validation = validateColumnDesigns(
+      sortedColumns.map((column) => ({
+        levelsMm: byIndex.get(column.index)?.levelsMm ?? [],
+      })),
+      {
+        footHeightsMm: rules.footHeightsMm,
+        uprightHeightsMm: rules.uprightHeightsMm,
+        terminalHeightsMm: rules.terminalHeightsMm,
+        maxHeightMm: configuration.environment.maxHeightMm,
+      },
     );
+    if (!validation.valid) {
+      throw new ValidationError(
+        validation.reason
+          ? `spine ${validation.spineIndex} is invalid: ${validation.reason}`
+          : `spine ${validation.spineIndex} is invalid`,
+      );
+    }
 
     const updated: Configuration = {
       ...configuration,
-      columnDesigns: input.columnDesigns,
-      status: input.columnDesigns.length > 0 ? 'DESIGN_IN_PROGRESS' : 'COLUMNS_DEFINED',
+      columnDesigns: normalizedDesigns,
+      status: normalizedDesigns.length > 0 ? 'DESIGN_IN_PROGRESS' : 'COLUMNS_DEFINED',
       version: configuration.version + 1,
       updatedAt: new Date(),
       components: [],
     };
 
     // Derive BOM if design is complete
-    if (input.columnDesigns.length > 0) {
+    if (normalizedDesigns.length > 0) {
       try {
         updated.components = deriveBom(updated, rules);
       } catch (err) {
@@ -122,6 +155,25 @@ export class UpdateDesign {
     return toConfigurationDto(updated);
   }
 
+  /**
+   * Enforces strictly increasing positive levels in a single column.
+   *
+   * Levels are absolute Y coordinates (mm from floor), therefore duplicates
+   * or descending values are invalid by definition.
+   */
+  private ensureStrictlyIncreasingLevels(columnIndex: number, levelsMm: number[]): void {
+    let previous = 0;
+    for (const level of levelsMm) {
+      if (!Number.isFinite(level) || level <= 0) {
+        throw new ValidationError(`column ${columnIndex} levels must be positive numbers`);
+      }
+      if (level <= previous) {
+        throw new ValidationError(`column ${columnIndex} levels must be strictly increasing`);
+      }
+      previous = level;
+    }
+  }
+
   private async loadOwnedConfiguration(id: string, ownerId: string): Promise<Configuration> {
     const configuration = await this.configurationRepository.findById(id);
     if (!configuration || configuration.ownerId !== ownerId) {
@@ -129,121 +181,5 @@ export class UpdateDesign {
     }
 
     return configuration;
-  }
-
-  private pickTerminalHeight(rules: CatalogRules): number {
-    if (rules.terminalHeightsMm.length === 0) {
-      return 0;
-    }
-
-    return Math.max(...rules.terminalHeightsMm);
-  }
-
-  private ensureAdjacencyConstraint(
-    columnPlan: ColumnPlan,
-    byIndex: Map<number, ColumnDesign>,
-  ): void {
-    const sortedColumns = [...columnPlan.columns].sort((a, b) => a.index - b.index);
-
-    for (let i = 0; i < sortedColumns.length - 1; i += 1) {
-      const left = byIndex.get(sortedColumns[i].index);
-      const right = byIndex.get(sortedColumns[i + 1].index);
-
-      if (!left || !right || left.levelsMm.length === 0 || right.levelsMm.length === 0) {
-        continue;
-      }
-
-      const rightLevels = new Set(right.levelsMm);
-      for (const level of left.levelsMm) {
-        if (rightLevels.has(level)) {
-          throw new ValidationError(
-            `Adjacent columns ${left.columnIndex} and ${right.columnIndex} cannot share level ${level}`,
-          );
-        }
-      }
-    }
-  }
-
-  private ensureImmediateLookAhead(
-    columnPlan: ColumnPlan,
-    byIndex: Map<number, ColumnDesign>,
-    rules: CatalogRules,
-    terminalHeightMm: number,
-    maxHeightMm: number,
-  ): void {
-    const sortedColumns = [...columnPlan.columns].sort((a, b) => a.index - b.index);
-
-    for (let i = 0; i < sortedColumns.length - 1; i += 1) {
-      const leftPlan = sortedColumns[i];
-      const rightPlan = sortedColumns[i + 1];
-      const left = byIndex.get(leftPlan.index);
-      const right = byIndex.get(rightPlan.index);
-
-      if (!left && !right) {
-        continue;
-      }
-
-      if (left && (!right || right.levelsMm.length === 0)) {
-        this.ensureMissingNeighborHasCandidate(
-          left,
-          rightPlan.index,
-          rightPlan.shelfWidthMm,
-          rules,
-          terminalHeightMm,
-          maxHeightMm,
-        );
-      }
-
-      if (right && (!left || left.levelsMm.length === 0)) {
-        this.ensureMissingNeighborHasCandidate(
-          right,
-          leftPlan.index,
-          leftPlan.shelfWidthMm,
-          rules,
-          terminalHeightMm,
-          maxHeightMm,
-        );
-      }
-    }
-  }
-
-  private ensureMissingNeighborHasCandidate(
-    designedNeighbor: ColumnDesign,
-    missingColumnIndex: number,
-    missingColumnWidthMm: number,
-    rules: CatalogRules,
-    terminalHeightMm: number,
-    maxHeightMm: number,
-  ): void {
-    const missingShelf = rules.shelfByWidthMm.get(missingColumnWidthMm);
-    if (!missingShelf) {
-      throw new ValidationError(
-        `No shelf rule found for width ${missingColumnWidthMm} in category constraints`,
-      );
-    }
-
-    const forbidden = new Set(designedNeighbor.levelsMm);
-    const candidates = rules.footHeightsMm.length > 0
-      ? rules.footHeightsMm
-      : rules.uprightHeightsMm;
-
-    if (candidates.length === 0) {
-      // If catalog data is incomplete for this category, avoid blocking user edits.
-      // We still validate known geometric constraints when candidate heights are available.
-      return;
-    }
-
-    const hasAtLeastOneCandidate = candidates.some((candidateLevel) => {
-      const totalHeight = candidateLevel + missingShelf.heightMm + terminalHeightMm;
-      return candidateLevel > 0
-        && !forbidden.has(candidateLevel)
-        && totalHeight <= maxHeightMm;
-    });
-
-    if (!hasAtLeastOneCandidate) {
-      throw new ValidationError(
-        `Look-ahead failed: column ${missingColumnIndex} has no valid next level against adjacent constraints`,
-      );
-    }
   }
 }

@@ -7,6 +7,7 @@ import {
 } from '../domain/entities/Configuration';
 import { ConfigurationStatus } from '../domain/entities/ConfigurationStatus';
 import { BomItem } from '../domain/entities/Bom';
+import { SpineReasonCode } from '../domain/services/SpineModel';
 
 export interface CreateConfigurationInput {
   ownerId: string;
@@ -76,6 +77,28 @@ export interface UpdateDesignInput {
 export interface FinalizeConfigurationInput {
   id: string;
   ownerId: string;
+}
+
+export interface ListNextOptionsInput {
+  id: string;
+  ownerId: string;
+  columnIndex: number;
+}
+
+export type NextOptionReasonCode = SpineReasonCode | 'INVALID_GAP' | 'SPINE_CONFLICT';
+
+export interface NextOptionDto {
+  heightMm: number;
+  allowed: boolean;
+  reasonCode?: NextOptionReasonCode;
+  reason?: string;
+}
+
+export interface ListNextOptionsOutput {
+  columnIndex: number;
+  options: NextOptionDto[];
+  lookAhead: { feasible: boolean };
+  version: number;
 }
 
 export function toConfigurationDto(configuration: Configuration): ConfigurationDto {

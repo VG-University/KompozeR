@@ -19,13 +19,13 @@ function sumByType(bom: BomItem[]): Record<string, number> {
 }
 
 describe('deriveBom', () => {
-  it('single column: counts RIPIANO / PIEDINO / TERMINALE / MONTANTE correctly', () => {
+  it('single column: counts shelves and shared-spine components correctly', () => {
     const cfg = buildConfiguration({
       status: 'DESIGN_IN_PROGRESS',
       category: 'TONDO',
       environment: env,
       columnPlan: { columnCount: 1, columns: [{ index: 0, shelfWidthMm: 800 }] },
-      // 2 levels: gap0=120mm (foot), gap1=300-20=280 → upright 300mm
+      // Two exterior spines share the same column levels.
       columnDesigns: [{ columnIndex: 0, levelsMm: [120, 440], shelfThicknessMm: 20 }],
     });
 
@@ -35,15 +35,15 @@ describe('deriveBom', () => {
 
     // 2 shelves
     expect(byType['RIPIANO']).toBe(2);
-    // 4 feet per column
+    // 2 spines × 2 feet = 4
     expect(byType['PIEDINO']).toBe(4);
-    // 4 terminals per column
+    // 2 spines × 2 terminals = 4
     expect(byType['TERMINALE']).toBe(4);
-    // 2 gaps × 4 uprights = 8
-    expect(byType['MONTANTE']).toBe(8);
+    // 2 spines × 1 upright segment × 2 = 4
+    expect(byType['MONTANTE']).toBe(4);
   });
 
-  it('two adjacent columns: shared inner uprights are deduped', () => {
+  it('two adjacent columns: interior spine is counted once', () => {
     const cfg = buildConfiguration({
       status: 'DESIGN_IN_PROGRESS',
       category: 'TONDO',
@@ -55,10 +55,11 @@ describe('deriveBom', () => {
           { index: 1, shelfWidthMm: 600 },
         ],
       },
-      // Each column: 1 level at 120mm → 1 gap each (foot height 120mm)
+      // Valid shared-spine snapshot: both columns use the same levels, so the
+      // interior spine is the distinct merge [120, 440].
       columnDesigns: [
-        { columnIndex: 0, levelsMm: [120], shelfThicknessMm: 20 },
-        { columnIndex: 1, levelsMm: [300], shelfThicknessMm: 20 },
+        { columnIndex: 0, levelsMm: [120, 440], shelfThicknessMm: 20 },
+        { columnIndex: 1, levelsMm: [120, 440], shelfThicknessMm: 20 },
       ],
     });
 
@@ -66,35 +67,32 @@ describe('deriveBom', () => {
 
     const byType = sumByType(bom);
 
-    // 1 shelf × 2 columns = 2 RIPIANO (different SKUs aggregated by SKU)
+    // 2 shelves × 2 columns = 4 RIPIANO (different SKUs aggregated by SKU)
     const totalShelves = bom.filter((b) => b.componentType === 'RIPIANO').reduce((s, b) => s + b.quantity, 0);
-    expect(totalShelves).toBe(2);
+    expect(totalShelves).toBe(4);
 
-    // Without dedup: 2 cols × 1 gap × 4 uprights = 8
-    // Dedup: 1 shared gap → subtract 2 → 6
+    // 3 spines (left, interior, right) × 1 upright segment × 2 = 6
     expect(byType['MONTANTE']).toBe(6);
 
-    // PIEDINO: 4 × 2 cols = 8; TERMINALE: same
-    expect(byType['PIEDINO']).toBe(8);
-    expect(byType['TERMINALE']).toBe(8);
+    // 3 spines × 2 components each
+    expect(byType['PIEDINO']).toBe(6);
+    expect(byType['TERMINALE']).toBe(6);
   });
 
-  it('KUBE: applies x2 multiplier to MONTANTE only', () => {
+  it('KUBE: is currently treated like every other system', () => {
     const cfg = buildConfiguration({
       status: 'DESIGN_IN_PROGRESS',
       category: 'KUBE',
       environment: env,
       columnPlan: { columnCount: 1, columns: [{ index: 0, shelfWidthMm: 800 }] },
-      columnDesigns: [{ columnIndex: 0, levelsMm: [120], shelfThicknessMm: 20 }],
+      columnDesigns: [{ columnIndex: 0, levelsMm: [120, 440], shelfThicknessMm: 20 }],
     });
 
     const bom = deriveBom(cfg, buildCatalogRules());
 
     const byType = sumByType(bom);
 
-    // 1 gap × 4 uprights × 2 (KUBE) = 8
-    expect(byType['MONTANTE']).toBe(8);
-    // PIEDINO and TERMINALE remain 4
+    expect(byType['MONTANTE']).toBe(4);
     expect(byType['PIEDINO']).toBe(4);
     expect(byType['TERMINALE']).toBe(4);
   });
@@ -113,17 +111,17 @@ describe('deriveBom', () => {
         ],
       },
       columnDesigns: [
-        { columnIndex: 0, levelsMm: [120], shelfThicknessMm: 20 },
-        { columnIndex: 1, levelsMm: [300], shelfThicknessMm: 20 },
+        { columnIndex: 0, levelsMm: [120, 440], shelfThicknessMm: 20 },
+        { columnIndex: 1, levelsMm: [120, 440], shelfThicknessMm: 20 },
       ],
     });
 
     const bom = deriveBom(cfg, buildCatalogRules());
 
     const ripianoEntries = bom.filter((b) => b.componentType === 'RIPIANO');
-    // Same SKU → should be aggregated into 1 entry with quantity 2
+    // Same SKU → should be aggregated into 1 entry with quantity 4
     expect(ripianoEntries).toHaveLength(1);
-    expect(ripianoEntries[0].quantity).toBe(2);
+    expect(ripianoEntries[0].quantity).toBe(4);
     expect(ripianoEntries[0].sku).toBe('RIP-800');
   });
 });

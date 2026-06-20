@@ -102,7 +102,7 @@ describe('cadRouter', () => {
       .send({
         columnDesigns: [
           { columnIndex: 0, levelsMm: [120, 440], shelfThicknessMm: 20 },
-          { columnIndex: 1, levelsMm: [300, 640], shelfThicknessMm: 20 },
+          { columnIndex: 1, levelsMm: [120, 440], shelfThicknessMm: 20 },
         ],
       });
 
@@ -286,5 +286,56 @@ describe('cadRouter', () => {
 
     expect(res.status).toBe(422);
     expect(res.body.error.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('GET /cad/configurations/:id/next-options -> 200 with backend-calculated options', async () => {
+    const app = buildApp({
+      configurationRepository: new FakeConfigurationRepository(),
+      catalogRulesProvider: new FakeCatalogRulesProvider(),
+      cartServiceClient: new FakeCartServiceClient(),
+    });
+
+    const created = await request(app)
+      .post('/cad/configurations')
+      .set('x-user-id', 'usr_1')
+      .send({ name: 'Bozza' });
+
+    await request(app)
+      .patch(`/cad/configurations/${created.body.id}/environment`)
+      .set('x-user-id', 'usr_1')
+      .send({
+        maxWidthMm: 5000,
+        maxHeightMm: 3000,
+        minWidthMm: 600,
+        minHeightMm: 220,
+        unit: 'mm',
+      });
+
+    await request(app)
+      .patch(`/cad/configurations/${created.body.id}/category`)
+      .set('x-user-id', 'usr_1')
+      .send({ category: 'TONDO' });
+
+    await request(app)
+      .patch(`/cad/configurations/${created.body.id}/column-plan`)
+      .set('x-user-id', 'usr_1')
+      .send({
+        columnCount: 2,
+        columns: [
+          { index: 0, shelfWidthMm: 800 },
+          { index: 1, shelfWidthMm: 600 },
+        ],
+      });
+
+    const res = await request(app)
+      .get(`/cad/configurations/${created.body.id}/next-options?columnIndex=0`)
+      .set('x-user-id', 'usr_1');
+
+    expect(res.status).toBe(200);
+    expect(res.body.columnIndex).toBe(0);
+    expect(Array.isArray(res.body.options)).toBe(true);
+    expect(res.body.options.length).toBeGreaterThan(0);
+    expect(res.body.options.some((option: { allowed: boolean }) => option.allowed)).toBe(true);
+    expect(typeof res.body.lookAhead?.feasible).toBe('boolean');
   });
 });

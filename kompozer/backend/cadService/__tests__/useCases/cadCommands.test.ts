@@ -3,6 +3,7 @@ import { FinalizeConfiguration } from '../../src/useCases/write/FinalizeConfigur
 import { SetCategory } from '../../src/useCases/write/SetCategory';
 import { SetColumnPlan } from '../../src/useCases/write/SetColumnPlan';
 import { SetEnvironment } from '../../src/useCases/write/SetEnvironment';
+import { ListNextOptions } from '../../src/useCases/read/ListNextOptions';
 import { UpdateDesign } from '../../src/useCases/write/UpdateDesign';
 import { deriveBom } from '../../src/domain/services/deriveBom';
 import {
@@ -267,7 +268,7 @@ describe('CAD command use cases', () => {
     ).rejects.toMatchObject({ code: 'VALIDATION_ERROR' });
   });
 
-  it('UpdateDesign rejects equal levels in adjacent columns', async () => {
+  it('UpdateDesign rejects adjacent designs when the shared spine would require an invalid segment', async () => {
     const repo = new FakeConfigurationRepository();
     repo.seed(
       buildConfiguration({
@@ -304,7 +305,75 @@ describe('CAD command use cases', () => {
     ).rejects.toMatchObject({ code: 'VALIDATION_ERROR' });
   });
 
-  it('UpdateDesign rejects dead-end look-ahead for adjacent empty column', async () => {
+  it('UpdateDesign accepts equal levels in adjacent columns when the shared spine remains valid', async () => {
+    const repo = new FakeConfigurationRepository();
+    repo.seed(
+      buildConfiguration({
+        status: 'COLUMNS_DEFINED',
+        category: 'TONDO',
+        environment: {
+          maxWidthMm: 5000,
+          maxHeightMm: 3000,
+          minWidthMm: 600,
+          minHeightMm: 220,
+          unit: 'mm',
+        },
+        columnPlan: {
+          columnCount: 2,
+          columns: [
+            { index: 0, shelfWidthMm: 800 },
+            { index: 1, shelfWidthMm: 600 },
+          ],
+        },
+      }),
+    );
+
+    const useCase = new UpdateDesign(repo, new FakeCatalogRulesProvider());
+    const result = await useCase.execute({
+      id: 'cfg_test',
+      ownerId: 'usr_1',
+      columnDesigns: [
+        { columnIndex: 0, levelsMm: [120, 440], shelfThicknessMm: 20 },
+        { columnIndex: 1, levelsMm: [120, 440], shelfThicknessMm: 20 },
+      ],
+    });
+
+    expect(result.status).toBe('READY_FOR_FINALIZE');
+    expect(result.columnDesigns).toHaveLength(2);
+  });
+
+  it('UpdateDesign rejects non increasing levels in the same column', async () => {
+    const repo = new FakeConfigurationRepository();
+    repo.seed(
+      buildConfiguration({
+        status: 'COLUMNS_DEFINED',
+        category: 'TONDO',
+        environment: {
+          maxWidthMm: 5000,
+          maxHeightMm: 3000,
+          minWidthMm: 600,
+          minHeightMm: 220,
+          unit: 'mm',
+        },
+        columnPlan: {
+          columnCount: 1,
+          columns: [{ index: 0, shelfWidthMm: 800 }],
+        },
+      }),
+    );
+
+    const useCase = new UpdateDesign(repo, new FakeCatalogRulesProvider());
+
+    await expect(
+      useCase.execute({
+        id: 'cfg_test',
+        ownerId: 'usr_1',
+        columnDesigns: [{ columnIndex: 0, levelsMm: [420, 420], shelfThicknessMm: 20 }],
+      }),
+    ).rejects.toMatchObject({ code: 'VALIDATION_ERROR' });
+  });
+
+  it('UpdateDesign rejects a design when the shared spine has no valid terminal fit', async () => {
     const repo = new FakeConfigurationRepository();
     repo.seed(
       buildConfiguration({
@@ -344,6 +413,36 @@ describe('CAD command use cases', () => {
         columnDesigns: [{ columnIndex: 0, levelsMm: [120], shelfThicknessMm: 20 }],
       }),
     ).rejects.toMatchObject({ code: 'VALIDATION_ERROR' });  });
+
+  it('UpdateDesign normalizes client shelf thickness to the fixed 20mm value', async () => {
+    const repo = new FakeConfigurationRepository();
+    repo.seed(
+      buildConfiguration({
+        status: 'COLUMNS_DEFINED',
+        category: 'TONDO',
+        environment: {
+          maxWidthMm: 5000,
+          maxHeightMm: 3000,
+          minWidthMm: 600,
+          minHeightMm: 220,
+          unit: 'mm',
+        },
+        columnPlan: {
+          columnCount: 1,
+          columns: [{ index: 0, shelfWidthMm: 800 }],
+        },
+      }),
+    );
+
+    const useCase = new UpdateDesign(repo, new FakeCatalogRulesProvider());
+    const result = await useCase.execute({
+      id: 'cfg_test',
+      ownerId: 'usr_1',
+      columnDesigns: [{ columnIndex: 0, levelsMm: [120, 440], shelfThicknessMm: 999 }],
+    });
+
+    expect(result.columnDesigns[0].shelfThicknessMm).toBe(20);
+  });
 
   it('SetEnvironment initializes components to empty array', async () => {
     const repo = new FakeConfigurationRepository();
@@ -452,5 +551,38 @@ describe('CAD command use cases', () => {
     const skus = result.bom!.map((c) => c.sku);
     expect(skus).toContain('RIP-800'); // Ripiano
     expect(skus.some((s) => s.startsWith('MON-'))).toBe(true); // Montante
+  });
+
+  it('ListNextOptions proposes the second level using lastLevel + 20 + gap', async () => {
+    const repo = new FakeConfigurationRepository();
+    repo.seed(
+      buildConfiguration({
+        status: 'DESIGN_IN_PROGRESS',
+        category: 'TONDO',
+        environment: {
+          maxWidthMm: 5000,
+          maxHeightMm: 3000,
+          minWidthMm: 600,
+          minHeightMm: 220,
+          unit: 'mm',
+        },
+        columnPlan: {
+          columnCount: 1,
+          columns: [{ index: 0, shelfWidthMm: 800 }],
+        },
+        columnDesigns: [{ columnIndex: 0, levelsMm: [120], shelfThicknessMm: 20 }],
+      }),
+    );
+
+    const useCase = new ListNextOptions(repo, new FakeCatalogRulesProvider());
+    const result = await useCase.execute({
+      id: 'cfg_test',
+      ownerId: 'usr_1',
+      columnIndex: 0,
+    });
+
+    const allowedHeights = result.options.filter((option) => option.allowed).map((option) => option.heightMm);
+    expect(allowedHeights).toContain(300);
+    expect(allowedHeights).not.toContain(280);
   });
 });

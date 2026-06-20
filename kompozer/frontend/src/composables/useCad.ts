@@ -11,6 +11,8 @@ import type {
 } from '@/types/cad';
 import { ApiError } from '@/types/api';
 
+const SHELF_THICKNESS_MM = 20;
+
 export function useCad() {
   const notifications = useNotificationStore();
 
@@ -195,7 +197,7 @@ export function useCad() {
     };
   }
 
-  function createDesignDraft(defaultShelfThicknessMm = 20): ColumnDesign[] {
+  function createDesignDraft(defaultShelfThicknessMm = SHELF_THICKNESS_MM): ColumnDesign[] {
     if (!selected.value?.columnPlan) {
       return [];
     }
@@ -212,12 +214,16 @@ export function useCad() {
         return {
           columnIndex: index,
           levelsMm: existing ? [...existing.levelsMm].sort((a, b) => a - b) : [],
-          shelfThicknessMm: existing?.shelfThicknessMm ?? defaultShelfThicknessMm,
+          shelfThicknessMm: defaultShelfThicknessMm,
         };
       });
   }
 
-  async function addTopShelf(columnIndex: number, gapHeightMm: number, shelfThicknessMm = 20): Promise<void> {
+  async function addTopShelf(
+    columnIndex: number,
+    gapHeightMm: number,
+    shelfThicknessMm = SHELF_THICKNESS_MM,
+  ): Promise<void> {
     if (!selected.value) {
       return;
     }
@@ -230,12 +236,18 @@ export function useCad() {
     }
 
     const lastLevel = target.levelsMm.length > 0 ? target.levelsMm[target.levelsMm.length - 1] : 0;
-    target.levelsMm = [...target.levelsMm, lastLevel + gapHeightMm].sort((a, b) => a - b);
+    const nextLevel = target.levelsMm.length === 0
+      ? gapHeightMm
+      : lastLevel + shelfThicknessMm + gapHeightMm;
+    target.levelsMm = [...target.levelsMm, nextLevel].sort((a, b) => a - b);
 
     await updateDesign(draft);
   }
 
-  async function removeTopShelf(columnIndex: number, shelfThicknessMm = 20): Promise<void> {
+  async function removeTopShelf(
+    columnIndex: number,
+    shelfThicknessMm = SHELF_THICKNESS_MM,
+  ): Promise<void> {
     if (!selected.value) {
       return;
     }

@@ -10,6 +10,7 @@ import { CartServiceClient } from './domain/ports/CartServiceClient';
 import { ConfigurationRepository } from './domain/ports/ConfigurationRepository';
 import { GetConfiguration } from './useCases/read/GetConfiguration';
 import { ListConfigurations } from './useCases/read/ListConfigurations';
+import { ListNextOptions } from './useCases/read/ListNextOptions';
 import { CreateConfiguration } from './useCases/write/CreateConfiguration';
 import { FinalizeConfiguration } from './useCases/write/FinalizeConfiguration';
 import { SetCategory } from './useCases/write/SetCategory';
@@ -33,6 +34,7 @@ export function buildApp(deps: BuildAppDeps = {}) {
   const createConfiguration = new CreateConfiguration(configurationRepository);
   const listConfigurations = new ListConfigurations(configurationRepository);
   const getConfiguration = new GetConfiguration(configurationRepository, catalogRulesProvider);
+  const listNextOptions = new ListNextOptions(configurationRepository, catalogRulesProvider);
   const setEnvironment = new SetEnvironment(configurationRepository);
   const setCategory = new SetCategory(configurationRepository);
   const setColumnPlan = new SetColumnPlan(configurationRepository, catalogRulesProvider);
@@ -53,6 +55,7 @@ export function buildApp(deps: BuildAppDeps = {}) {
       createConfiguration,
       listConfigurations,
       getConfiguration,
+      listNextOptions,
       setEnvironment,
       setCategory,
       setColumnPlan,

@@ -71,7 +71,7 @@ const environmentDraft = ref<Environment>({
 
 const columnCountDraft = ref(2);
 const shelfWidthsDraft = ref<number[]>([800, 800]);
-const SHELF_THICKNESS_MM = 18;
+const SHELF_THICKNESS_MM = 20;
 const shelfThicknessDraft = ref(SHELF_THICKNESS_MM);
 const selectedGapByColumn = ref<Record<number, number | null>>({});
 const categoryCatalogItems = ref<CatalogItem[]>([]);
@@ -189,24 +189,6 @@ const availableShelfWidths = computed(() =>
   ),
 );
 
-const availableFootHeights = computed(() =>
-  uniqueSortedNumeric(
-    categoryCatalogItems.value
-      .filter((item) => normalizedType(item) === 'PIEDINO')
-      .map((item) => Number(item.dimensions?.heightMm))
-      .filter((value) => Number.isFinite(value) && value > 0),
-  ),
-);
-
-const availableMountHeights = computed(() =>
-  uniqueSortedNumeric(
-    categoryCatalogItems.value
-      .filter((item) => normalizedType(item) === 'MONTANTE')
-      .map((item) => Number(item.dimensions?.heightMm))
-      .filter((value) => Number.isFinite(value) && value > 0),
-  ),
-);
-
 watch(columnCountDraft, (count) => {
   const safeCount = Math.max(1, Math.min(8, count));
   if (safeCount !== count) {
@@ -291,6 +273,21 @@ function syncDraftLengths(nextCount: number): void {
 
 function normalizedType(item: CatalogItem): string {
   return String(item.Type ?? '').trim().toUpperCase();
+}
+
+function formatComponentTypeLabel(componentType?: string): string {
+  switch (componentType) {
+    case 'RIPIANO':
+      return 'Ripiano';
+    case 'PIEDINO':
+      return 'Piedino';
+    case 'MONTANTE':
+      return 'Montante';
+    case 'TERMINALE':
+      return 'Terminale';
+    default:
+      return componentType || 'Componente';
+  }
 }
 
 function uniqueSortedNumeric(values: number[]): number[] {
@@ -413,36 +410,67 @@ function getOptions(columnIndex: number): NextOption[] {
 }
 
 function effectiveOptions(columnIndex: number): NextOption[] {
-  const remote = getOptions(columnIndex).filter((option) => option.allowed);
-  if (remote.length > 0) {
-    return remote;
-  }
-  return fallbackOptions(columnIndex);
+  return getOptions(columnIndex);
 }
 
-function fallbackOptions(columnIndex: number): NextOption[] {
-  const levels = designByColumn.value.get(columnIndex)?.levelsMm ?? [];
-  const sourceHeights = levels.length === 0 ? availableFootHeights.value : availableMountHeights.value;
-  return sourceHeights.map((heightMm) => ({
-    heightMm,
-    allowed: true,
-  }));
+function optionReason(option: NextOption): string {
+  if (option.reason && option.reason.trim().length > 0) {
+    return option.reason;
+  }
+
+  switch (option.reasonCode) {
+    case 'INVALID_GAP':
+      return 'Altezza pezzo non valida';
+    case 'NON_INCREASING_LEVEL':
+      return 'Il nuovo livello deve essere maggiore del precedente';
+    case 'MAX_HEIGHT_EXCEEDED':
+      return 'Supera l altezza massima configurata';
+    case 'ADJACENCY_CONFLICT':
+      return 'Conflitto con la colonna adiacente (stessa quota)';
+    case 'LOOK_AHEAD_BLOCKED':
+      return 'Questa scelta blocca i passi successivi';
+    case 'INVALID_FIRST_LEVEL':
+      return 'Il primo livello deve corrispondere a un piedino di catalogo';
+    case 'INVALID_SEGMENT':
+      return 'La spina condivisa richiede un montante non disponibile a catalogo';
+    case 'NO_TERMINAL_FIT':
+      return 'Non esiste un terminale compatibile con l altezza residua';
+    case 'SPINE_CONFLICT':
+      return 'Questa scelta viola i vincoli della spina condivisa';
+    default:
+      return 'Opzione non consentita';
+  }
+}
+
+function hasAllowedOption(columnIndex: number): boolean {
+  return effectiveOptions(columnIndex).some((option) => option.allowed);
+}
+
+function blockedReasons(columnIndex: number): string[] {
+  const reasons = effectiveOptions(columnIndex)
+    .filter((option) => !option.allowed)
+    .map((option) => optionReason(option));
+
+  return Array.from(new Set(reasons));
 }
 
 async function openNextOptions(columnIndex: number): Promise<void> {
-  const fetchedOptions = await fetchNextOptions(columnIndex);
-  const options = (fetchedOptions.length > 0 ? fetchedOptions : fallbackOptions(columnIndex)).filter(
-    (option) => option.allowed,
-  );
+  const options = await fetchNextOptions(columnIndex);
   setNextOptions(columnIndex, options);
   selectedGapByColumn.value = {
     ...selectedGapByColumn.value,
-    [columnIndex]: options[0]?.heightMm ?? null,
+    [columnIndex]: options.find((option) => option.allowed)?.heightMm ?? null,
   };
 }
 
+async function refreshOptionsAround(columnIndex: number): Promise<void> {
+  const targets = [columnIndex - 1, columnIndex, columnIndex + 1];
+  const valid = targets.filter((index, pos, arr) => index >= 0 && arr.indexOf(index) === pos);
+  await Promise.all(valid.map((index) => openNextOptions(index)));
+}
+
 async function addShelf(columnIndex: number): Promise<void> {
-  const gap = selectedGapByColumn.value[columnIndex] ?? effectiveOptions(columnIndex)[0]?.heightMm ?? null;
+  const gap = selectedGapByColumn.value[columnIndex] ?? effectiveOptions(columnIndex).find((o) => o.allowed)?.heightMm ?? null;
   if (!gap) {
     return;
   }
@@ -451,12 +479,12 @@ async function addShelf(columnIndex: number): Promise<void> {
     [columnIndex]: gap,
   };
   await addTopShelf(columnIndex, gap, shelfThicknessDraft.value);
-  await openNextOptions(columnIndex);
+  await refreshOptionsAround(columnIndex);
 }
 
 async function removeShelf(columnIndex: number): Promise<void> {
   await removeTopShelf(columnIndex, shelfThicknessDraft.value);
-  await openNextOptions(columnIndex);
+  await refreshOptionsAround(columnIndex);
 }
 
 function stepDone(index: number): boolean {
@@ -477,7 +505,7 @@ function stepActive(index: number): boolean {
       </div>
       <div class="header-actions">
         <button class="btn btn--light" :disabled="loading" @click="loadList">Aggiorna</button>
-        <button class="btn btn--light bom-mobile-btn" @click="showBomMobile = true">Lista componenti</button>
+        <button class="btn btn--light bom-mobile-btn" @click="showBomMobile = true">Distinta componenti</button>
       </div>
     </header>
 
@@ -576,31 +604,37 @@ function stepActive(index: number): boolean {
             <div><span class="muted">Ultimo update</span><strong>{{ formatDate(selected.updatedAt) }}</strong></div>
           </section>
 
-          <section class="canvas-section">
-            <header class="canvas-section__header">
-              <h3>Griglia configuratore</h3>
-              <span class="canvas-size">{{ environmentDraft.maxWidthMm }} x {{ environmentDraft.maxHeightMm }} mm</span>
-            </header>
-
-            <div class="canvas-grid" :style="{ '--cols': String(canvasColumns.length || 1) }">
-              <article v-for="column in canvasColumns" :key="column.index" class="canvas-column">
-                <div class="canvas-column__scale">Y</div>
-                <div class="canvas-column__body">
-                  <div
-                    v-for="(level, idx) in column.levelPercents"
-                    :key="`level-${column.index}-${idx}`"
-                    class="level-line"
-                    :style="{ bottom: `${level}%` }"
-                  >
-                    <span>{{ column.levels[idx] }}mm</span>
+          <section class="workspace-split">
+            <aside class="visual-panel">
+              <section class="canvas-section">
+                <header class="canvas-section__header">
+                  <div>
+                    <h3>Schema grafico</h3>
+                    <p class="mini muted">Vista sempre visibile della struttura corrente</p>
                   </div>
-                </div>
-                <div class="canvas-column__x">C{{ column.index + 1 }} · {{ column.shelfWidthMm }}mm</div>
-              </article>
-            </div>
-          </section>
+                  <span class="canvas-size">{{ environmentDraft.maxWidthMm }} x {{ environmentDraft.maxHeightMm }} mm</span>
+                </header>
 
-          <section class="controls-section">
+                <div class="canvas-grid" :style="{ '--cols': String(canvasColumns.length || 1) }">
+                  <article v-for="column in canvasColumns" :key="column.index" class="canvas-column">
+                    <div class="canvas-column__scale">Y</div>
+                    <div class="canvas-column__body">
+                      <div
+                        v-for="(level, idx) in column.levelPercents"
+                        :key="`level-${column.index}-${idx}`"
+                        class="level-line"
+                        :style="{ bottom: `${level}%` }"
+                      >
+                        <span>{{ column.levels[idx] }}mm</span>
+                      </div>
+                    </div>
+                    <div class="canvas-column__x">C{{ column.index + 1 }} · {{ column.shelfWidthMm }}mm</div>
+                  </article>
+                </div>
+              </section>
+            </aside>
+
+            <section class="controls-section">
             <article class="control-card">
               <h3>Step 1 - Ambiente</h3>
               <div class="two-cols">
@@ -658,7 +692,7 @@ function stepActive(index: number): boolean {
               </label>
               <p class="mini muted" v-if="catalogLoading">Caricamento larghezze da catalogo...</p>
               <p class="mini muted" v-else-if="availableShelfWidths.length === 0">
-                Nessun RIPIANO disponibile per la categoria selezionata.
+                Nessun ripiano disponibile per la categoria selezionata.
               </p>
               <div class="column-widths">
                 <label v-for="(_, i) in columnCountDraft" :key="`col-width-${i}`" class="field">
@@ -684,7 +718,7 @@ function stepActive(index: number): boolean {
             </article>
 
             <article class="control-card">
-              <h3>Step 4 - Design ripiani (+ / -)</h3>
+              <h3>Step 4 - Costruzione livelli (+ / -)</h3>
               <p class="mini muted">Spessore ripiano fisso: {{ shelfThicknessDraft }} mm</p>
 
               <div class="design-columns">
@@ -696,11 +730,11 @@ function stepActive(index: number): boolean {
 
                   <p class="mini muted">Livelli correnti: {{ column.levels.join(', ') || 'nessuno' }}</p>
                   <p class="mini muted">
-                    {{ column.levels.length === 0 ? 'Livello 0: opzioni PIEDINO' : 'Livelli successivi: opzioni MONTANTE' }}
+                    {{ column.levels.length === 0 ? 'Primo livello: scegli un PIEDINO' : 'Livello successivo: scegli un MONTANTE' }}
                   </p>
 
                   <label class="field" v-if="effectiveOptions(column.index).length > 0">
-                    <span class="field__label">Gap da aggiungere</span>
+                    <span class="field__label">Altezza pezzo da aggiungere</span>
                     <select
                       class="field__input"
                       :disabled="!canEditDesign || designLoading"
@@ -712,10 +746,17 @@ function stepActive(index: number): boolean {
                         :value="option.allowed ? option.heightMm : null"
                         :disabled="!option.allowed"
                       >
-                        {{ option.heightMm }}mm{{ option.allowed ? '' : ` - ${option.reason || 'non consentito'}` }}
+                        {{ option.heightMm }}mm{{ option.allowed ? '' : ` - ${optionReason(option)}` }}
                       </option>
                     </select>
                   </label>
+
+                  <p class="mini muted" v-if="effectiveOptions(column.index).length === 0">
+                    Nessuna opzione disponibile dal backend per questa colonna.
+                  </p>
+                  <p class="mini" v-else-if="!hasAllowedOption(column.index)">
+                    Nessuna scelta valida: {{ blockedReasons(column.index).join(' · ') }}
+                  </p>
 
                   <div class="actions-row">
                     <button
@@ -723,7 +764,7 @@ function stepActive(index: number): boolean {
                       :disabled="!canEditDesign || designLoading || !selectedGapByColumn[column.index]"
                       @click="addShelf(column.index)"
                     >
-                      + Ripiano
+                      + Livello
                     </button>
                     <button
                       class="btn btn--light btn--small"
@@ -744,19 +785,20 @@ function stepActive(index: number): boolean {
               </button>
               <p v-if="!canFinalize" class="hint">Finalizzazione disponibile solo in READY_FOR_FINALIZE.</p>
             </article>
+            </section>
           </section>
         </template>
       </main>
 
       <aside class="right-panel" v-if="selected">
-        <h2>Lista componenti</h2>
-        <p class="muted">Aggiornata in tempo reale dal backend</p>
+        <h2>Distinta componenti</h2>
+        <p class="muted">Anteprima aggiornata in tempo reale dal backend</p>
 
         <div class="bom-list" v-if="(selected.bom?.length ?? 0) > 0">
           <article class="bom-row" v-for="item in selected.bom" :key="`${item.sku}-${item.componentType || 'GEN'}`">
             <div>
               <strong>{{ item.name }}</strong>
-              <p class="mini">SKU: {{ item.sku }} · {{ item.componentType || 'COMPONENTE' }}</p>
+              <p class="mini">SKU: {{ item.sku }} · {{ formatComponentTypeLabel(item.componentType) }}</p>
             </div>
             <div class="bom-row__right">
               <span>x{{ item.quantity }}</span>
@@ -778,14 +820,14 @@ function stepActive(index: number): boolean {
     <div v-if="showBomMobile" class="modal-overlay" @click.self="showBomMobile = false">
       <article class="modal-card">
         <header class="modal-header">
-          <h3>Lista componenti</h3>
+          <h3>Distinta componenti</h3>
           <button class="btn btn--light btn--small" @click="showBomMobile = false">Chiudi</button>
         </header>
         <div class="bom-list" v-if="(selected?.bom?.length ?? 0) > 0">
           <article class="bom-row" v-for="item in selected?.bom" :key="`mob-${item.sku}-${item.componentType || 'GEN'}`">
             <div>
               <strong>{{ item.name }}</strong>
-              <p class="mini">SKU: {{ item.sku }}</p>
+              <p class="mini">SKU: {{ item.sku }} · {{ formatComponentTypeLabel(item.componentType) }}</p>
             </div>
             <div class="bom-row__right">
               <span>x{{ item.quantity }}</span>
@@ -1036,17 +1078,31 @@ function stepActive(index: number): boolean {
   gap: 2px;
 }
 
-.canvas-section {
+.workspace-split {
   margin-top: var(--space-4);
+  display: grid;
+  grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.visual-panel {
+  position: sticky;
+  top: var(--space-4);
+  align-self: start;
+}
+
+.canvas-section {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-3);
+  background: var(--color-surface-raised);
 }
 
 .canvas-section__header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: var(--space-3);
 }
 
@@ -1102,10 +1158,10 @@ function stepActive(index: number): boolean {
 }
 
 .controls-section {
-  margin-top: var(--space-4);
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-3);
+  min-width: 0;
 }
 
 .control-card {
@@ -1254,6 +1310,14 @@ function stepActive(index: number): boolean {
   .right-panel {
     grid-column: 1 / -1;
   }
+
+  .workspace-split {
+    grid-template-columns: 1fr;
+  }
+
+  .visual-panel {
+    position: static;
+  }
 }
 
 @media (max-width: 980px) {
@@ -1297,6 +1361,10 @@ function stepActive(index: number): boolean {
 
   .canvas-grid {
     grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+
+  .workspace-split {
+    gap: var(--space-3);
   }
 
   .actions-row {

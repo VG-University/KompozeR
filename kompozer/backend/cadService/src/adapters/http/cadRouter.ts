@@ -5,6 +5,7 @@ import { ColumnDesign, ColumnPlan, Environment } from '../../domain/entities/Con
 import { ValidationError } from '../../domain/entities/errors';
 import { GetConfiguration } from '../../useCases/read/GetConfiguration';
 import { ListConfigurations } from '../../useCases/read/ListConfigurations';
+import { ListNextOptions } from '../../useCases/read/ListNextOptions';
 import { CreateConfiguration } from '../../useCases/write/CreateConfiguration';
 import { FinalizeConfiguration } from '../../useCases/write/FinalizeConfiguration';
 import { SetCategory } from '../../useCases/write/SetCategory';
@@ -16,6 +17,7 @@ export interface CadRouterDeps {
   createConfiguration: CreateConfiguration;
   listConfigurations: ListConfigurations;
   getConfiguration: GetConfiguration;
+  listNextOptions: ListNextOptions;
   setEnvironment: SetEnvironment;
   setCategory: SetCategory;
   setColumnPlan: SetColumnPlan;
@@ -237,6 +239,32 @@ export function buildCadRouter(deps: CadRouterDeps): Router {
         ownerId,
       });
       res.json(configuration);
+    }),
+  );
+
+  router.get(
+    '/configurations/:id/next-options',
+    requireUserId,
+    wrap(async (req, res) => {
+      const ownerId = req.headers['x-user-id'] as string;
+      const rawColumnIndex = req.query['columnIndex'];
+
+      if (typeof rawColumnIndex !== 'string') {
+        throw new ValidationError('columnIndex query param is required');
+      }
+
+      const columnIndex = Number(rawColumnIndex);
+      if (Number.isNaN(columnIndex)) {
+        throw new ValidationError('columnIndex must be numeric');
+      }
+
+      const output = await deps.listNextOptions.execute({
+        id: req.params['id'],
+        ownerId,
+        columnIndex,
+      });
+
+      res.json(output);
     }),
   );
 

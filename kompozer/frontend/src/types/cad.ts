@@ -65,10 +65,21 @@ export interface ConfigurationsListDto {
   totalPages: number;
 }
 
+export type NextOptionReasonCode =
+  | 'INVALID_GAP'
+  | 'NON_INCREASING_LEVEL'
+  | 'MAX_HEIGHT_EXCEEDED'
+  | 'ADJACENCY_CONFLICT'
+  | 'LOOK_AHEAD_BLOCKED'
+  | 'INVALID_FIRST_LEVEL'
+  | 'INVALID_SEGMENT'
+  | 'NO_TERMINAL_FIT'
+  | 'SPINE_CONFLICT';
+
 export interface NextOption {
   heightMm: number;
   allowed: boolean;
-  reasonCode?: string;
+  reasonCode?: NextOptionReasonCode;
   reason?: string;
 }
 
