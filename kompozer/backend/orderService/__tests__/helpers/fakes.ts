@@ -32,6 +32,15 @@ export class FakeOrderRepository implements OrderRepository {
       }));
   }
 
+  async listAll(): Promise<Order[]> {
+    return [...this.orders.values()]
+      .sort((a, b) => b.submittedAt.getTime() - a.submittedAt.getTime())
+      .map((order) => ({
+        ...order,
+        items: order.items.map((item) => ({ ...item })),
+      }));
+  }
+
   async update(order: Order): Promise<void> {
     this.orders.set(order.id, {
       ...order,

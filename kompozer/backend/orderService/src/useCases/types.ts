@@ -19,6 +19,7 @@ export interface CreateOrderInput {
 
 export interface ListOrdersInput {
   userId: string;
+  role?: string;
 }
 
 export interface GetOrderInput {

@@ -56,7 +56,16 @@ export class HttpCatalogRulesProvider implements CatalogRulesProvider {
       const heightMm = Number(item.dimensions?.heightMm);
       const depthMm = Number(item.dimensions?.depthMm);
 
-      if ([widthMm, heightMm, depthMm].some((value) => Number.isNaN(value) || value <= 0)) {
+      const hasInvalidHeight = Number.isNaN(heightMm) || !Number.isFinite(heightMm) || heightMm <= 0;
+      const hasInvalidWidth = Number.isNaN(widthMm) || !Number.isFinite(widthMm);
+      const hasInvalidDepth = Number.isNaN(depthMm) || !Number.isFinite(depthMm);
+      if (hasInvalidHeight || hasInvalidWidth || hasInvalidDepth) {
+        continue;
+      }
+
+      // RIPIANO needs physical width/depth. Vertical parts can use 0 for width/depth
+      // in our catalog seed and must not be dropped from rules extraction.
+      if ((type === 'RIPIANO' || type === 'MENSOLA') && (widthMm <= 0 || depthMm <= 0)) {
         continue;
       }
 

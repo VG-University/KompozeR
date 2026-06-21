@@ -4,7 +4,6 @@ import { useRoute } from 'vue-router';
 import type {
   Category,
   ColumnPlan,
-  ConfigurationStatus,
   Environment,
   NextOption,
 } from '@/types/cad';
@@ -13,28 +12,16 @@ import { catalogService } from '@/services/catalogService';
 import type { CatalogItem } from '@/types/catalog';
 
 const {
-  items,
   selected,
-  loading,
   detailLoading,
-  createLoading,
   finalizeLoading,
   categoryLoading,
   environmentLoading,
   columnPlanLoading,
   designLoading,
   error,
-  page,
-  total,
-  totalPages,
-  statusFilter,
-  createName,
   nextOptionsByColumn,
-  canPrev,
-  canNext,
-  loadList,
   loadDetail,
-  createConfiguration,
   updateCategory,
   updateEnvironment,
   updateColumnPlan,
@@ -43,20 +30,7 @@ const {
   addTopShelf,
   removeTopShelf,
   finalizeSelected,
-  setStatusFilter,
-  nextPage,
-  prevPage,
 } = useCad();
-
-const statuses: Array<ConfigurationStatus> = [
-  'DRAFT',
-  'ENVIRONMENT_DEFINED',
-  'CATEGORY_SELECTED',
-  'COLUMNS_DEFINED',
-  'DESIGN_IN_PROGRESS',
-  'READY_FOR_FINALIZE',
-  'FINALIZED',
-];
 
 const categories: Array<Category> = ['TONDO', 'QUADRO', 'KUBE'];
 const route = useRoute();
@@ -85,7 +59,6 @@ const pendingEnvironment = ref<Environment | null>(null);
 
 onMounted(() => {
   void (async () => {
-    await loadList();
     const configurationId = route.query['configurationId'];
     if (typeof configurationId === 'string' && configurationId.length > 0) {
       await loadDetail(configurationId);
@@ -487,6 +460,14 @@ async function removeShelf(columnIndex: number): Promise<void> {
   await refreshOptionsAround(columnIndex);
 }
 
+async function reloadSelected(): Promise<void> {
+  if (!selected.value) {
+    return;
+  }
+
+  await loadDetail(selected.value.id);
+}
+
 function stepDone(index: number): boolean {
   return currentStepIndex.value > index;
 }
@@ -501,78 +482,20 @@ function stepActive(index: number): boolean {
     <header class="cad-header">
       <div>
         <h1>Configuratore CAD</h1>
-        <p class="subtitle">Flusso guidato a step con vincoli backend</p>
+        <p class="subtitle">Workspace di design con schema grafico indipendente</p>
       </div>
       <div class="header-actions">
-        <button class="btn btn--light" :disabled="loading" @click="loadList">Aggiorna</button>
+        <button class="btn btn--light" :disabled="detailLoading || !selected" @click="reloadSelected">Aggiorna dettaglio</button>
         <button class="btn btn--light bom-mobile-btn" @click="showBomMobile = true">Distinta componenti</button>
       </div>
     </header>
 
-    <section class="toolbar">
-      <label class="field">
-        <span class="field__label">Stato</span>
-        <select
-          class="field__input"
-          :value="statusFilter"
-          @change="setStatusFilter(($event.target as HTMLSelectElement).value as ConfigurationStatus | '')"
-        >
-          <option value="">Tutti</option>
-          <option v-for="status in statuses" :key="status" :value="status">{{ status }}</option>
-        </select>
-      </label>
-      <span class="meta">{{ total }} configurazioni</span>
-    </section>
-
-    <section class="create-card">
-      <h2>Nuova configurazione</h2>
-      <div class="create-grid">
-        <label class="field">
-          <span class="field__label">Nome</span>
-          <input v-model="createName" class="field__input" type="text" placeholder="Es. Libreria soggiorno" />
-        </label>
-        <button class="btn btn--primary" :disabled="createLoading" @click="createConfiguration">
-          {{ createLoading ? 'Creazione...' : 'Crea configurazione' }}
-        </button>
-      </div>
-    </section>
-
     <p v-if="error" class="error">{{ error }}</p>
 
     <div class="cad-layout">
-      <aside class="left-panel">
-        <h2>Configurazioni</h2>
-        <p v-if="loading" class="placeholder">Caricamento elenco...</p>
-        <p v-else-if="items.length === 0" class="placeholder">Nessuna configurazione trovata.</p>
-        <div v-else class="list">
-          <button
-            v-for="item in items"
-            :key="item.id"
-            class="list-item"
-            :class="{ 'list-item--active': selected?.id === item.id }"
-            @click="loadDetail(item.id)"
-          >
-            <div class="list-item__top">
-              <strong>{{ item.name }}</strong>
-              <span class="status">{{ item.status }}</span>
-            </div>
-            <div class="list-item__meta">
-              <span>{{ item.category || 'Senza categoria' }}</span>
-              <span>v{{ item.version }}</span>
-            </div>
-          </button>
-        </div>
-
-        <footer class="pagination" v-if="totalPages > 1">
-          <button class="btn btn--light" :disabled="!canPrev || loading" @click="prevPage">Precedente</button>
-          <span>Pagina {{ page }} di {{ totalPages }}</span>
-          <button class="btn btn--light" :disabled="!canNext || loading" @click="nextPage">Successiva</button>
-        </footer>
-      </aside>
-
       <main class="center-panel">
         <p v-if="detailLoading" class="placeholder">Caricamento dettaglio...</p>
-        <p v-else-if="!selected" class="placeholder">Seleziona una configurazione per iniziare.</p>
+        <p v-else-if="!selected" class="placeholder">Apri una configurazione dalla vista dedicata e torna qui per il design.</p>
 
         <template v-else>
           <section class="stepper">
@@ -604,37 +527,7 @@ function stepActive(index: number): boolean {
             <div><span class="muted">Ultimo update</span><strong>{{ formatDate(selected.updatedAt) }}</strong></div>
           </section>
 
-          <section class="workspace-split">
-            <aside class="visual-panel">
-              <section class="canvas-section">
-                <header class="canvas-section__header">
-                  <div>
-                    <h3>Schema grafico</h3>
-                    <p class="mini muted">Vista sempre visibile della struttura corrente</p>
-                  </div>
-                  <span class="canvas-size">{{ environmentDraft.maxWidthMm }} x {{ environmentDraft.maxHeightMm }} mm</span>
-                </header>
-
-                <div class="canvas-grid" :style="{ '--cols': String(canvasColumns.length || 1) }">
-                  <article v-for="column in canvasColumns" :key="column.index" class="canvas-column">
-                    <div class="canvas-column__scale">Y</div>
-                    <div class="canvas-column__body">
-                      <div
-                        v-for="(level, idx) in column.levelPercents"
-                        :key="`level-${column.index}-${idx}`"
-                        class="level-line"
-                        :style="{ bottom: `${level}%` }"
-                      >
-                        <span>{{ column.levels[idx] }}mm</span>
-                      </div>
-                    </div>
-                    <div class="canvas-column__x">C{{ column.index + 1 }} · {{ column.shelfWidthMm }}mm</div>
-                  </article>
-                </div>
-              </section>
-            </aside>
-
-            <section class="controls-section">
+          <section class="controls-section">
             <article class="control-card">
               <h3>Step 1 - Ambiente</h3>
               <div class="two-cols">
@@ -785,10 +678,38 @@ function stepActive(index: number): boolean {
               </button>
               <p v-if="!canFinalize" class="hint">Finalizzazione disponibile solo in READY_FOR_FINALIZE.</p>
             </article>
-            </section>
           </section>
         </template>
       </main>
+
+      <aside class="schema-panel" v-if="selected">
+        <section class="canvas-section">
+          <header class="canvas-section__header">
+            <div>
+              <h3>Schema grafico</h3>
+              <p class="mini muted">Vista sempre visibile della struttura corrente</p>
+            </div>
+            <span class="canvas-size">{{ environmentDraft.maxWidthMm }} x {{ environmentDraft.maxHeightMm }} mm</span>
+          </header>
+
+          <div class="canvas-grid" :style="{ '--cols': String(canvasColumns.length || 1) }">
+            <article v-for="column in canvasColumns" :key="column.index" class="canvas-column">
+              <div class="canvas-column__scale">Y</div>
+              <div class="canvas-column__body">
+                <div
+                  v-for="(level, idx) in column.levelPercents"
+                  :key="`level-${column.index}-${idx}`"
+                  class="level-line"
+                  :style="{ bottom: `${level}%` }"
+                >
+                  <span>{{ column.levels[idx] }}mm</span>
+                </div>
+              </div>
+              <div class="canvas-column__x">C{{ column.index + 1 }} · {{ column.shelfWidthMm }}mm</div>
+            </article>
+          </div>
+        </section>
+      </aside>
 
       <aside class="right-panel" v-if="selected">
         <h2>Distinta componenti</h2>
@@ -914,14 +835,6 @@ function stepActive(index: number): boolean {
   padding: var(--space-4);
 }
 
-.create-grid {
-  margin-top: var(--space-3);
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: var(--space-3);
-  align-items: end;
-}
-
 .field {
   display: flex;
   flex-direction: column;
@@ -962,12 +875,12 @@ function stepActive(index: number): boolean {
 .cad-layout {
   margin-top: var(--space-5);
   display: grid;
-  grid-template-columns: minmax(260px, 320px) 1fr minmax(280px, 340px);
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 380px) minmax(280px, 340px);
   gap: var(--space-4);
-  align-items: start;
+  align-items: stretch;
 }
 
-.left-panel,
+.schema-panel,
 .center-panel,
 .right-panel {
   border: 1px solid var(--color-border);
@@ -976,53 +889,11 @@ function stepActive(index: number): boolean {
   padding: var(--space-4);
 }
 
-.list {
-  margin-top: var(--space-3);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  max-height: 500px;
+.center-panel,
+.schema-panel,
+.right-panel {
+  max-height: calc(100vh - 130px);
   overflow: auto;
-}
-
-.list-item {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-raised);
-  padding: var(--space-3);
-  text-align: left;
-  cursor: pointer;
-}
-
-.list-item--active {
-  border-color: var(--color-accent);
-  box-shadow: inset 0 0 0 1px var(--color-accent);
-}
-
-.list-item__top,
-.list-item__meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.list-item__meta {
-  margin-top: var(--space-1);
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-}
-
-.status {
-  font-size: var(--font-size-xs);
-  color: var(--color-accent);
-}
-
-.pagination {
-  margin-top: var(--space-4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: var(--space-3);
 }
 
 .stepper {
@@ -1078,15 +949,7 @@ function stepActive(index: number): boolean {
   gap: 2px;
 }
 
-.workspace-split {
-  margin-top: var(--space-4);
-  display: grid;
-  grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
-  gap: var(--space-4);
-  align-items: start;
-}
-
-.visual-panel {
+.schema-panel {
   position: sticky;
   top: var(--space-4);
   align-self: start;
@@ -1158,6 +1021,7 @@ function stepActive(index: number): boolean {
 }
 
 .controls-section {
+  margin-top: var(--space-4);
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-3);
@@ -1304,18 +1168,17 @@ function stepActive(index: number): boolean {
 
 @media (max-width: 1360px) {
   .cad-layout {
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+    align-items: start;
   }
 
   .right-panel {
     grid-column: 1 / -1;
+    max-height: none;
+    overflow: visible;
   }
 
-  .workspace-split {
-    grid-template-columns: 1fr;
-  }
-
-  .visual-panel {
+  .schema-panel {
     position: static;
   }
 }
@@ -1325,20 +1188,23 @@ function stepActive(index: number): boolean {
     padding: var(--space-6) var(--space-4);
   }
 
-  .create-grid {
-    grid-template-columns: 1fr;
-  }
-
   .cad-layout {
     grid-template-columns: 1fr;
     gap: var(--space-3);
   }
 
-  .left-panel {
-    order: 1;
+  .center-panel,
+  .schema-panel,
+  .right-panel {
+    max-height: none;
+    overflow: visible;
   }
 
   .center-panel {
+    order: 1;
+  }
+
+  .schema-panel {
     order: 2;
   }
 
@@ -1361,10 +1227,6 @@ function stepActive(index: number): boolean {
 
   .canvas-grid {
     grid-template-columns: repeat(2, minmax(120px, 1fr));
-  }
-
-  .workspace-split {
-    gap: var(--space-3);
   }
 
   .actions-row {

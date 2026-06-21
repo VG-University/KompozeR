@@ -74,6 +74,36 @@ describe('orderRouter', () => {
     expect(cancelRes.body.status).toBe('CANCELLED');
   });
 
+  it('GET /orders -> admin sees orders from all users', async () => {
+    const app = buildTestApp();
+
+    await request(app)
+      .post('/orders')
+      .set('x-user-id', 'usr_1')
+      .send({
+        items: [{ sku: 'SKU-001', name: 'Ripiano', unitPrice: 1990, quantity: 1 }],
+        total: 1990,
+      });
+
+    await request(app)
+      .post('/orders')
+      .set('x-user-id', 'usr_2')
+      .send({
+        items: [{ sku: 'SKU-002', name: 'Montante', unitPrice: 990, quantity: 2 }],
+        total: 1980,
+      });
+
+    const listRes = await request(app)
+      .get('/orders')
+      .set('x-user-id', 'adm_1')
+      .set('x-user-role', 'ADMIN');
+
+    expect(listRes.status).toBe(200);
+    expect(listRes.body.items).toHaveLength(2);
+    const userIds = listRes.body.items.map((item: { userId: string }) => item.userId);
+    expect(userIds).toEqual(expect.arrayContaining(['usr_1', 'usr_2']));
+  });
+
   it('PATCH /orders/:id/status -> 403 for non-admin user', async () => {
     const app = buildTestApp();
 

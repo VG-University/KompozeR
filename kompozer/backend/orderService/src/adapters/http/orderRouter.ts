@@ -79,7 +79,11 @@ export function buildOrderRouter(deps: OrderRouterDeps): Router {
     requireUserId,
     wrap(async (req, res) => {
       const userId = req.headers['x-user-id'] as string;
-      const orders = await deps.listOrders.execute({ userId });
+      const role = req.headers['x-user-role'];
+      const orders = await deps.listOrders.execute({
+        userId,
+        role: typeof role === 'string' ? role : undefined,
+      });
       res.json(orders);
     }),
   );

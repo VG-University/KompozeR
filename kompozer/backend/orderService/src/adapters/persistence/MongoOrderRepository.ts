@@ -48,6 +48,20 @@ export class MongoOrderRepository implements OrderRepository {
     }));
   }
 
+  async listAll(): Promise<Order[]> {
+    const docs = await OrderModel.find().sort({ submittedAt: -1 }).lean();
+    return docs.map((doc) => ({
+      id: doc._id,
+      userId: doc.userId,
+      items: doc.items.map((item) => ({ ...item })),
+      total: doc.total,
+      status: doc.status,
+      submittedAt: doc.submittedAt,
+      doneAt: doc.doneAt,
+      cancelledAt: doc.cancelledAt,
+    }));
+  }
+
   async update(order: Order): Promise<void> {
     await OrderModel.findByIdAndUpdate(order.id, {
       userId: order.userId,

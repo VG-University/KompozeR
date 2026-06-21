@@ -14,7 +14,9 @@ export class ListOrders {
       throw new ValidationError('userId is required');
     }
 
-    const orders = await this.repo.listByUserId(input.userId);
+    const isAdmin = typeof input.role === 'string' && input.role.toUpperCase() === 'ADMIN';
+    const orders = isAdmin ? await this.repo.listAll() : await this.repo.listByUserId(input.userId);
+
     return {
       items: orders.map(toOrderDto),
     };
