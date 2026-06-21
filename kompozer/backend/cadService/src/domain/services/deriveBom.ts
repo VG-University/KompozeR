@@ -101,11 +101,16 @@ export function deriveBom(configuration: Configuration, rules: CatalogRules): Bo
       throw new ValidationError(`Cannot derive BOM for invalid spine ${spine.index}`);
     }
 
+    const footRule = rules.footByHeightMm.get(spineBom.footHeightMm);
+    if (!footRule) {
+      throw new ValidationError(`No PIEDINO found for exact height ${spineBom.footHeightMm}mm`);
+    }
+
     add(
-      rules.defaultFoot.sku,
-      rules.defaultFoot.name,
+      footRule.sku,
+      footRule.name,
       SPINE_COMPONENT_MULTIPLIER,
-      rules.defaultFoot.priceCents,
+      footRule.priceCents,
       'PIEDINO',
     );
     add(

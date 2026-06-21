@@ -80,6 +80,7 @@ export class FakeCatalogRulesProvider implements CatalogRulesProvider {
     return {
       shelfByWidthMm: new Map(this.rules.shelfByWidthMm),
       uprightByHeightMm: new Map(this.rules.uprightByHeightMm),
+      footByHeightMm: new Map(this.rules.footByHeightMm),
       terminalHeightsMm: [...this.rules.terminalHeightsMm],
       footHeightsMm: [...this.rules.footHeightsMm],
       uprightHeightsMm: [...this.rules.uprightHeightsMm],
@@ -112,11 +113,17 @@ export function buildCatalogRules(overrides: Partial<CatalogRules> = {}): Catalo
   ]);
 
   const defaultFoot = { type: 'PIEDINO' as const, sku: 'PIE-120', name: 'Piedino 120', priceCents: 490, widthMm: 40, heightMm: 120, depthMm: 40 };
+  const altFoot = { type: 'PIEDINO' as const, sku: 'PIE-160', name: 'Piedino 160', priceCents: 590, widthMm: 40, heightMm: 160, depthMm: 40 };
   const defaultTerminal = { type: 'TERMINALE' as const, sku: 'TER-40', name: 'Terminale 40', priceCents: 390, widthMm: 40, heightMm: 40, depthMm: 40 };
+  const footMap = new Map([
+    [120, defaultFoot],
+    [160, altFoot],
+  ]);
 
   const base: CatalogRules = {
     shelfByWidthMm: shelfMap,
     uprightByHeightMm: uprightMap,
+    footByHeightMm: footMap,
     terminalHeightsMm: [40],
     footHeightsMm: [120, 160],
     uprightHeightsMm: [120, 300, 400, 500],
@@ -127,6 +134,7 @@ export function buildCatalogRules(overrides: Partial<CatalogRules> = {}): Catalo
   return {
     shelfByWidthMm:   overrides.shelfByWidthMm   ? new Map(overrides.shelfByWidthMm)   : base.shelfByWidthMm,
     uprightByHeightMm: overrides.uprightByHeightMm ? new Map(overrides.uprightByHeightMm) : base.uprightByHeightMm,
+    footByHeightMm:    overrides.footByHeightMm    ? new Map(overrides.footByHeightMm)    : base.footByHeightMm,
     terminalHeightsMm: overrides.terminalHeightsMm ?? base.terminalHeightsMm,
     footHeightsMm:     overrides.footHeightsMm     ?? base.footHeightsMm,
     uprightHeightsMm:  overrides.uprightHeightsMm  ?? base.uprightHeightsMm,

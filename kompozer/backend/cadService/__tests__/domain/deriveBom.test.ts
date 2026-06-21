@@ -124,4 +124,38 @@ describe('deriveBom', () => {
     expect(ripianoEntries[0].quantity).toBe(4);
     expect(ripianoEntries[0].sku).toBe('RIP-800');
   });
+
+  it('uses foot component matching first level height exactly', () => {
+    const rules = buildCatalogRules({
+      footHeightsMm: [80, 120],
+      footByHeightMm: new Map([
+        [80, { type: 'PIEDINO', sku: 'PIE-80', name: 'Piedino 80', priceCents: 450, widthMm: 40, heightMm: 80, depthMm: 40 }],
+        [120, { type: 'PIEDINO', sku: 'PIE-120', name: 'Piedino 120', priceCents: 490, widthMm: 40, heightMm: 120, depthMm: 40 }],
+      ]),
+      defaultFoot: { type: 'PIEDINO', sku: 'PIE-120', name: 'Piedino 120', priceCents: 490, widthMm: 40, heightMm: 120, depthMm: 40 },
+      uprightHeightsMm: [80, 120, 300, 400, 500],
+      uprightByHeightMm: new Map([
+        [80, { type: 'MONTANTE', sku: 'MON-80', name: 'Montante 80', priceCents: 890, widthMm: 40, heightMm: 80, depthMm: 40 }],
+        [120, { type: 'MONTANTE', sku: 'MON-120', name: 'Montante 120', priceCents: 990, widthMm: 40, heightMm: 120, depthMm: 40 }],
+        [300, { type: 'MONTANTE', sku: 'MON-300', name: 'Montante 300', priceCents: 1490, widthMm: 40, heightMm: 300, depthMm: 40 }],
+        [400, { type: 'MONTANTE', sku: 'MON-400', name: 'Montante 400', priceCents: 1790, widthMm: 40, heightMm: 400, depthMm: 40 }],
+        [500, { type: 'MONTANTE', sku: 'MON-500', name: 'Montante 500', priceCents: 1990, widthMm: 40, heightMm: 500, depthMm: 40 }],
+      ]),
+    });
+
+    const cfg = buildConfiguration({
+      status: 'DESIGN_IN_PROGRESS',
+      category: 'TONDO',
+      environment: env,
+      columnPlan: { columnCount: 1, columns: [{ index: 0, shelfWidthMm: 800 }] },
+      columnDesigns: [{ columnIndex: 0, levelsMm: [80], shelfThicknessMm: 20 }],
+    });
+
+    const bom = deriveBom(cfg, rules);
+    const feet = bom.filter((item) => item.componentType === 'PIEDINO');
+
+    expect(feet).toHaveLength(1);
+    expect(feet[0].sku).toBe('PIE-80');
+    expect(feet[0].quantity).toBe(4);
+  });
 });

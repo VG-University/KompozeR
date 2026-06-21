@@ -455,8 +455,13 @@ async function openNextOptions(columnIndex: number): Promise<void> {
 }
 
 async function refreshOptionsAround(columnIndex: number): Promise<void> {
+  const planIndexes = new Set(
+    selected.value?.columnPlan?.columns.map((column) => column.index) ?? [],
+  );
   const targets = [columnIndex - 1, columnIndex, columnIndex + 1];
-  const valid = targets.filter((index, pos, arr) => index >= 0 && arr.indexOf(index) === pos);
+  const valid = targets.filter(
+    (index, pos, arr) => index >= 0 && planIndexes.has(index) && arr.indexOf(index) === pos,
+  );
   await Promise.all(valid.map((index) => openNextOptions(index)));
 }
 

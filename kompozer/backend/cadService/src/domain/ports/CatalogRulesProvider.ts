@@ -16,6 +16,8 @@ export interface CatalogRules {
   shelfByWidthMm: Map<number, CatalogComponentRule>;
   /** Smallest upright whose heightMm >= requested gap; keyed by exact heightMm */
   uprightByHeightMm: Map<number, CatalogComponentRule>;
+  /** Foot rule keyed by exact heightMm */
+  footByHeightMm: Map<number, CatalogComponentRule>;
   terminalHeightsMm: number[];
   footHeightsMm: number[];
   uprightHeightsMm: number[];

@@ -623,4 +623,36 @@ describe('CAD command use cases', () => {
     expect(result.options.map((option) => option.heightMm)).toEqual([120, 300, 400]);
     expect(result.options.some((option) => option.allowed)).toBe(true);
   });
+
+  it('ListNextOptions returns empty options for column index outside current plan', async () => {
+    const repo = new FakeConfigurationRepository();
+    repo.seed(
+      buildConfiguration({
+        status: 'COLUMNS_DEFINED',
+        category: 'TONDO',
+        environment: {
+          maxWidthMm: 5000,
+          maxHeightMm: 3000,
+          minWidthMm: 600,
+          minHeightMm: 220,
+          unit: 'mm',
+        },
+        columnPlan: {
+          columnCount: 1,
+          columns: [{ index: 0, shelfWidthMm: 800 }],
+        },
+      }),
+    );
+
+    const useCase = new ListNextOptions(repo, new FakeCatalogRulesProvider());
+    const result = await useCase.execute({
+      id: 'cfg_test',
+      ownerId: 'usr_1',
+      columnIndex: 1,
+    });
+
+    expect(result.columnIndex).toBe(1);
+    expect(result.options).toEqual([]);
+    expect(result.lookAhead.feasible).toBe(false);
+  });
 });

@@ -68,7 +68,12 @@ export class ListNextOptions {
 
     const planColumn = columnPlan.columns.find((column) => column.index === input.columnIndex);
     if (!planColumn) {
-      throw new ValidationError('columnIndex does not exist in current column plan');
+      return {
+        columnIndex: input.columnIndex,
+        options: [],
+        lookAhead: { feasible: false },
+        version: configuration.version,
+      };
     }
 
     const rules = await this.catalogRulesProvider.getRules(configuration.category);
