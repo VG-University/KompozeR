@@ -14,6 +14,7 @@ import type { CatalogItem } from '@/types/catalog';
 const {
   selected,
   detailLoading,
+  createLoading,
   finalizeLoading,
   categoryLoading,
   environmentLoading,
@@ -29,6 +30,8 @@ const {
   setNextOptions,
   addTopShelf,
   removeTopShelf,
+  createConfiguration,
+  createName,
   finalizeSelected,
 } = useCad();
 
@@ -208,6 +211,21 @@ const canvasColumns = computed(() => {
       levelPercents: levels.map((level) => Math.min(95, Math.max(2, Math.round((level / gridMaxHeight.value) * 100)))),
     };
   });
+});
+
+const canvasGridTracks = computed(() => {
+  if (canvasColumns.value.length === 0) {
+    return 'minmax(110px, 1fr)';
+  }
+
+  return canvasColumns.value
+    .map((column) => {
+      const width = Number.isFinite(column.shelfWidthMm) && column.shelfWidthMm > 0
+        ? column.shelfWidthMm
+        : 1;
+      return `minmax(110px, ${width}fr)`;
+    })
+    .join(' ');
 });
 
 watch(
@@ -468,6 +486,10 @@ async function reloadSelected(): Promise<void> {
   await loadDetail(selected.value.id);
 }
 
+async function createFromCad(): Promise<void> {
+  await createConfiguration();
+}
+
 function stepDone(index: number): boolean {
   return currentStepIndex.value > index;
 }
@@ -495,7 +517,19 @@ function stepActive(index: number): boolean {
     <div class="cad-layout">
       <main class="center-panel">
         <p v-if="detailLoading" class="placeholder">Caricamento dettaglio...</p>
-        <p v-else-if="!selected" class="placeholder">Apri una configurazione dalla vista dedicata e torna qui per il design.</p>
+        <section v-else-if="!selected" class="create-card">
+          <h3>Crea nuova configurazione</h3>
+          <p class="muted">Puoi iniziare direttamente da qui anche come utente guest.</p>
+          <div class="actions-row">
+            <label class="field" style="flex: 1; min-width: 220px;">
+              <span class="field__label">Nome configurazione</span>
+              <input v-model="createName" class="field__input" type="text" placeholder="Nuova configurazione" />
+            </label>
+            <button class="btn btn--primary" :disabled="createLoading" @click="createFromCad">
+              {{ createLoading ? 'Creazione...' : 'Crea e apri configuratore' }}
+            </button>
+          </div>
+        </section>
 
         <template v-else>
           <section class="stepper">
@@ -692,7 +726,13 @@ function stepActive(index: number): boolean {
             <span class="canvas-size">{{ environmentDraft.maxWidthMm }} x {{ environmentDraft.maxHeightMm }} mm</span>
           </header>
 
-          <div class="canvas-grid" :style="{ '--cols': String(canvasColumns.length || 1) }">
+          <div
+            class="canvas-grid"
+            :style="{
+              '--cols': String(canvasColumns.length || 1),
+              '--col-tracks': canvasGridTracks,
+            }"
+          >
             <article v-for="column in canvasColumns" :key="column.index" class="canvas-column">
               <div class="canvas-column__scale">Y</div>
               <div class="canvas-column__body">
@@ -976,7 +1016,7 @@ function stepActive(index: number): boolean {
 
 .canvas-grid {
   display: grid;
-  grid-template-columns: repeat(var(--cols), minmax(110px, 1fr));
+  grid-template-columns: var(--col-tracks, repeat(var(--cols), minmax(110px, 1fr)));
   gap: var(--space-2);
   min-height: 260px;
 }
