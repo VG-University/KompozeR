@@ -9,6 +9,7 @@ import { deriveBom } from '../../src/domain/services/deriveBom';
 import {
   FakeCatalogRulesProvider,
   FakeCartServiceClient,
+  FakeNotificationSubscriptionClient,
   FakeConfigurationRepository,
   buildCatalogRules,
   buildConfiguration,
@@ -65,6 +66,7 @@ describe('CAD command use cases', () => {
   it('FinalizeConfiguration marks configuration as FINALIZED and pushes BOM to cart', async () => {
     const repo = new FakeConfigurationRepository();
     const cart = new FakeCartServiceClient();
+    const subscriptions = new FakeNotificationSubscriptionClient();
     repo.seed(
       buildConfiguration({
         status: 'DESIGN_IN_PROGRESS',
@@ -94,7 +96,7 @@ describe('CAD command use cases', () => {
       }),
     );
 
-    const useCase = new FinalizeConfiguration(repo, cart);
+    const useCase = new FinalizeConfiguration(repo, cart, subscriptions);
     const result = await useCase.execute({ id: 'cfg_test', ownerId: 'usr_1' });
 
     expect(result.status).toBe('FINALIZED');
@@ -104,6 +106,9 @@ describe('CAD command use cases', () => {
     expect(cart.calls).toHaveLength(1);
     expect(cart.calls[0].ownerId).toBe('usr_1');
     expect(cart.calls[0].items.length).toBeGreaterThan(0);
+    expect(subscriptions.calls).toHaveLength(2);
+    expect(subscriptions.calls[0].ownerId).toBe('usr_1');
+    expect(subscriptions.calls.map((call) => call.sku).sort()).toEqual(['PIE-120', 'RIP-800']);
   });
 
   it('UpdateDesign rejects unknown column indexes', async () => {

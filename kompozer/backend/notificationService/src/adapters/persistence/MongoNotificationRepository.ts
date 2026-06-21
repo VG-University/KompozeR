@@ -124,6 +124,38 @@ export class MongoNotificationRepository implements NotificationRepository {
     });
   }
 
+  async upsertSubscription(item: NotificationSubscription): Promise<NotificationSubscription> {
+    const doc = await NotificationSubscriptionModel.findOneAndUpdate(
+      {
+        userId: item.userId,
+        scope: item.scope,
+        targetId: item.targetId,
+        channel: item.channel,
+      },
+      {
+        $set: {
+          events: item.events,
+          isActive: item.isActive,
+          updatedAt: item.updatedAt,
+        },
+        $setOnInsert: {
+          _id: item.id,
+          createdAt: item.createdAt,
+        },
+      },
+      {
+        upsert: true,
+        new: true,
+      },
+    ).lean<NotificationSubscriptionDoc | null>();
+
+    if (!doc) {
+      return item;
+    }
+
+    return toSubscription(doc);
+  }
+
   async listSubscriptions(userId: string): Promise<NotificationSubscription[]> {
     const docs = await NotificationSubscriptionModel.find({ userId })
       .sort({ updatedAt: -1 })

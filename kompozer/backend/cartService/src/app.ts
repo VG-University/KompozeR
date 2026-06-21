@@ -5,11 +5,13 @@ import { MongoCartRepository } from './adapters/persistence/MongoCartRepository'
 import { HttpCatalogSnapshotProvider } from './adapters/httpClient/HttpCatalogSnapshotProvider';
 import { HttpOrderServiceClient } from './adapters/httpClient/HttpOrderServiceClient';
 import { RedisCartEventPublisher } from './adapters/messaging/publishers/RedisCartEventPublisher';
+import { RedisCatalogEventsSubscriber } from './adapters/messaging/subscribers/RedisCatalogEventsSubscriber';
 import { GetCart } from './useCases/GetCart';
 import { UpsertCartItem } from './useCases/UpsertCartItem';
 import { RemoveCartItem } from './useCases/RemoveCartItem';
 import { ClearCart } from './useCases/ClearCart';
 import { CheckoutCart } from './useCases/CheckoutCart';
+import { RestoreUnavailableItems } from './useCases/RestoreUnavailableItems';
 import { buildCartRouter } from './adapters/http/cartRouter';
 import { errorMiddleware } from './adapters/http/errorMiddleware';
 import { CartEventPublisher } from './domain/ports/CartEventPublisher';
@@ -30,6 +32,12 @@ export function buildApp(config: CartAppConfig = {}) {
   if (config.redisUrl) {
     const redis = new Redis(config.redisUrl);
     eventPublisher = new RedisCartEventPublisher(redis);
+
+    const restoreUnavailableItems = new RestoreUnavailableItems(repo, catalog, eventPublisher);
+    const catalogSubscriber = new RedisCatalogEventsSubscriber(config.redisUrl, restoreUnavailableItems);
+    void catalogSubscriber.start().catch((error) => {
+      console.error('[cart] Failed to start catalog events subscriber', error);
+    });
   }
 
   const getCart = new GetCart(repo, catalog, eventPublisher);

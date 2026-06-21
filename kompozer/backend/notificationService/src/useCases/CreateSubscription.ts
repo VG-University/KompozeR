@@ -45,7 +45,7 @@ export class CreateSubscription {
       updatedAt: now,
     };
 
-    await this.repo.createSubscription(subscription);
-    return toSubscriptionDto(subscription);
+    const saved = await this.repo.upsertSubscription(subscription);
+    return toSubscriptionDto(saved);
   }
 }

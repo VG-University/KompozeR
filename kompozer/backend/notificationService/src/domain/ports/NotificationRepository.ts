@@ -22,6 +22,7 @@ export interface NotificationRepository {
   findById(id: string): Promise<Notification | null>;
   markRead(notificationId: string, readAt: Date): Promise<Notification | null>;
   createSubscription(item: NotificationSubscription): Promise<void>;
+  upsertSubscription(item: NotificationSubscription): Promise<NotificationSubscription>;
   listSubscriptions(userId: string): Promise<NotificationSubscription[]>;
   findSubscriptionById(subscriptionId: string): Promise<NotificationSubscription | null>;
   updateSubscription(subscription: NotificationSubscription): Promise<NotificationSubscription | null>;

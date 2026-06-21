@@ -51,6 +51,26 @@ export class FakeNotificationRepository implements NotificationRepository {
     this.subscriptions.push(item);
   }
 
+  async upsertSubscription(item: NotificationSubscription): Promise<NotificationSubscription> {
+    const existing = this.subscriptions.find(
+      (s) =>
+        s.userId === item.userId
+        && s.scope === item.scope
+        && s.targetId === item.targetId
+        && s.channel === item.channel,
+    );
+
+    if (!existing) {
+      this.subscriptions.push(item);
+      return item;
+    }
+
+    existing.events = [...item.events];
+    existing.isActive = item.isActive;
+    existing.updatedAt = item.updatedAt;
+    return existing;
+  }
+
   async listSubscriptions(userId: string): Promise<NotificationSubscription[]> {
     return this.subscriptions.filter((s) => s.userId === userId);
   }

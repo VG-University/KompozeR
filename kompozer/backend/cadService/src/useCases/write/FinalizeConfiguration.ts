@@ -6,6 +6,7 @@ import {
 } from '../../domain/entities/errors';
 import { CartServiceClient } from '../../domain/ports/CartServiceClient';
 import { ConfigurationRepository } from '../../domain/ports/ConfigurationRepository';
+import { NotificationSubscriptionClient } from '../../domain/ports/NotificationSubscriptionClient';
 import {
   ConfigurationDto,
   FinalizeConfigurationInput,
@@ -16,6 +17,7 @@ export class FinalizeConfiguration {
   constructor(
     private readonly configurationRepository: ConfigurationRepository,
     private readonly cartServiceClient: CartServiceClient,
+    private readonly notificationSubscriptionClient?: NotificationSubscriptionClient,
   ) {}
 
   async execute(input: FinalizeConfigurationInput): Promise<ConfigurationDto> {
@@ -46,6 +48,18 @@ export class FinalizeConfiguration {
     }
 
     await this.cartServiceClient.pushBomToCart(configuration.ownerId, configuration.components);
+
+    const subscriptionClient = this.notificationSubscriptionClient;
+    if (subscriptionClient) {
+      const uniqueSkus = [...new Set(configuration.components.map((component) => component.sku))];
+      await Promise.all(
+        uniqueSkus.map((sku) =>
+          subscriptionClient.ensureProductAvailabilitySubscription(
+            configuration.ownerId,
+            sku,
+          )),
+      );
+    }
 
     const updated: Configuration = {
       ...configuration,

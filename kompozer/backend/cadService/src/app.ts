@@ -3,10 +3,12 @@ import express from 'express';
 import { buildCadRouter } from './adapters/http/cadRouter';
 import { HttpCatalogRulesProvider } from './adapters/http/HttpCatalogRulesProvider';
 import { HttpCartServiceClient } from './adapters/http/HttpCartServiceClient';
+import { HttpNotificationSubscriptionClient } from './adapters/http/HttpNotificationSubscriptionClient';
 import { errorMiddleware } from './adapters/http/errorMiddleware';
 import { MongoConfigurationRepository } from './adapters/persistence/MongoConfigurationRepository';
 import { CatalogRulesProvider } from './domain/ports/CatalogRulesProvider';
 import { CartServiceClient } from './domain/ports/CartServiceClient';
+import { NotificationSubscriptionClient } from './domain/ports/NotificationSubscriptionClient';
 import { ConfigurationRepository } from './domain/ports/ConfigurationRepository';
 import { GetConfiguration } from './useCases/read/GetConfiguration';
 import { ListConfigurations } from './useCases/read/ListConfigurations';
@@ -22,6 +24,7 @@ export interface BuildAppDeps {
   configurationRepository?: ConfigurationRepository;
   catalogRulesProvider?: CatalogRulesProvider;
   cartServiceClient?: CartServiceClient;
+  notificationSubscriptionClient?: NotificationSubscriptionClient;
 }
 
 export function buildApp(deps: BuildAppDeps = {}) {
@@ -30,6 +33,11 @@ export function buildApp(deps: BuildAppDeps = {}) {
     ?? new HttpCatalogRulesProvider(process.env['CATALOG_BASE_URL'] || 'http://localhost:3004');
   const cartServiceClient = deps.cartServiceClient
     ?? new HttpCartServiceClient(process.env['CART_BASE_URL'] || 'http://localhost:3003');
+  const notificationBaseUrl = process.env['NOTIFICATION_BASE_URL'];
+  const notificationSubscriptionClient = deps.notificationSubscriptionClient
+    ?? (notificationBaseUrl
+      ? new HttpNotificationSubscriptionClient(notificationBaseUrl)
+      : undefined);
 
   const createConfiguration = new CreateConfiguration(configurationRepository);
   const listConfigurations = new ListConfigurations(configurationRepository);
@@ -39,7 +47,11 @@ export function buildApp(deps: BuildAppDeps = {}) {
   const setCategory = new SetCategory(configurationRepository);
   const setColumnPlan = new SetColumnPlan(configurationRepository, catalogRulesProvider);
   const updateDesign = new UpdateDesign(configurationRepository, catalogRulesProvider);
-  const finalizeConfiguration = new FinalizeConfiguration(configurationRepository, cartServiceClient);
+  const finalizeConfiguration = new FinalizeConfiguration(
+    configurationRepository,
+    cartServiceClient,
+    notificationSubscriptionClient,
+  );
 
   const app = express();
 

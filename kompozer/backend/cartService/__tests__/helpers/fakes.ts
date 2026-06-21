@@ -8,13 +8,34 @@ import { CartRepository } from '../../src/domain/ports/CartRepository';
 export class FakeCartRepository implements CartRepository {
   private store = new Map<string, Cart>();
 
+  private clone(cart: Cart): Cart {
+    return {
+      ...cart,
+      items: cart.items.map((it) => ({ ...it })),
+      removedUnavailableItems: cart.removedUnavailableItems
+        ? Object.fromEntries(
+          Object.entries(cart.removedUnavailableItems).map(([sku, snapshot]) => [
+            sku,
+            { ...snapshot, removedAt: new Date(snapshot.removedAt) },
+          ]),
+        )
+        : undefined,
+    };
+  }
+
   async findByUserId(userId: string): Promise<Cart | null> {
     const cart = this.store.get(userId);
-    return cart ? { ...cart, items: cart.items.map((it) => ({ ...it })) } : null;
+    return cart ? this.clone(cart) : null;
   }
 
   async upsert(cart: Cart): Promise<void> {
-    this.store.set(cart.userId, { ...cart, items: cart.items.map((it) => ({ ...it })) });
+    this.store.set(cart.userId, this.clone(cart));
+  }
+
+  async findByRemovedSku(sku: string): Promise<Cart[]> {
+    return [...this.store.values()]
+      .filter((cart) => Boolean(cart.removedUnavailableItems?.[sku]))
+      .map((cart) => this.clone(cart));
   }
 
   async clear(userId: string): Promise<void> {

@@ -5,6 +5,7 @@ import {
   CatalogRulesProvider,
 } from '../../src/domain/ports/CatalogRulesProvider';
 import { CartServiceClient } from '../../src/domain/ports/CartServiceClient';
+import { NotificationSubscriptionClient } from '../../src/domain/ports/NotificationSubscriptionClient';
 import { ConfigurationRepository } from '../../src/domain/ports/ConfigurationRepository';
 
 export class FakeConfigurationRepository implements ConfigurationRepository {
@@ -95,6 +96,14 @@ export class FakeCartServiceClient implements CartServiceClient {
 
   async pushBomToCart(ownerId: string, items: BomItem[]): Promise<void> {
     this.calls.push({ ownerId, items: [...items] });
+  }
+}
+
+export class FakeNotificationSubscriptionClient implements NotificationSubscriptionClient {
+  readonly calls: Array<{ ownerId: string; sku: string }> = [];
+
+  async ensureProductAvailabilitySubscription(ownerId: string, sku: string): Promise<void> {
+    this.calls.push({ ownerId, sku });
   }
 }
 

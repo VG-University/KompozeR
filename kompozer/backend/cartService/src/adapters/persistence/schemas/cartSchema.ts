@@ -8,10 +8,18 @@ type CartItemDoc = {
   lineTotal: number;
 };
 
+type RemovedUnavailableItemSnapshotDoc = {
+  sku: string;
+  name: string;
+  quantity: number;
+  removedAt: Date;
+};
+
 type CartDoc = {
   _id: string;
   userId: string;
   items: CartItemDoc[];
+  removedUnavailableItems?: Record<string, RemovedUnavailableItemSnapshotDoc>;
   total: number;
   updatedAt: Date;
 };
@@ -32,6 +40,19 @@ const cartSchema = new Schema<CartDoc>(
     _id: { type: String, required: true },
     userId: { type: String, required: true, unique: true, index: true },
     items: { type: [cartItemSchema], default: [] },
+    removedUnavailableItems: {
+      type: Map,
+      of: new Schema<RemovedUnavailableItemSnapshotDoc>(
+        {
+          sku: { type: String, required: true },
+          name: { type: String, required: true },
+          quantity: { type: Number, required: true },
+          removedAt: { type: Date, required: true },
+        },
+        { _id: false },
+      ),
+      default: {},
+    },
     total: { type: Number, required: true, default: 0 },
     updatedAt: { type: Date, required: true },
   },

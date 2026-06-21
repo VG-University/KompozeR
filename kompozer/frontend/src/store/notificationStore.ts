@@ -22,6 +22,12 @@ export const useNotificationStore = defineStore('notifications', () => {
     }
   }
 
+  function applyRealtimePush(notification: Notification): void {
+    if (!notification.read) {
+      unreadCount.value += 1;
+    }
+  }
+
   function addToast(type: ToastMessage['type'], message: string): void {
     const id = crypto.randomUUID();
     toasts.value.push({ id, type, message });
@@ -43,6 +49,7 @@ export const useNotificationStore = defineStore('notifications', () => {
     unreadCount,
     toasts,
     refreshUnreadCount,
+    applyRealtimePush,
     addToast,
     removeToast,
     markRead,

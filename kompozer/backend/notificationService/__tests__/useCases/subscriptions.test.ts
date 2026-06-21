@@ -98,4 +98,30 @@ describe('Subscription use cases', () => {
       del.execute({ userId: 'usr_1', subscriptionId: 'missing-sub' }),
     ).rejects.toBeInstanceOf(SubscriptionNotFoundError);
   });
+
+  it('upserts duplicate subscription by user and target', async () => {
+    const repo = new FakeNotificationRepository();
+    const create = new CreateSubscription(repo);
+    const list = new ListSubscriptions(repo);
+
+    await create.execute({
+      userId: 'usr_1',
+      scope: 'PRODUCT',
+      targetId: 'SKU-500',
+      events: ['AVAILABILITY_CHANGED'],
+      channel: 'IN_APP',
+    });
+
+    await create.execute({
+      userId: 'usr_1',
+      scope: 'PRODUCT',
+      targetId: 'SKU-500',
+      events: ['PRICE_CHANGED', 'AVAILABILITY_CHANGED'],
+      channel: 'IN_APP',
+    });
+
+    const result = await list.execute({ userId: 'usr_1' });
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0].events).toEqual(['PRICE_CHANGED', 'AVAILABILITY_CHANGED']);
+  });
 });

@@ -84,6 +84,10 @@ const notificationSubscriptionSchema = new Schema<NotificationSubscriptionDoc>(
 
 notificationSubscriptionSchema.index({ targetId: 1, isActive: 1 });
 notificationSubscriptionSchema.index({ userId: 1, isActive: 1, updatedAt: -1 });
+notificationSubscriptionSchema.index(
+  { userId: 1, scope: 1, targetId: 1, channel: 1 },
+  { unique: true },
+);
 
 export const NotificationSubscriptionModel = model<NotificationSubscriptionDoc>(
   'NotificationSubscription',

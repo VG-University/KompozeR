@@ -18,8 +18,11 @@ let pollTimer: ReturnType<typeof setInterval> | null = null;
 
 onMounted(() => {
   // Prima chiamata immediata all'avvio
-  void notifications.refreshUnreadCount();
-  pollTimer = setInterval(() => void notifications.refreshUnreadCount(), POLL_INTERVAL_MS);
+  void Promise.all([notifications.refreshUnreadCount(), cart.refreshItemCount()]);
+  pollTimer = setInterval(
+    () => void Promise.all([notifications.refreshUnreadCount(), cart.refreshItemCount()]),
+    POLL_INTERVAL_MS,
+  );
 });
 
 onUnmounted(() => {

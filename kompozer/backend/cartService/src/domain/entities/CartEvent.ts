@@ -4,6 +4,7 @@ export type CartEventType =
   | 'ItemRemovedFromCart'
   | 'CartUpdatedFromConfiguration'
   | 'CartItemsRemovedUnavailable'
+  | 'CartItemsRestoredAvailable'
   | 'CartPricesUpdated'
   | 'OrderRequestSubmitted'
   | 'OrderConfirmationRequested';
@@ -19,4 +20,5 @@ export interface CartEvent {
   source?: 'MANUAL' | 'CONFIGURATION';
   removedSkus?: string[];
   updatedSkus?: string[];
+  restoredSkus?: string[];
 }

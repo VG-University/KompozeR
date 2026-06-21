@@ -6,9 +6,17 @@ export interface CartItem {
   lineTotal: number;
 }
 
+export interface RemovedUnavailableItemSnapshot {
+  sku: string;
+  name: string;
+  quantity: number;
+  removedAt: Date;
+}
+
 export interface Cart {
   userId: string;
   items: CartItem[];
+  removedUnavailableItems?: Record<string, RemovedUnavailableItemSnapshot>;
   total: number;
   updatedAt: Date;
 }

@@ -3,16 +3,36 @@ import { CartRepository } from '../../domain/ports/CartRepository';
 import { CartModel } from './schemas/cartSchema';
 
 export class MongoCartRepository implements CartRepository {
+  private toEntity(doc: {
+    userId: string;
+    items: Cart['items'];
+    removedUnavailableItems?: Map<string, { sku: string; name: string; quantity: number; removedAt: Date }>
+      | Record<string, { sku: string; name: string; quantity: number; removedAt: Date }>;
+    total: number;
+    updatedAt: Date;
+  }): Cart {
+    const removedRaw = doc.removedUnavailableItems;
+    const removedAsRecord = removedRaw instanceof Map
+      ? Object.fromEntries(removedRaw.entries())
+      : (removedRaw ?? {});
+
+    return {
+      userId: doc.userId,
+      items: doc.items,
+      removedUnavailableItems: removedAsRecord,
+      total: doc.total,
+      updatedAt: doc.updatedAt,
+    };
+  }
+
   async findByUserId(userId: string): Promise<Cart | null> {
     const doc = await CartModel.findOne({ userId }).lean();
-    return doc
-      ? {
-          userId: doc.userId,
-          items: doc.items,
-          total: doc.total,
-          updatedAt: doc.updatedAt,
-        }
-      : null;
+    return doc ? this.toEntity(doc) : null;
+  }
+
+  async findByRemovedSku(sku: string): Promise<Cart[]> {
+    const docs = await CartModel.find({ [`removedUnavailableItems.${sku}`]: { $exists: true } }).lean();
+    return docs.map((doc) => this.toEntity(doc));
   }
 
   async upsert(cart: Cart): Promise<void> {
@@ -22,6 +42,7 @@ export class MongoCartRepository implements CartRepository {
         _id: cart.userId,
         userId: cart.userId,
         items: cart.items,
+        removedUnavailableItems: cart.removedUnavailableItems ?? {},
         total: cart.total,
         updatedAt: cart.updatedAt,
       },
@@ -36,6 +57,7 @@ export class MongoCartRepository implements CartRepository {
         _id: userId,
         userId,
         items: [],
+        removedUnavailableItems: {},
         total: 0,
         updatedAt: new Date(),
       },

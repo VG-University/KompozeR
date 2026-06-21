@@ -67,6 +67,10 @@ describe('SyncCart', () => {
     expect(result.items).toHaveLength(0);
     expect(result.total).toBe(0);
     expect(publisher.events.map((e) => e.type)).toContain('CartItemsRemovedUnavailable');
+
+    const persisted = await repo.findByUserId('usr_1');
+    expect(persisted?.removedUnavailableItems?.['SKU-GONE']).toBeDefined();
+    expect(persisted?.removedUnavailableItems?.['SKU-GONE'].quantity).toBe(1);
   });
 
   it('removes item when catalog has no snapshot for the sku', async () => {

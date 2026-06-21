@@ -34,6 +34,7 @@ export class SyncCart {
 
     const removedSkus: string[] = [];
     const updatedSkus: string[] = [];
+    const removedUnavailableItems = { ...(existing.removedUnavailableItems ?? {}) };
 
     const syncedItems = await Promise.all(
       existing.items.map(async (item) => {
@@ -41,7 +42,17 @@ export class SyncCart {
 
         if (!snapshot || !snapshot.isAvailable) {
           removedSkus.push(item.sku);
+          removedUnavailableItems[item.sku] = {
+            sku: item.sku,
+            name: item.name,
+            quantity: item.quantity,
+            removedAt: new Date(),
+          };
           return null;
+        }
+
+        if (removedUnavailableItems[item.sku]) {
+          delete removedUnavailableItems[item.sku];
         }
 
         if (snapshot.unitPrice !== item.unitPrice) {
@@ -65,6 +76,7 @@ export class SyncCart {
       const updated: Cart = {
         ...existing,
         items: keptItems,
+        removedUnavailableItems,
         total: computeCartTotal(keptItems),
         updatedAt: new Date(),
       };
