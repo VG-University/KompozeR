@@ -6,7 +6,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
-      "price": 3,
+      "price": 30000,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -24,7 +24,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
-      "price": 3,
+      "price": 30000,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -42,7 +42,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
-      "price": 3,
+      "price": 300,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -60,7 +60,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
-      "price": 3,
+      "price": 300,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -78,7 +78,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
-      "price": 3,
+      "price": 300,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -96,7 +96,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
-      "price": 3,
+      "price": 300,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -114,7 +114,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
-      "price": 3,
+      "price": 300,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -132,7 +132,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
-      "price": 3,
+      "price": 300,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -150,7 +150,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "MONTANTE",
-      "price": 4,
+      "price": 40000,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -168,7 +168,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "MONTANTE",
-      "price": 4,
+      "price": 400,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -186,7 +186,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "MONTANTE",
-      "price": 4,
+      "price": 400,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -204,7 +204,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "MONTANTE",
-      "price": 4,
+      "price": 400,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -222,7 +222,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "MONTANTE",
-      "price": 4,
+      "price": 400,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -240,7 +240,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "MONTANTE",
-      "price": 4,
+      "price": 400,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -258,7 +258,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "MONTANTE",
-      "price": 4,
+      "price": 400,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -276,7 +276,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "RIPIANO",
-      "price": 5,
+      "price": 500,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -294,7 +294,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "RIPIANO",
-      "price": 5,
+      "price": 500,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -312,7 +312,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "RIPIANO",
-      "price": 5,
+      "price": 500,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -330,7 +330,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "RIPIANO",
-      "price": 6,
+      "price": 600,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -348,7 +348,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "RIPIANO",
-      "price": 7,
+      "price": 700,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -366,7 +366,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "RIPIANO",
-      "price": 8,
+      "price": 800,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -384,7 +384,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "RIPIANO",
-      "price": 9,
+      "price": 900,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -402,7 +402,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "RIPIANO",
-      "price": 10,
+      "price": 1000,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -420,7 +420,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "RIPIANO",
-      "price": 11,
+      "price": 1100,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -438,7 +438,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "RIPIANO",
-      "price": 12,
+      "price": 1200,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -456,7 +456,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "TERMINALE",
-      "price": 3,
+      "price": 300,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -474,7 +474,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "TERMINALE",
-      "price": 3,
+      "price": 300,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -492,7 +492,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "TERMINALE",
-      "price": 3,
+      "price": 300,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -510,7 +510,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "TERMINALE",
-      "price": 3,
+      "price": 300,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -528,7 +528,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "TERMINALE",
-      "price": 3,
+      "price": 300,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -546,7 +546,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "TERMINALE",
-      "price": 3,
+      "price": 300,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -564,7 +564,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "TERMINALE",
-      "price": 3,
+      "price": 300,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -582,7 +582,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "TERMINALE",
-      "price": 3,
+      "price": 300,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
