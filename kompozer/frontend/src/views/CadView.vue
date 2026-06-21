@@ -405,10 +405,6 @@ function effectiveOptions(columnIndex: number): NextOption[] {
 }
 
 function optionReason(option: NextOption): string {
-  if (option.reason && option.reason.trim().length > 0) {
-    return option.reason;
-  }
-
   switch (option.reasonCode) {
     case 'INVALID_GAP':
       return 'Altezza pezzo non valida';
@@ -429,6 +425,9 @@ function optionReason(option: NextOption): string {
     case 'SPINE_CONFLICT':
       return 'Questa scelta viola i vincoli della spina condivisa';
     default:
+      if (option.reason && option.reason.trim().length > 0) {
+        return option.reason;
+      }
       return 'Opzione non consentita';
   }
 }
@@ -443,6 +442,20 @@ function blockedReasons(columnIndex: number): string[] {
     .map((option) => optionReason(option));
 
   return Array.from(new Set(reasons));
+}
+
+function blockedReasonsSummary(columnIndex: number): string {
+  const reasons = blockedReasons(columnIndex);
+  if (reasons.length === 0) {
+    return 'Nessuna scelta valida';
+  }
+
+  const MAX_REASONS = 3;
+  const visible = reasons.slice(0, MAX_REASONS);
+  const hiddenCount = reasons.length - visible.length;
+  return hiddenCount > 0
+    ? `${visible.join(' · ')} · +${hiddenCount} altre`
+    : visible.join(' · ');
 }
 
 async function openNextOptions(columnIndex: number): Promise<void> {
@@ -668,7 +681,7 @@ function stepActive(index: number): boolean {
                   <label class="field" v-if="effectiveOptions(column.index).length > 0">
                     <span class="field__label">Altezza pezzo da aggiungere</span>
                     <select
-                      class="field__input"
+                      class="field__input field__input--column-select"
                       :disabled="!canEditDesign || designLoading"
                       v-model.number="selectedGapByColumn[column.index]"
                     >
@@ -678,7 +691,7 @@ function stepActive(index: number): boolean {
                         :value="option.allowed ? option.heightMm : null"
                         :disabled="!option.allowed"
                       >
-                        {{ option.heightMm }}mm{{ option.allowed ? '' : ` - ${optionReason(option)}` }}
+                          {{ option.heightMm }}mm{{ option.allowed ? '' : ` - ${option.reasonCode || 'NON_CONSENTITA'}` }}
                       </option>
                     </select>
                   </label>
@@ -686,8 +699,8 @@ function stepActive(index: number): boolean {
                   <p class="mini muted" v-if="effectiveOptions(column.index).length === 0">
                     Nessuna opzione disponibile dal backend per questa colonna.
                   </p>
-                  <p class="mini" v-else-if="!hasAllowedOption(column.index)">
-                    Nessuna scelta valida: {{ blockedReasons(column.index).join(' · ') }}
+                  <p class="mini blocked-reasons" v-else-if="!hasAllowedOption(column.index)">
+                    Nessuna scelta valida: {{ blockedReasonsSummary(column.index) }}
                   </p>
 
                   <div class="actions-row">
@@ -896,6 +909,14 @@ function stepActive(index: number): boolean {
   background: var(--color-surface);
   border-radius: var(--radius-md);
   padding: var(--space-2) var(--space-3);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.field__input--column-select {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .meta,
@@ -1105,6 +1126,8 @@ function stepActive(index: number): boolean {
   padding: var(--space-2);
   display: grid;
   gap: var(--space-2);
+  min-width: 0;
+  overflow: hidden;
 }
 
 .design-column header {
@@ -1115,6 +1138,11 @@ function stepActive(index: number): boolean {
 .actions-row {
   display: flex;
   gap: var(--space-2);
+}
+
+.blocked-reasons {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .bom-list {
