@@ -6,7 +6,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
-      "price": 30000,
+      "price": 300,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
@@ -24,7 +24,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "PIEDINO",
-      "price": 30000,
+      "price": 300,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {
