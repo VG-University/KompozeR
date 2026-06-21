@@ -305,7 +305,7 @@ describe('CAD command use cases', () => {
     ).rejects.toMatchObject({ code: 'VALIDATION_ERROR' });
   });
 
-  it('UpdateDesign accepts equal levels in adjacent columns when the shared spine remains valid', async () => {
+  it('UpdateDesign rejects equal levels in adjacent columns', async () => {
     const repo = new FakeConfigurationRepository();
     repo.seed(
       buildConfiguration({
@@ -329,17 +329,17 @@ describe('CAD command use cases', () => {
     );
 
     const useCase = new UpdateDesign(repo, new FakeCatalogRulesProvider());
-    const result = await useCase.execute({
-      id: 'cfg_test',
-      ownerId: 'usr_1',
-      columnDesigns: [
-        { columnIndex: 0, levelsMm: [120, 440], shelfThicknessMm: 20 },
-        { columnIndex: 1, levelsMm: [120, 440], shelfThicknessMm: 20 },
-      ],
-    });
 
-    expect(result.status).toBe('READY_FOR_FINALIZE');
-    expect(result.columnDesigns).toHaveLength(2);
+    await expect(
+      useCase.execute({
+        id: 'cfg_test',
+        ownerId: 'usr_1',
+        columnDesigns: [
+          { columnIndex: 0, levelsMm: [120, 440], shelfThicknessMm: 20 },
+          { columnIndex: 1, levelsMm: [120, 440], shelfThicknessMm: 20 },
+        ],
+      }),
+    ).rejects.toMatchObject({ code: 'VALIDATION_ERROR' });
   });
 
   it('UpdateDesign rejects non increasing levels in the same column', async () => {
@@ -622,6 +622,43 @@ describe('CAD command use cases', () => {
 
     expect(result.options.map((option) => option.heightMm)).toEqual([120, 300, 400]);
     expect(result.options.some((option) => option.allowed)).toBe(true);
+  });
+
+  it('ListNextOptions blocks candidate that would align with adjacent column level', async () => {
+    const repo = new FakeConfigurationRepository();
+    repo.seed(
+      buildConfiguration({
+        status: 'DESIGN_IN_PROGRESS',
+        category: 'TONDO',
+        environment: {
+          maxWidthMm: 5000,
+          maxHeightMm: 3000,
+          minWidthMm: 600,
+          minHeightMm: 220,
+          unit: 'mm',
+        },
+        columnPlan: {
+          columnCount: 2,
+          columns: [
+            { index: 0, shelfWidthMm: 800 },
+            { index: 1, shelfWidthMm: 600 },
+          ],
+        },
+        columnDesigns: [{ columnIndex: 1, levelsMm: [120], shelfThicknessMm: 20 }],
+      }),
+    );
+
+    const useCase = new ListNextOptions(repo, new FakeCatalogRulesProvider());
+    const result = await useCase.execute({
+      id: 'cfg_test',
+      ownerId: 'usr_1',
+      columnIndex: 0,
+    });
+
+    const conflicting = result.options.find((option) => option.heightMm === 120);
+    expect(conflicting).toBeDefined();
+    expect(conflicting?.allowed).toBe(false);
+    expect(conflicting?.reasonCode).toBe('ADJACENCY_CONFLICT');
   });
 
   it('ListNextOptions returns empty options for column index outside current plan', async () => {

@@ -2,6 +2,7 @@ export const SHELF_THICKNESS_MM = 20;
 export const SPINE_COMPONENT_MULTIPLIER = 2;
 
 export type SpineReasonCode =
+  | "ADJACENCY_CONFLICT"
   | "INVALID_FIRST_LEVEL"
   | "INVALID_SEGMENT"
   | "MAX_HEIGHT_EXCEEDED"
@@ -154,6 +155,24 @@ export function validateColumnCandidate(
     candidateHeightMm,
   });
 
+  const leftNeighbor = columnLevels[columnIndex - 1];
+  if (leftNeighbor?.levelsMm.includes(nextLevelMm)) {
+    return {
+      valid: false,
+      reasonCode: "ADJACENCY_CONFLICT",
+      reason: `Adjacent column level conflict at ${nextLevelMm}mm`,
+    };
+  }
+
+  const rightNeighbor = columnLevels[columnIndex + 1];
+  if (rightNeighbor?.levelsMm.includes(nextLevelMm)) {
+    return {
+      valid: false,
+      reasonCode: "ADJACENCY_CONFLICT",
+      reason: `Adjacent column level conflict at ${nextLevelMm}mm`,
+    };
+  }
+
   const nextColumns = columnLevels.map((column, currentIndex) => {
     if (currentIndex !== columnIndex) {
       return column;
@@ -185,6 +204,22 @@ export function validateColumnDesigns(
   columnLevels: readonly ColumnLevels[],
   rules: SpineRules,
 ): ColumnSpineValidationResult {
+  for (let index = 0; index < columnLevels.length - 1; index += 1) {
+    const leftLevels = new Set(columnLevels[index]?.levelsMm ?? []);
+    const rightLevels = columnLevels[index + 1]?.levelsMm ?? [];
+
+    for (const levelMm of rightLevels) {
+      if (leftLevels.has(levelMm)) {
+        return {
+          valid: false,
+          spineIndex: index + 1,
+          reasonCode: "ADJACENCY_CONFLICT",
+          reason: `Adjacent columns cannot share the same level ${levelMm}mm`,
+        };
+      }
+    }
+  }
+
   const spines = buildSpines(columnLevels);
 
   for (const spine of spines) {

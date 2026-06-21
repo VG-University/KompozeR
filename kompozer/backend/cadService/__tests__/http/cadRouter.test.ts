@@ -102,7 +102,7 @@ describe('cadRouter', () => {
       .send({
         columnDesigns: [
           { columnIndex: 0, levelsMm: [120, 440], shelfThicknessMm: 20 },
-          { columnIndex: 1, levelsMm: [120, 440], shelfThicknessMm: 20 },
+          { columnIndex: 1, levelsMm: [], shelfThicknessMm: 20 },
         ],
       });
 
