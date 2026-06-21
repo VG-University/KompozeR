@@ -39,7 +39,11 @@ export class MongoOrderTrendReader implements OrderTrendReader {
           done: { $sum: { $cond: [{ $eq: ['$status', 'DONE'] }, 1, 0] } },
           cancelled: { $sum: { $cond: [{ $eq: ['$status', 'CANCELLED'] }, 1, 0] } },
           totalOrders: { $sum: 1 },
-          revenue: { $sum: '$total' },
+          revenue: {
+            $sum: {
+              $cond: [{ $ne: ['$status', 'CANCELLED'] }, '$total', 0],
+            },
+          },
         },
       },
       { $sort: { _id: 1 } },
