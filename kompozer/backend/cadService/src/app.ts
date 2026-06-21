@@ -15,6 +15,7 @@ import { ListConfigurations } from './useCases/read/ListConfigurations';
 import { ListNextOptions } from './useCases/read/ListNextOptions';
 import { CreateConfiguration } from './useCases/write/CreateConfiguration';
 import { FinalizeConfiguration } from './useCases/write/FinalizeConfiguration';
+import { ReorderConfiguration } from './useCases/write/ReorderConfiguration';
 import { SetCategory } from './useCases/write/SetCategory';
 import { SetColumnPlan } from './useCases/write/SetColumnPlan';
 import { SetEnvironment } from './useCases/write/SetEnvironment';
@@ -52,6 +53,7 @@ export function buildApp(deps: BuildAppDeps = {}) {
     cartServiceClient,
     notificationSubscriptionClient,
   );
+  const reorderConfiguration = new ReorderConfiguration(configurationRepository, cartServiceClient);
 
   const app = express();
 
@@ -73,6 +75,7 @@ export function buildApp(deps: BuildAppDeps = {}) {
       setColumnPlan,
       updateDesign,
       finalizeConfiguration,
+      reorderConfiguration,
     }),
   );
 

@@ -49,6 +49,10 @@ export const cadService = {
     return http.post<ConfigurationDto>(`/cad/configurations/${id}/finalize`);
   },
 
+  reorder(id: string): Promise<ConfigurationDto> {
+    return http.post<ConfigurationDto>(`/cad/configurations/${id}/reorder`);
+  },
+
   nextOptions(id: string, columnIndex: number): Promise<NextOptionsDto> {
     return http.get<NextOptionsDto>(`/cad/configurations/${id}/next-options?columnIndex=${columnIndex}`);
   },

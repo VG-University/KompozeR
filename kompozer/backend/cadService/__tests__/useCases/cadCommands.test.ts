@@ -1,5 +1,6 @@
 import { CreateConfiguration } from '../../src/useCases/write/CreateConfiguration';
 import { FinalizeConfiguration } from '../../src/useCases/write/FinalizeConfiguration';
+import { ReorderConfiguration } from '../../src/useCases/write/ReorderConfiguration';
 import { SetCategory } from '../../src/useCases/write/SetCategory';
 import { SetColumnPlan } from '../../src/useCases/write/SetColumnPlan';
 import { SetEnvironment } from '../../src/useCases/write/SetEnvironment';
@@ -109,6 +110,55 @@ describe('CAD command use cases', () => {
     expect(subscriptions.calls).toHaveLength(2);
     expect(subscriptions.calls[0].ownerId).toBe('usr_1');
     expect(subscriptions.calls.map((call) => call.sku).sort()).toEqual(['PIE-120', 'RIP-800']);
+  });
+
+  it('ReorderConfiguration repushes BOM to cart without changing state', async () => {
+    const repo = new FakeConfigurationRepository();
+    const cart = new FakeCartServiceClient();
+    repo.seed(
+      buildConfiguration({
+        status: 'FINALIZED',
+        category: 'TONDO',
+        environment: {
+          maxWidthMm: 5000,
+          maxHeightMm: 3000,
+          minWidthMm: 600,
+          minHeightMm: 220,
+          unit: 'mm',
+        },
+        columnPlan: {
+          columnCount: 1,
+          columns: [{ index: 0, shelfWidthMm: 800 }],
+        },
+        columnDesigns: [
+          { columnIndex: 0, levelsMm: [120], shelfThicknessMm: 20 },
+        ],
+        components: [
+          { sku: 'RIP-800', name: 'Ripiano 800', quantity: 1, unitPriceCents: 3490, componentType: 'RIPIANO' },
+        ],
+        version: 3,
+      }),
+    );
+
+    const useCase = new ReorderConfiguration(repo, cart);
+    const result = await useCase.execute({ id: 'cfg_test', ownerId: 'usr_1' });
+
+    expect(result.status).toBe('FINALIZED');
+    expect(result.version).toBe(3); // version unchanged
+    expect(cart.calls).toHaveLength(1);
+    expect(cart.calls[0].ownerId).toBe('usr_1');
+    expect(cart.calls[0].items[0].sku).toBe('RIP-800');
+  });
+
+  it('ReorderConfiguration rejects non-finalized configurations', async () => {
+    const repo = new FakeConfigurationRepository();
+    const cart = new FakeCartServiceClient();
+    repo.seed(buildConfiguration({ status: 'DESIGN_IN_PROGRESS' }));
+
+    const useCase = new ReorderConfiguration(repo, cart);
+    await expect(
+      useCase.execute({ id: 'cfg_test', ownerId: 'usr_1' }),
+    ).rejects.toMatchObject({ code: 'VALIDATION_ERROR' });
   });
 
   it('UpdateDesign rejects unknown column indexes', async () => {

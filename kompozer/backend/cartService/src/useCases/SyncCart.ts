@@ -34,81 +34,103 @@ export class SyncCart {
 
     const removedSkus: string[] = [];
     const updatedSkus: string[] = [];
-    const removedUnavailableItems = { ...(existing.removedUnavailableItems ?? {}) };
 
-    const syncedItems = await Promise.all(
-      existing.items.map(async (item) => {
-        const snapshot = await this.catalog.getBySku(item.sku);
-
-        if (!snapshot || !snapshot.isAvailable) {
-          removedSkus.push(item.sku);
-          removedUnavailableItems[item.sku] = {
-            sku: item.sku,
-            name: item.name,
-            quantity: item.quantity,
-            removedAt: new Date(),
-          };
-          return null;
-        }
-
-        if (removedUnavailableItems[item.sku]) {
-          delete removedUnavailableItems[item.sku];
-        }
-
-        if (snapshot.unitPrice !== item.unitPrice) {
-          updatedSkus.push(item.sku);
-          return {
-            ...item,
-            unitPrice: snapshot.unitPrice,
-            lineTotal: computeLineTotal(snapshot.unitPrice, item.quantity),
-          };
-        }
-
-        return item;
-      }),
+    // First pass: check availability for each item.
+    const snapshots = await Promise.all(
+      existing.items.map(async (item) => ({
+        item,
+        snapshot: await this.catalog.getBySku(item.sku),
+      })),
     );
 
-    const keptItems = syncedItems.filter((item): item is NonNullable<typeof item> => item !== null);
+    const anyUnavailable = snapshots.some(({ snapshot }) => !snapshot || !snapshot.isAvailable);
 
-    const hasChanges = removedSkus.length > 0 || updatedSkus.length > 0;
+    if (anyUnavailable) {
+      // When any item is unavailable the entire cart is cleared.
+      // All current items are snapshotted so the restore flow can replay them.
+      const now = new Date();
+      const removedUnavailableItems: Record<string, import('../domain/entities/Cart').RemovedUnavailableItemSnapshot> = {
+        ...(existing.removedUnavailableItems ?? {}),
+      };
+
+      for (const { item } of snapshots) {
+        removedUnavailableItems[item.sku] = {
+          sku: item.sku,
+          name: item.name,
+          quantity: item.quantity,
+          removedAt: now,
+        };
+        removedSkus.push(item.sku);
+      }
+
+      const cleared: Cart = {
+        ...existing,
+        items: [],
+        removedUnavailableItems,
+        total: 0,
+        updatedAt: now,
+      };
+
+      await this.cartRepo.upsert(cleared);
+
+      await this.eventPublisher.publish(
+        this.buildEvent({
+          type: 'CartItemsRemovedUnavailable',
+          userId: input.userId,
+          removedSkus,
+        }),
+      );
+
+      return {
+        userId: cleared.userId,
+        items: [],
+        total: 0,
+        updatedAt: cleared.updatedAt,
+        removedSkus,
+        updatedSkus: [],
+      };
+    }
+
+    // No unavailable items: check for price updates only.
+    const keptItems = snapshots.map(({ item, snapshot }) => {
+      if (snapshot && snapshot.unitPrice !== item.unitPrice) {
+        updatedSkus.push(item.sku);
+        return {
+          ...item,
+          unitPrice: snapshot.unitPrice,
+          lineTotal: computeLineTotal(snapshot.unitPrice, item.quantity),
+        };
+      }
+      return item;
+    });
+
+    const hasChanges = updatedSkus.length > 0;
 
     if (hasChanges) {
       const updated: Cart = {
         ...existing,
         items: keptItems,
-        removedUnavailableItems,
+        removedUnavailableItems: existing.removedUnavailableItems,
         total: computeCartTotal(keptItems),
         updatedAt: new Date(),
       };
 
       await this.cartRepo.upsert(updated);
 
-      if (removedSkus.length > 0) {
-        await this.eventPublisher.publish(
-          this.buildEvent({
-            type: 'CartItemsRemovedUnavailable',
-            userId: input.userId,
-            removedSkus,
-          }),
-        );
-      }
-
-      if (updatedSkus.length > 0) {
-        await this.eventPublisher.publish(
-          this.buildEvent({
-            type: 'CartPricesUpdated',
-            userId: input.userId,
-            updatedSkus,
-          }),
-        );
-      }
+      await this.eventPublisher.publish(
+        this.buildEvent({
+          type: 'CartPricesUpdated',
+          userId: input.userId,
+          updatedSkus,
+        }),
+      );
 
       return {
         userId: updated.userId,
         items: updated.items,
         total: updated.total,
         updatedAt: updated.updatedAt,
-        removedSkus,
+        removedSkus: [],
         updatedSkus,
       };
     }

@@ -11,6 +11,7 @@ const notifications = useNotificationStore();
 
 const loading = ref(false);
 const createLoading = ref(false);
+const reorderLoadingId = ref<string | null>(null);
 const error = ref('');
 
 const total = ref(0);
@@ -85,6 +86,20 @@ async function quickCreate(): Promise<void> {
 async function openInCad(configuration: ConfigurationDto): Promise<void> {
   await router.push({ name: 'cad', query: { configurationId: configuration.id } });
 }
+
+async function reorder(configuration: ConfigurationDto): Promise<void> {
+  reorderLoadingId.value = configuration.id;
+  try {
+    await cadService.reorder(configuration.id);
+    notifications.addToast('success', `Componenti di "${configuration.name}" aggiunti al carrello`);
+    await router.push({ name: 'cart' });
+  } catch (e) {
+    const msg = e instanceof ApiError ? e.message : 'Errore riordino configurazione';
+    notifications.addToast('error', msg);
+  } finally {
+    reorderLoadingId.value = null;
+  }
+}
 </script>
 
 <template>
@@ -156,7 +171,18 @@ async function openInCad(configuration: ConfigurationDto): Promise<void> {
             <p class="meta">{{ item.status }} · {{ item.category || 'Senza categoria' }}</p>
             <p class="meta">Aggiornata: {{ formatDate(item.updatedAt) }}</p>
           </div>
-          <button class="btn btn--light" @click="openInCad(item)">Apri in CAD</button>
+          <div class="recent-item__actions">
+            <button
+              v-if="item.status === 'FINALIZED'"
+              class="btn btn--light"
+              :disabled="reorderLoadingId === item.id"
+              :aria-label="`Riordina la configurazione ${item.name}`"
+              @click="reorder(item)"
+            >
+              {{ reorderLoadingId === item.id ? 'Riordino...' : 'Riordina' }}
+            </button>
+            <button class="btn btn--light" :aria-label="`Apri la configurazione ${item.name} nel CAD`" @click="openInCad(item)">Apri in CAD</button>
+          </div>
         </article>
       </div>
     </section>
@@ -265,6 +291,12 @@ async function openInCad(configuration: ConfigurationDto): Promise<void> {
   justify-content: space-between;
   align-items: center;
   gap: var(--space-3);
+}
+
+.recent-item__actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-shrink: 0;
 }
 
 .recent-item h3 {

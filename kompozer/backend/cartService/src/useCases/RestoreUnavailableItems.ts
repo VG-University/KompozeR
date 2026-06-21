@@ -16,8 +16,9 @@ export class RestoreUnavailableItems {
   ) {}
 
   async execute(input: RestoreUnavailableItemsInput): Promise<number> {
-    const snapshot = await this.catalog.getBySku(input.sku);
-    if (!snapshot || !snapshot.isAvailable) {
+    // Verify the triggering SKU is now available before looking up carts.
+    const triggerSnapshot = await this.catalog.getBySku(input.sku);
+    if (!triggerSnapshot || !triggerSnapshot.isAvailable) {
       return 0;
     }
 
@@ -29,45 +30,63 @@ export class RestoreUnavailableItems {
     let restoredCount = 0;
 
     for (const cart of carts) {
-      const removed = cart.removedUnavailableItems?.[input.sku];
-      if (!removed) {
+      const snapshotMap = cart.removedUnavailableItems ?? {};
+      if (!snapshotMap[input.sku]) {
         continue;
       }
 
-      const alreadyPresent = cart.items.some((item) => item.sku === input.sku);
-      const nextRemoved = { ...(cart.removedUnavailableItems ?? {}) };
-      delete nextRemoved[input.sku];
+      // For each cart, try to restore ALL snapshotted items that are now available.
+      const nextRemoved = { ...snapshotMap };
+      const restoredItems: CartItem[] = [];
+      const restoredSkus: string[] = [];
 
-      if (alreadyPresent) {
-        cart.removedUnavailableItems = nextRemoved;
-        cart.updatedAt = new Date();
-        await this.cartRepo.upsert(cart);
+      for (const [sku, removedSnapshot] of Object.entries(snapshotMap)) {
+        const catalogEntry = await this.catalog.getBySku(sku);
+        if (!catalogEntry || !catalogEntry.isAvailable) {
+          // Still unavailable — keep in snapshot.
+          continue;
+        }
+
+        const alreadyPresent = cart.items.some((item) => item.sku === sku);
+        delete nextRemoved[sku];
+
+        if (alreadyPresent) {
+          // Already in cart (added manually in the meantime) — just clean snapshot.
+          continue;
+        }
+
+        restoredItems.push({
+          sku,
+          name: removedSnapshot.name,
+          quantity: removedSnapshot.quantity,
+          unitPrice: catalogEntry.unitPrice,
+          lineTotal: computeLineTotal(catalogEntry.unitPrice, removedSnapshot.quantity),
+        });
+        restoredSkus.push(sku);
+      }
+
+      if (restoredItems.length === 0 && Object.keys(nextRemoved).length === Object.keys(snapshotMap).length) {
+        // Nothing changed for this cart.
         continue;
       }
 
-      const restoredItem: CartItem = {
-        sku: input.sku,
-        name: removed.name,
-        quantity: removed.quantity,
-        unitPrice: snapshot.unitPrice,
-        lineTotal: computeLineTotal(snapshot.unitPrice, removed.quantity),
-      };
-
-      cart.items.push(restoredItem);
+      cart.items = [...cart.items, ...restoredItems];
       cart.removedUnavailableItems = nextRemoved;
       cart.total = computeCartTotal(cart.items);
       cart.updatedAt = new Date();
 
       await this.cartRepo.upsert(cart);
-      restoredCount += 1;
 
-      await this.eventPublisher.publish(
-        this.buildEvent({
-          type: 'CartItemsRestoredAvailable',
-          userId: cart.userId,
-          restoredSkus: [input.sku],
-        }),
-      );
+      if (restoredSkus.length > 0) {
+        restoredCount += 1;
+        await this.eventPublisher.publish(
+          this.buildEvent({
+            type: 'CartItemsRestoredAvailable',
+            userId: cart.userId,
+            restoredSkus,
+          }),
+        );
+      }
     }
 
     return restoredCount;

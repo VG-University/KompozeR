@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
+import { RouterLink } from 'vue-router';
 import { useCart } from '@/composables/useCart';
 import type { CartItem } from '@/types/cart';
 
@@ -40,7 +41,14 @@ function decrement(item: CartItem): void {
 
     <p v-if="error" class="error" role="alert" aria-live="assertive">{{ error }}</p>
     <p v-if="loading" class="placeholder">Caricamento carrello...</p>
-    <p v-else-if="items.length === 0" class="placeholder">Il tuo carrello è vuoto.</p>
+    <div v-else-if="items.length === 0" class="empty-state">
+      <p class="placeholder">Il tuo carrello è vuoto.</p>
+      <p class="empty-hint">
+        Se un componente è diventato non disponibile il carrello viene svuotato automaticamente.
+        Puoi <RouterLink :to="{ name: 'configurations' }" class="empty-link">riordinare una configurazione finalizzata</RouterLink>
+        o <RouterLink :to="{ name: 'cad' }" class="empty-link">crearne una nuova nel configuratore</RouterLink>.
+      </p>
+    </div>
 
     <div v-else class="layout">
       <section class="items">
@@ -111,6 +119,22 @@ function decrement(item: CartItem): void {
 .placeholder {
   margin-top: var(--space-4);
   color: var(--color-text-muted);
+}
+
+.empty-state {
+  margin-top: var(--space-4);
+}
+
+.empty-hint {
+  margin-top: var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.empty-link {
+  color: var(--color-accent);
+  text-decoration: underline;
 }
 
 .layout {

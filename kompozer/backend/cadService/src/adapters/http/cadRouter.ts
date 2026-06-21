@@ -8,6 +8,7 @@ import { ListConfigurations } from '../../useCases/read/ListConfigurations';
 import { ListNextOptions } from '../../useCases/read/ListNextOptions';
 import { CreateConfiguration } from '../../useCases/write/CreateConfiguration';
 import { FinalizeConfiguration } from '../../useCases/write/FinalizeConfiguration';
+import { ReorderConfiguration } from '../../useCases/write/ReorderConfiguration';
 import { SetCategory } from '../../useCases/write/SetCategory';
 import { SetColumnPlan } from '../../useCases/write/SetColumnPlan';
 import { SetEnvironment } from '../../useCases/write/SetEnvironment';
@@ -23,6 +24,7 @@ export interface CadRouterDeps {
   setColumnPlan: SetColumnPlan;
   updateDesign: UpdateDesign;
   finalizeConfiguration: FinalizeConfiguration;
+  reorderConfiguration: ReorderConfiguration;
 }
 
 function wrap(fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) {
@@ -335,6 +337,19 @@ export function buildCadRouter(deps: CadRouterDeps): Router {
     wrap(async (req, res) => {
       const ownerId = req.headers['x-user-id'] as string;
       const configuration = await deps.finalizeConfiguration.execute({
+        id: req.params['id'],
+        ownerId,
+      });
+      res.json(configuration);
+    }),
+  );
+
+  router.post(
+    '/configurations/:id/reorder',
+    requireUserId,
+    wrap(async (req, res) => {
+      const ownerId = req.headers['x-user-id'] as string;
+      const configuration = await deps.reorderConfiguration.execute({
         id: req.params['id'],
         ownerId,
       });

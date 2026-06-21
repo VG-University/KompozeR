@@ -52,7 +52,7 @@ describe('SyncCart', () => {
     expect(publisher.events.map((e) => e.type)).toContain('CartPricesUpdated');
   });
 
-  it('removes item and fires event when item is no longer available', async () => {
+  it('clears entire cart and snapshots all items when any item becomes unavailable', async () => {
     const repo = new FakeCartRepository();
     const catalog = new FakeCatalogSnapshotProvider();
     const publisher = new FakeCartEventPublisher();
@@ -73,7 +73,33 @@ describe('SyncCart', () => {
     expect(persisted?.removedUnavailableItems?.['SKU-GONE'].quantity).toBe(1);
   });
 
-  it('removes item when catalog has no snapshot for the sku', async () => {
+  it('clears entire cart including available items when one item becomes unavailable', async () => {
+    const repo = new FakeCartRepository();
+    const catalog = new FakeCatalogSnapshotProvider();
+    const publisher = new FakeCartEventPublisher();
+    const upsert = new UpsertCartItem(repo);
+    const sync = new SyncCart(repo, catalog, publisher);
+
+    await upsert.execute({ userId: 'usr_1', sku: 'SKU-OK', name: 'Disponibile', unitPrice: 1000, quantity: 2 });
+    await upsert.execute({ userId: 'usr_1', sku: 'SKU-GONE', name: 'Rimosso', unitPrice: 500, quantity: 3 });
+
+    catalog.set({ sku: 'SKU-OK', unitPrice: 1000, isAvailable: true });
+    catalog.set({ sku: 'SKU-GONE', unitPrice: 500, isAvailable: false });
+
+    const result = await sync.execute({ userId: 'usr_1' });
+    expect(result.items).toHaveLength(0);
+    expect(result.total).toBe(0);
+    expect(result.removedSkus).toEqual(expect.arrayContaining(['SKU-OK', 'SKU-GONE']));
+    expect(result.updatedSkus).toHaveLength(0);
+
+    const persisted = await repo.findByUserId('usr_1');
+    expect(persisted?.removedUnavailableItems?.['SKU-OK']).toBeDefined();
+    expect(persisted?.removedUnavailableItems?.['SKU-OK'].quantity).toBe(2);
+    expect(persisted?.removedUnavailableItems?.['SKU-GONE']).toBeDefined();
+    expect(persisted?.removedUnavailableItems?.['SKU-GONE'].quantity).toBe(3);
+  });
+
+  it('clears entire cart when catalog has no snapshot for a sku', async () => {
     const repo = new FakeCartRepository();
     const catalog = new FakeCatalogSnapshotProvider();
     const upsert = new UpsertCartItem(repo);
@@ -87,7 +113,7 @@ describe('SyncCart', () => {
     expect(result.items).toHaveLength(0);
   });
 
-  it('handles mixed cart: one item updated, one removed, one unchanged', async () => {
+  it('clears entire cart when any item is unavailable, regardless of other items', async () => {
     const repo = new FakeCartRepository();
     const catalog = new FakeCatalogSnapshotProvider();
     const publisher = new FakeCartEventPublisher();
@@ -103,18 +129,21 @@ describe('SyncCart', () => {
     catalog.set({ sku: 'SKU-RM', unitPrice: 500, isAvailable: false });
 
     const result = await sync.execute({ userId: 'usr_1' });
-    expect(result.items).toHaveLength(2);
-    expect(result.removedSkus).toEqual(['SKU-RM']);
-    expect(result.updatedSkus).toEqual(['SKU-UP']);
 
-    const updated = result.items.find((i) => i.sku === 'SKU-UP');
-    expect(updated?.unitPrice).toBe(900);
-    expect(updated?.lineTotal).toBe(1800);
+    // Entire cart cleared because SKU-RM is unavailable.
+    expect(result.items).toHaveLength(0);
+    expect(result.total).toBe(0);
+    expect(result.removedSkus).toEqual(expect.arrayContaining(['SKU-OK', 'SKU-UP', 'SKU-RM']));
+    expect(result.updatedSkus).toHaveLength(0);
 
-    expect(result.total).toBe(1000 + 1800);
+    // All items snapshotted for restore.
+    const persisted = await repo.findByUserId('usr_1');
+    expect(persisted?.removedUnavailableItems?.['SKU-OK']).toBeDefined();
+    expect(persisted?.removedUnavailableItems?.['SKU-UP']).toBeDefined();
+    expect(persisted?.removedUnavailableItems?.['SKU-RM']).toBeDefined();
 
     const eventTypes = publisher.events.map((e) => e.type);
     expect(eventTypes).toContain('CartItemsRemovedUnavailable');
-    expect(eventTypes).toContain('CartPricesUpdated');
+    expect(eventTypes).not.toContain('CartPricesUpdated');
   });
 });
