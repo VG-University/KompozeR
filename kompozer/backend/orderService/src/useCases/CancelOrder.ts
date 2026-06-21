@@ -23,7 +23,9 @@ export class CancelOrder {
     if (!order) {
       throw new OrderNotFoundError(input.orderId);
     }
-    if (order.userId !== input.userId) {
+    const isAdmin = typeof input.role === 'string' && input.role.toUpperCase() === 'ADMIN';
+
+    if (!isAdmin && order.userId !== input.userId) {
       throw new ForbiddenError('Cannot cancel another user order');
     }
     if (order.status === 'CANCELLED') {

@@ -30,6 +30,7 @@ export interface GetOrderInput {
 export interface CancelOrderInput {
   userId: string;
   orderId: string;
+  role?: string;
 }
 
 export interface UpdateOrderStatusInput {

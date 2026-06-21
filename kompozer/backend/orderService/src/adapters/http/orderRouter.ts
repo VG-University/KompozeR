@@ -104,8 +104,13 @@ export function buildOrderRouter(deps: OrderRouterDeps): Router {
     requireUserId,
     wrap(async (req, res) => {
       const userId = req.headers['x-user-id'] as string;
+      const role = req.headers['x-user-role'];
       const orderId = req.params['orderId'] as string;
-      const order = await deps.cancelOrder.execute({ userId, orderId });
+      const order = await deps.cancelOrder.execute({
+        userId,
+        orderId,
+        role: typeof role === 'string' ? role : undefined,
+      });
       res.json(order);
     }),
   );

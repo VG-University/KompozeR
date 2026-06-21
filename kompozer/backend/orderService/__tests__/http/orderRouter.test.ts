@@ -150,4 +150,51 @@ describe('orderRouter', () => {
     expect(updateRes.body.status).toBe('DONE');
     expect(updateRes.body.doneAt).toEqual(expect.any(String));
   });
+
+  it('PATCH /orders/:id/cancel -> 403 for non-admin on another user order', async () => {
+    const app = buildTestApp();
+
+    const createRes = await request(app)
+      .post('/orders')
+      .set('x-user-id', 'usr_1')
+      .send({
+        items: [{ sku: 'SKU-001', name: 'Ripiano', unitPrice: 1990, quantity: 1 }],
+        total: 1990,
+      });
+
+    const orderId = createRes.body.id as string;
+
+    const cancelRes = await request(app)
+      .patch(`/orders/${orderId}/cancel`)
+      .set('x-user-id', 'usr_2')
+      .set('x-user-role', 'BASE')
+      .send({});
+
+    expect(cancelRes.status).toBe(403);
+    expect(cancelRes.body.error.code).toBe('FORBIDDEN');
+  });
+
+  it('PATCH /orders/:id/cancel -> 200 for admin on another user order', async () => {
+    const app = buildTestApp();
+
+    const createRes = await request(app)
+      .post('/orders')
+      .set('x-user-id', 'usr_1')
+      .send({
+        items: [{ sku: 'SKU-001', name: 'Ripiano', unitPrice: 1990, quantity: 1 }],
+        total: 1990,
+      });
+
+    const orderId = createRes.body.id as string;
+
+    const cancelRes = await request(app)
+      .patch(`/orders/${orderId}/cancel`)
+      .set('x-user-id', 'adm_1')
+      .set('x-user-role', 'ADMIN')
+      .send({});
+
+    expect(cancelRes.status).toBe(200);
+    expect(cancelRes.body.status).toBe('CANCELLED');
+    expect(cancelRes.body.cancelledAt).toEqual(expect.any(String));
+  });
 });

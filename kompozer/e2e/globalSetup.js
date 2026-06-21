@@ -107,18 +107,6 @@ function detectTargetNeeds() {
     .join(' ')
     .toLowerCase();
 
-  const hasFilter = rawArgs.includes('testpathpattern') || rawArgs.includes('runtestsbypath');
-
-  if (!hasFilter) {
-    return {
-      needsAuth: true,
-      needsCatalog: true,
-      needsCad: true,
-      needsReporting: true,
-      needsAdminSeed: true,
-    };
-  }
-
   const wants = {
     auth: rawArgs.includes('auth.integration.test'),
     catalog: rawArgs.includes('catalog.integration.test'),

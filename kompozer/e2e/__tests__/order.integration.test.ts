@@ -11,6 +11,7 @@ const SKU = `INT-ORDER-${RUN}`;
 let adminToken = '';
 let userToken = '';
 let createdOrderId = '';
+let createdOrderToCancelId = '';
 
 async function parseJson<T = Record<string, unknown>>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
@@ -131,6 +132,43 @@ describe('[INT] Order — checkout from cart', () => {
     expect(doneBody['doneAt']).toEqual(expect.any(String));
   });
 
+  it('PATCH /orders/:id/cancel come admin porta ordine a CANCELLED anche se di un altro utente', async () => {
+    const addToCart = await fetch(`${BASE}/cart/items/${SKU}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${userToken}`,
+      },
+      body: JSON.stringify({ name: `Ripiano Ordine ${RUN}`, unitPrice: 2990, quantity: 1 }),
+    });
+
+    expect(addToCart.status).toBe(200);
+
+    const checkout = await fetch(`${BASE}/cart/checkout`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${userToken}` },
+    });
+
+    expect(checkout.status).toBe(200);
+    const checkoutBody = await parseJson<Record<string, unknown>>(checkout);
+    createdOrderToCancelId = checkoutBody['orderId'] as string;
+    expect(createdOrderToCancelId).toEqual(expect.any(String));
+
+    const cancelOrder = await fetch(`${BASE}/orders/${createdOrderToCancelId}/cancel`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${adminToken}`,
+      },
+      body: JSON.stringify({}),
+    });
+
+    expect(cancelOrder.status).toBe(200);
+    const cancelledBody = await parseJson<Record<string, unknown>>(cancelOrder);
+    expect(cancelledBody['status']).toBe('CANCELLED');
+    expect(cancelledBody['cancelledAt']).toEqual(expect.any(String));
+  });
+
   it('GET /orders/:id come utente mostra stato DONE', async () => {
     const getOrder = await fetch(`${BASE}/orders/${createdOrderId}`, {
       headers: { Authorization: `Bearer ${userToken}` },
@@ -140,5 +178,18 @@ describe('[INT] Order — checkout from cart', () => {
     const orderBody = await parseJson<Record<string, unknown>>(getOrder);
     expect(orderBody['id']).toBe(createdOrderId);
     expect(orderBody['status']).toBe('DONE');
+  });
+
+  it('GET /orders/:id come utente mostra stato CANCELLED dopo azione admin', async () => {
+    expect(createdOrderToCancelId).toBeTruthy();
+
+    const getOrder = await fetch(`${BASE}/orders/${createdOrderToCancelId}`, {
+      headers: { Authorization: `Bearer ${userToken}` },
+    });
+
+    expect(getOrder.status).toBe(200);
+    const orderBody = await parseJson<Record<string, unknown>>(getOrder);
+    expect(orderBody['id']).toBe(createdOrderToCancelId);
+    expect(orderBody['status']).toBe('CANCELLED');
   });
 });
