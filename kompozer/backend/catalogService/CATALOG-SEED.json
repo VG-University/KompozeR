@@ -150,7 +150,7 @@
       "description": "TODO Descrizione componente",
       "category": "TONDO",
       "Type": "MONTANTE",
-      "price": 40000,
+      "price": 400,
       "isAvailable": true,
       "imageUrl": "",
       "dimensions": {

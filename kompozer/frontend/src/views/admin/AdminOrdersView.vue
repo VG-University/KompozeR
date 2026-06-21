@@ -186,7 +186,7 @@ function requestMarkCancelled(order: Order): void {
       </article>
     </section>
 
-    <p v-if="error" class="error">{{ error }}</p>
+    <p v-if="error" class="error" role="alert" aria-live="assertive">{{ error }}</p>
     <p v-if="loading" class="placeholder">Caricamento ordini...</p>
     <p v-else-if="filteredItems.length === 0" class="placeholder">Nessun ordine per il filtro selezionato.</p>
 

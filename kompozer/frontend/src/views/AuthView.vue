@@ -125,7 +125,7 @@ async function handleGuest(): Promise<void> {
           <span class="field__label">Password</span>
           <input v-model="login.password" class="field__input" type="password" required autocomplete="current-password" />
         </label>
-        <p v-if="error" class="auth-error">{{ error }}</p>
+        <p v-if="error" class="auth-error" role="alert" aria-live="assertive">{{ error }}</p>
         <button class="btn btn--primary" type="submit" :disabled="loading">
           {{ loading ? 'Attendere...' : 'Accedi' }}
         </button>
@@ -144,7 +144,7 @@ async function handleGuest(): Promise<void> {
           <span class="field__label">Password</span>
           <input v-model="register.password" class="field__input" type="password" required autocomplete="new-password" />
         </label>
-        <p v-if="error" class="auth-error">{{ error }}</p>
+        <p v-if="error" class="auth-error" role="alert" aria-live="assertive">{{ error }}</p>
         <button class="btn btn--primary" type="submit" :disabled="loading">
           {{ loading ? 'Attendere...' : 'Registrati' }}
         </button>

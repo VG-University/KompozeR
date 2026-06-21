@@ -109,7 +109,7 @@ async function logout(): Promise<void> {
           {{ auth.isGuest ? 'Guest' : auth.user?.username }}
         </span>
 
-        <button class="app-header__logout" @click="logout">Esci</button>
+        <button class="app-header__logout" aria-label="Esci dal tuo account" @click="logout">Esci</button>
       </div>
     </div>
   </header>
@@ -226,5 +226,49 @@ async function logout(): Promise<void> {
 .app-header__logout:hover {
   color: var(--color-text-primary);
   border-color: var(--color-text-muted);
+}
+
+@media (max-width: 1180px) {
+  .app-header__inner {
+    gap: var(--space-3);
+    padding: 0 var(--space-4);
+  }
+
+  .app-header__nav {
+    gap: var(--space-2);
+  }
+
+  .app-header__actions {
+    gap: var(--space-3);
+  }
+}
+
+@media (max-width: 900px) {
+  .app-header {
+    height: auto;
+  }
+
+  .app-header__inner {
+    flex-wrap: wrap;
+    padding: var(--space-2) var(--space-4);
+  }
+
+  .app-header__nav {
+    order: 3;
+    flex: 0 0 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 2px;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-header__user {
+    display: none;
+  }
+
+  .app-header__actions {
+    gap: var(--space-2);
+  }
 }
 </style>

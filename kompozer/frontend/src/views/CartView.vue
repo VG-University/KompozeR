@@ -38,7 +38,7 @@ function decrement(item: CartItem): void {
       <button class="btn btn--light" :disabled="loading" @click="load">Aggiorna</button>
     </header>
 
-    <p v-if="error" class="error">{{ error }}</p>
+    <p v-if="error" class="error" role="alert" aria-live="assertive">{{ error }}</p>
     <p v-if="loading" class="placeholder">Caricamento carrello...</p>
     <p v-else-if="items.length === 0" class="placeholder">Il tuo carrello è vuoto.</p>
 
@@ -52,9 +52,9 @@ function decrement(item: CartItem): void {
           </div>
 
           <div class="qty-controls">
-            <button class="qty-btn" @click="decrement(item)">-</button>
+            <button class="qty-btn" :aria-label="`Riduci quantita ${item.name}`" @click="decrement(item)">-</button>
             <span class="qty-value">{{ item.quantity }}</span>
-            <button class="qty-btn" @click="increment(item)">+</button>
+            <button class="qty-btn" :aria-label="`Aumenta quantita ${item.name}`" @click="increment(item)">+</button>
           </div>
 
           <div class="line-total">
@@ -214,6 +214,12 @@ function decrement(item: CartItem): void {
   border: 1px solid var(--color-border);
 }
 
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;
@@ -222,6 +228,16 @@ function decrement(item: CartItem): void {
   .item-row {
     grid-template-columns: 1fr;
     gap: var(--space-3);
+  }
+}
+
+@media (max-width: 700px) {
+  .view-container {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .cart-header {
+    flex-direction: column;
   }
 }
 </style>

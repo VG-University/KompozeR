@@ -530,7 +530,7 @@ function stepActive(index: number): boolean {
       </div>
     </header>
 
-    <p v-if="error" class="error">{{ error }}</p>
+    <p v-if="error" class="error" role="alert" aria-live="assertive">{{ error }}</p>
 
     <div class="cad-layout">
       <main class="center-panel">
@@ -682,6 +682,7 @@ function stepActive(index: number): boolean {
                     <span class="field__label">Altezza pezzo da aggiungere</span>
                     <select
                       class="field__input field__input--column-select"
+                      :aria-label="`Seleziona altezza da aggiungere per colonna ${column.index + 1}`"
                       :disabled="!canEditDesign || designLoading"
                       v-model.number="selectedGapByColumn[column.index]"
                     >
@@ -706,6 +707,7 @@ function stepActive(index: number): boolean {
                   <div class="actions-row">
                     <button
                       class="btn btn--primary btn--small"
+                      :aria-label="`Aggiungi livello alla colonna ${column.index + 1}`"
                       :disabled="!canEditDesign || designLoading || !selectedGapByColumn[column.index]"
                       @click="addShelf(column.index)"
                     >
@@ -713,6 +715,7 @@ function stepActive(index: number): boolean {
                     </button>
                     <button
                       class="btn btn--light btn--small"
+                      :aria-label="`Rimuovi ultimo livello dalla colonna ${column.index + 1}`"
                       :disabled="!canEditDesign || designLoading || column.levels.length === 0"
                       @click="removeShelf(column.index)"
                     >
@@ -1256,6 +1259,16 @@ function stepActive(index: number): boolean {
   }
 }
 
+@media (max-width: 1200px) {
+  .cad-workspace {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .design-columns {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
 @media (max-width: 980px) {
   .cad-workspace {
     padding: var(--space-6) var(--space-4);
@@ -1304,6 +1317,16 @@ function stepActive(index: number): boolean {
 
   .actions-row {
     flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 760px) {
+  .canvas-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .design-columns {
+    grid-template-columns: 1fr;
   }
 }
 </style>

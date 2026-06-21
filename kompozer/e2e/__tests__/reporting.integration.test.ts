@@ -9,6 +9,7 @@ const RUN = Date.now();
 
 let adminToken = '';
 let userToken = '';
+let guestToken = '';
 let createdOrderId = '';
 
 async function timedFetch(input: string, init?: RequestInit): Promise<Response> {
@@ -58,7 +59,7 @@ beforeAll(async () => {
   if (!guestRes.ok) {
     throw new Error(`[reporting INT] guest login fallito (${guestRes.status})`);
   }
-  const guestToken = ((await json(guestRes)) as Record<string, string>)['token'];
+  guestToken = ((await json(guestRes)) as Record<string, string>)['token'];
 
   const checkout = await timedFetch(`${BASE}/cart/checkout`, {
     method: 'POST',
@@ -109,5 +110,15 @@ describe('[INT] Reporting — admin order trend', () => {
     if (createdOrderId) {
       expect(totals['totalOrders'] as number).toBeGreaterThanOrEqual(1);
     }
+  });
+
+  it('GET /reports/trends/orders -> 403 per guest', async () => {
+    const res = await timedFetch(`${BASE}/reports/trends/orders`, {
+      headers: { Authorization: `Bearer ${guestToken}` },
+    });
+
+    expect(res.status).toBe(403);
+    const body = await json<Record<string, unknown>>(res);
+    expect((body['error'] as Record<string, unknown>)['code']).toBe('FORBIDDEN');
   });
 });

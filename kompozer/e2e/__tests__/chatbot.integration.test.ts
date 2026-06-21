@@ -6,6 +6,7 @@ export {};
 
 const BASE = 'http://localhost:3000';
 let guestToken = '';
+let otherGuestToken = '';
 let adminToken = '';
 
 beforeAll(async () => {
@@ -18,6 +19,16 @@ beforeAll(async () => {
     throw new Error(`[chatbot INT] guest token non disponibile (${guestRes.status})`);
   }
   guestToken = ((await guestRes.json()) as Record<string, unknown>)['token'] as string;
+
+  const otherGuestRes = await fetch(`${BASE}/auth/guest`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  if (!otherGuestRes.ok) {
+    throw new Error(`[chatbot INT] second guest token non disponibile (${otherGuestRes.status})`);
+  }
+  otherGuestToken = ((await otherGuestRes.json()) as Record<string, unknown>)['token'] as string;
 
   const adminLoginRes = await fetch(`${BASE}/auth/login`, {
     method: 'POST',
@@ -97,6 +108,11 @@ describe('[INT] Chatbot — sessioni e Q&A base', () => {
     expect(listRes.status).toBe(200);
     const listBody = (await listRes.json()) as Record<string, unknown>;
     expect(Array.isArray(listBody['items'])).toBe(true);
+
+    const otherUserListRes = await fetch(`${BASE}/chatbot/sessions/${sessionId}/messages`, {
+      headers: { Authorization: `Bearer ${otherGuestToken}` },
+    });
+    expect([403, 404]).toContain(otherUserListRes.status);
 
     const closeRes = await fetch(`${BASE}/chatbot/sessions/${sessionId}/close`, {
       method: 'PATCH',

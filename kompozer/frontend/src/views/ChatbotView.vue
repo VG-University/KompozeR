@@ -222,7 +222,7 @@ onUnmounted(() => {
       <span v-if="session.configurationId"> · Configurazione: {{ session.configurationId }}</span>
     </p>
 
-    <p v-if="error" class="error">{{ error }}</p>
+    <p v-if="error" class="error" role="alert" aria-live="assertive">{{ error }}</p>
     <p v-if="loading" class="placeholder">Preparazione chat...</p>
 
     <template v-else>

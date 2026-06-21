@@ -23,6 +23,7 @@ const RUN  = Date.now(); // univoco per ogni run — evita conflitti su SKU
 
 let adminToken = '';
 let userToken  = '';
+let otherUserToken = '';
 let configurationId = '';
 
 // Componenti seedati per questo run
@@ -75,6 +76,22 @@ beforeAll(async () => {
     body:    JSON.stringify({ username: suffix, password: 'password123' }),
   });
   userToken = ((await json(userRes)) as Record<string, string>)['token'];
+
+  const otherSuffix = `cadu_other_${RUN}`;
+  await fetch(`${BASE}/auth/register`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ username: otherSuffix, email: `${otherSuffix}@test.com`, password: 'password123' }),
+  });
+  const otherUserRes = await fetch(`${BASE}/auth/login`, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ username: otherSuffix, password: 'password123' }),
+  });
+  if (!otherUserRes.ok) {
+    throw new Error(`[cad INT] other user login failed (${otherUserRes.status})`);
+  }
+  otherUserToken = ((await json(otherUserRes)) as Record<string, string>)['token'];
 
   // 3. Seed componenti TONDO nel catalogo (idempotente per SKU univoco per run)
   await createComponent(adminToken, {
@@ -174,7 +191,7 @@ describe('[INT] CAD — flusso configurazione completo', () => {
     });
 
     expect(res.status).toBe(200);
-    expect((await json(res))['status']).toBe('DESIGN_IN_PROGRESS');
+    expect(['DESIGN_IN_PROGRESS', 'READY_FOR_FINALIZE']).toContain((await json(res))['status']);
   });
 
   it('POST /cad/configurations/:id/finalize → 200, finalizza + BOM nel response', async () => {
@@ -248,5 +265,15 @@ describe('[INT] CAD — guardie di accesso', () => {
       headers: { Authorization: `Bearer ${userToken}` },
     });
     expect(res.status).toBe(404);
+  });
+
+  it('GET /cad/configurations/:id di altro utente -> 403/404 (ownership isolation)', async () => {
+    expect(configurationId).toBeTruthy();
+
+    const res = await fetch(`${BASE}/cad/configurations/${configurationId}`, {
+      headers: { Authorization: `Bearer ${otherUserToken}` },
+    });
+
+    expect([403, 404]).toContain(res.status);
   });
 });

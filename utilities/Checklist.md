@@ -276,12 +276,12 @@ Obiettivo:
 Backlog sprint:
 - [x] Bootstrap Vue (router, store, service clients) con client separati per auth/catalog/cad/cart/orders/notifications/reports.
 - [x] Guard ruoli frontend (USER/ADMIN) allineate agli endpoint protetti backend.
-- [ ] Pagine utente: login/guest, catalogo, configuratore, carrello, configurazioni salvate, centro notifiche.
+- [x] Pagine utente: login/guest, catalogo, configuratore, carrello, configurazioni salvate, centro notifiche.
 - [x] Pagine admin: gestione ordini (lista/dettaglio/azione DONE) e report trend ordini con filtro periodo.
 - [x] Integrazione pagina report con endpoint `GET /reports/trends/orders` e visualizzazione trend giornaliero.
 - [x] Gestione errori UI + stati loading/empty + fallback su servizi non disponibili.
 
-Dettaglio voce ancora aperta (pagine utente):
+Dettaglio copertura pagine utente:
 - [x] login/guest.
 - [x] catalogo.
 - [x] carrello.
@@ -296,22 +296,32 @@ Stima:
 - 7-8 gg.
 
 Exit criteria:
-- [ ] Percorso utente principale eseguibile solo da frontend.
+- [x] Percorso utente principale eseguibile solo da frontend.
 	Nota: rimangono solo rifiniture UX/NFR (responsive completo, accessibilita e smoke test UI).
 - [x] Percorso admin minimo eseguibile solo da frontend:
 	- consultazione trend ordini da reporting-service;
 	- avanzamento ordine a DONE.
+
+Stato:
+- [x] Sprint 4 formalmente chiuso.
 
 ### Sprint 5 - Qualita ASW (e2e full + rifinitura NFR)
 
 Obiettivo:
 - Chiudere il 100% ASW con evidenze testabili.
 
+Stato:
+- [x] Sprint 5 avviato.
+
 Backlog sprint:
-- [ ] Suite e2e estesa su tutti i flussi ASW.
-- [ ] Responsive + accessibilita base + feedback immediato.
-- [ ] Verifica sicurezza endpoint admin/ruoli.
-- [ ] Matrice tracciabilita requisito -> test.
+- [x] Suite e2e estesa su tutti i flussi ASW.
+	- [x] Blocco security-first runtime validato (order/cad/chatbot/notifications/reporting).
+	- [x] Full-run e2e completo eseguito 2 volte consecutive (69/69 + 69/69).
+- [x] Responsive + accessibilita base + feedback immediato.
+	- [x] Error handling accessibile: role=alert + aria-live aggiunti nelle viste core frontend.
+	- [x] Rifinitura responsive breakpoint e labeling controlli.
+- [x] Verifica sicurezza endpoint admin/ruoli (security-first e2e runtime verde).
+- [x] Matrice tracciabilita requisito -> test (baseline iniziale in `utilities/traceability-matrix.md`).
 
 Deliverable:
 - Chiusura ASW pronta per consegna.
@@ -366,7 +376,7 @@ Exit criteria:
 
 ## Priorita immediata (prossimi 3 passi)
 
-- [ ] Step 1: avviare Sprint 4 con bootstrap frontend (router, store, API clients allineati ai servizi backend attuali).
-- [ ] Step 2: implementare area admin UI per ordini + report trend (`/reports/trends/orders`).
-- [ ] Step 3: aggiungere smoke test frontend sui percorsi core utente/admin prima di estendere gli e2e completi in Sprint 5.
+- [ ] Step 1: estendere la suite e2e ASW ai flussi mancanti e ai test di isolamento/RBAC (notifications/chatbot/reporting/cad/orders).
+- [ ] Step 2: completare rifiniture NFR frontend (responsive completo, accessibilita base, feedback immediato coerente).
+- [ ] Step 3: consolidare evidenze comandi test/build/e2e in un artefatto unico per chiusura Sprint 5.
 

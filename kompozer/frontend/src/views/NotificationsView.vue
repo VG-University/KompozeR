@@ -61,7 +61,7 @@ function typeLabel(type: NotificationType): string {
       <span class="meta">{{ total }} notifiche</span>
     </section>
 
-    <p v-if="error" class="error">{{ error }}</p>
+    <p v-if="error" class="error" role="alert" aria-live="assertive">{{ error }}</p>
     <p v-if="loading" class="placeholder">Caricamento notifiche...</p>
     <p v-else-if="items.length === 0" class="placeholder">Nessuna notifica da mostrare.</p>
 

@@ -10,6 +10,7 @@ const SKU = `INT-ORDER-${RUN}`;
 
 let adminToken = '';
 let userToken = '';
+let otherUserToken = '';
 let createdOrderId = '';
 let createdOrderToCancelId = '';
 
@@ -44,6 +45,23 @@ beforeAll(async () => {
     throw new Error(`[order INT] user login fallito (${userRes.status})`);
   }
   userToken = ((await parseJson(userRes)) as Record<string, string>)['token'];
+
+  const otherUsername = `order_other_user_${RUN}`;
+  await fetch(`${BASE}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: otherUsername, email: `${otherUsername}@test.com`, password: 'password123' }),
+  });
+
+  const otherUserRes = await fetch(`${BASE}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: otherUsername, password: 'password123' }),
+  });
+  if (!otherUserRes.ok) {
+    throw new Error(`[order INT] other user login fallito (${otherUserRes.status})`);
+  }
+  otherUserToken = ((await parseJson(otherUserRes)) as Record<string, string>)['token'];
 
   const createComponent = await fetch(`${BASE}/catalog`, {
     method: 'POST',
@@ -191,5 +209,15 @@ describe('[INT] Order — checkout from cart', () => {
     const orderBody = await parseJson<Record<string, unknown>>(getOrder);
     expect(orderBody['id']).toBe(createdOrderToCancelId);
     expect(orderBody['status']).toBe('CANCELLED');
+  });
+
+  it('GET /orders/:id di altro utente -> 403/404 (ownership isolation)', async () => {
+    expect(createdOrderId).toBeTruthy();
+
+    const getOrder = await fetch(`${BASE}/orders/${createdOrderId}`, {
+      headers: { Authorization: `Bearer ${otherUserToken}` },
+    });
+
+    expect([403, 404]).toContain(getOrder.status);
   });
 });

@@ -42,6 +42,7 @@ function formatCurrency(cents: number): string {
           v-model="search"
           class="field__input"
           type="text"
+          aria-label="Ricerca nel catalogo"
           placeholder="Nome o descrizione"
           @keyup.enter="load"
         />
@@ -49,7 +50,7 @@ function formatCurrency(cents: number): string {
 
       <label class="field">
         <span class="field__label">Categoria</span>
-        <select v-model="category" class="field__input" @change="load">
+        <select v-model="category" class="field__input" aria-label="Filtro categoria" @change="load">
           <option value="">Tutte</option>
           <option value="TONDO">Tondo</option>
           <option value="QUADRO">Quadro</option>
@@ -58,16 +59,16 @@ function formatCurrency(cents: number): string {
       </label>
 
       <label class="checkbox">
-        <input v-model="availableOnly" type="checkbox" @change="load" />
+        <input v-model="availableOnly" type="checkbox" aria-label="Mostra solo componenti disponibili" @change="load" />
         Solo disponibili
       </label>
 
-      <button class="btn btn--primary" :disabled="loading" @click="load">
+      <button class="btn btn--primary" :disabled="loading" aria-label="Applica filtri catalogo" @click="load">
         Cerca
       </button>
     </section>
 
-    <p v-if="error" class="error">{{ error }}</p>
+    <p v-if="error" class="error" role="alert" aria-live="assertive">{{ error }}</p>
     <p v-if="loading" class="placeholder">Caricamento catalogo...</p>
     <p v-else-if="items.length === 0" class="placeholder">Nessun componente trovato.</p>
 
@@ -237,9 +238,28 @@ function formatCurrency(cents: number): string {
   border: 1px solid var(--color-border);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
+  .filters {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .view-container {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .catalog-header {
+    flex-direction: column;
+  }
+
   .filters {
     grid-template-columns: 1fr;
+  }
+
+  .card__footer {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 </style>

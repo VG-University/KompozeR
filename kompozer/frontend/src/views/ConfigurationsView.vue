@@ -97,7 +97,7 @@ async function openInCad(configuration: ConfigurationDto): Promise<void> {
       <button class="btn btn--light" :disabled="loading" @click="loadDashboard">Aggiorna</button>
     </header>
 
-    <p v-if="error" class="error">{{ error }}</p>
+    <p v-if="error" class="error" role="alert" aria-live="assertive">{{ error }}</p>
 
     <section class="metrics" v-if="!loading">
       <article class="metric-card">
@@ -128,18 +128,18 @@ async function openInCad(configuration: ConfigurationDto): Promise<void> {
       <div class="quick-create__grid">
         <label class="field">
           <span class="field__label">Nome</span>
-          <input v-model="quickName" class="field__input" type="text" placeholder="Es. Parete studio" />
+          <input v-model="quickName" class="field__input" type="text" aria-label="Nome configurazione" placeholder="Es. Parete studio" />
         </label>
         <label class="field">
           <span class="field__label">Categoria iniziale</span>
-          <select v-model="quickCategory" class="field__input">
+          <select v-model="quickCategory" class="field__input" aria-label="Categoria iniziale configurazione">
             <option value="">Nessuna</option>
             <option value="TONDO">TONDO</option>
             <option value="QUADRO">QUADRO</option>
             <option value="KUBE">KUBE</option>
           </select>
         </label>
-        <button class="btn btn--primary" :disabled="createLoading" @click="quickCreate">
+        <button class="btn btn--primary" :disabled="createLoading" aria-label="Crea una nuova configurazione e aprila nel CAD" @click="quickCreate">
           {{ createLoading ? 'Creazione...' : 'Crea e apri in CAD' }}
         </button>
       </div>
@@ -315,6 +315,10 @@ async function openInCad(configuration: ConfigurationDto): Promise<void> {
 }
 
 @media (max-width: 1000px) {
+  .header {
+    flex-direction: column;
+  }
+
   .metrics {
     grid-template-columns: repeat(2, minmax(140px, 1fr));
   }
@@ -326,6 +330,16 @@ async function openInCad(configuration: ConfigurationDto): Promise<void> {
   .recent-item {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 760px) {
+  .view-container {
+    padding: var(--space-6) var(--space-4);
+  }
+
+  .metrics {
+    grid-template-columns: 1fr;
   }
 }
 </style>

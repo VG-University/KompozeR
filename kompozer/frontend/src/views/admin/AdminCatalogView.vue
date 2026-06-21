@@ -313,7 +313,7 @@ async function deleteComponent(item: CatalogItem): Promise<void> {
       <button class="btn btn--primary" :disabled="loading" @click="load">Filtra</button>
     </section>
 
-    <p v-if="error" class="error">{{ error }}</p>
+    <p v-if="error" class="error" role="alert" aria-live="assertive">{{ error }}</p>
     <p v-if="loading" class="placeholder">Caricamento catalogo...</p>
     <p v-else-if="items.length === 0" class="placeholder">Nessun componente trovato.</p>
 

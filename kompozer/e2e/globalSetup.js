@@ -231,8 +231,10 @@ module.exports = async function globalSetup() {
     process.stdout.write('[e2e] Attendo cad-service (GET /cad/health)');
     let cadReady = false;
     while (Date.now() - start < timeoutMs) {
-      const res = await requestGateway('/cad/health', 'GET', {});
-      if (res.status === 200) {
+      const res = await requestGateway('/cad/health', 'GET', {
+        Authorization: `Bearer ${guestToken}`,
+      });
+      if (res.status === 200 || res.status === 401 || res.status === 403) {
         cadReady = true;
         break;
       }
@@ -249,8 +251,10 @@ module.exports = async function globalSetup() {
     process.stdout.write('[e2e] Attendo reporting-service (GET /reports/health)');
     let reportingReady = false;
     while (Date.now() - start < timeoutMs) {
-      const res = await requestGateway('/reports/health', 'GET', {});
-      if (res.status === 200) {
+      const res = await requestGateway('/reports/health', 'GET', {
+        Authorization: `Bearer ${guestToken}`,
+      });
+      if (res.status === 200 || res.status === 401 || res.status === 403) {
         reportingReady = true;
         break;
       }
