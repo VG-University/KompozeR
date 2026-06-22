@@ -213,21 +213,6 @@ const canvasColumns = computed(() => {
   });
 });
 
-const canvasGridTracks = computed(() => {
-  if (canvasColumns.value.length === 0) {
-    return 'minmax(110px, 1fr)';
-  }
-
-  return canvasColumns.value
-    .map((column) => {
-      const width = Number.isFinite(column.shelfWidthMm) && column.shelfWidthMm > 0
-        ? column.shelfWidthMm
-        : 1;
-      return `minmax(110px, ${width}fr)`;
-    })
-    .join(' ');
-});
-
 watch(
   () => [selected.value?.id, selected.value?.status, canvasColumns.value.length] as const,
   ([, status]) => {
@@ -747,14 +732,20 @@ function stepActive(index: number): boolean {
             <span class="canvas-size">{{ environmentDraft.maxWidthMm }} x {{ environmentDraft.maxHeightMm }} mm</span>
           </header>
 
-          <div
-            class="canvas-grid"
-            :style="{
-              '--cols': String(canvasColumns.length || 1),
-              '--col-tracks': canvasGridTracks,
-            }"
-          >
-            <article v-for="column in canvasColumns" :key="column.index" class="canvas-column">
+          <div class="canvas-scroll">
+            <div class="canvas-grid">
+              <article
+                v-for="column in canvasColumns"
+                :key="column.index"
+                class="canvas-column"
+                :style="{
+                  '--column-grow': String(
+                    Number.isFinite(column.shelfWidthMm) && column.shelfWidthMm > 0
+                      ? column.shelfWidthMm
+                      : 1,
+                  ),
+                }"
+              >
               <div class="canvas-column__scale">Y</div>
               <div class="canvas-column__body">
                 <div
@@ -767,7 +758,8 @@ function stepActive(index: number): boolean {
                 </div>
               </div>
               <div class="canvas-column__x">C{{ column.index + 1 }} · {{ column.shelfWidthMm }}mm</div>
-            </article>
+              </article>
+            </div>
           </div>
         </section>
       </aside>
@@ -1044,13 +1036,23 @@ function stepActive(index: number): boolean {
 }
 
 .canvas-grid {
-  display: grid;
-  grid-template-columns: var(--col-tracks, repeat(var(--cols), minmax(110px, 1fr)));
+  display: flex;
+  align-items: stretch;
   gap: var(--space-2);
   min-height: 260px;
+  min-width: 100%;
+  width: max-content;
+}
+
+.canvas-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: var(--space-1);
 }
 
 .canvas-column {
+  flex: var(--column-grow, 1) 0 0;
+  min-width: 140px;
   border: 1px dashed var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--space-2);
@@ -1311,20 +1313,12 @@ function stepActive(index: number): boolean {
     grid-template-columns: 1fr;
   }
 
-  .canvas-grid {
-    grid-template-columns: repeat(2, minmax(120px, 1fr));
-  }
-
   .actions-row {
     flex-wrap: wrap;
   }
 }
 
 @media (max-width: 760px) {
-  .canvas-grid {
-    grid-template-columns: 1fr;
-  }
-
   .design-columns {
     grid-template-columns: 1fr;
   }
