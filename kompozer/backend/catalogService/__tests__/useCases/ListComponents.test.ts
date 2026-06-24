@@ -62,7 +62,7 @@ describe('ListComponents', () => {
   it('filtra per testo di ricerca (name)', async () => {
     const { repo, uc } = makeUseCase();
     await repo.save(makeComponent({ id: 'a', sku: 'SKU-A', name: 'Ripiano 80cm', description: 'Ripiano classico' }));
-    // descrizione neutra per non matchare 'ripiano'
+    // Neutral description so it does not match 'ripiano'.
     await repo.save(makeComponent({ id: 'b', sku: 'SKU-B', name: 'Montante alto', description: 'Colonna verticale' }));
 
     const result = await uc.execute({ search: 'ripiano' });

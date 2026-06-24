@@ -1,6 +1,9 @@
-// GetComponent — Use case per il recupero di un singolo componente by ID.
-// Accesso pubblico: non richiede autenticazione.
-// Lancia ComponentNotFoundError (404) se l'ID non esiste.
+/**
+ * Use case for retrieving a single component by id.
+ *
+ * Public access: authentication is not required.
+ * Throws ComponentNotFoundError (404) if id does not exist.
+ */
 import { ComponentRepository }     from '../domain/ports/ComponentRepository';
 import { ComponentNotFoundError }  from '../domain/entities/errors';
 import { GetComponentInput, ComponentDto } from './types';

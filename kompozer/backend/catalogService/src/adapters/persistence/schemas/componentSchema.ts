@@ -1,8 +1,10 @@
-// componentSchema — Schema Mongoose per la collection `components`.
-// Usa _id: String (UUID) per coerenza con il modello di dominio.
-// `version` implementa optimistic concurrency control [DS].
-// Index su category e isAvailable per query di filtraggio efficienti.
-// Il text index su name e description abilita la full-text search ($text).
+/**
+ * Mongoose schema for `components` collection.
+ * Uses _id: String (UUID) for domain consistency.
+ * `version` supports optimistic concurrency control [DS].
+ * Indexes on category and isAvailable improve filtered queries.
+ * Text index on name and description enables full-text search ($text).
+ */
 import { Schema, model } from 'mongoose';
 import { ComponentCategory } from '../../../domain/entities/ComponentCategory';
 import { ComponentType }     from '../../../domain/entities/ComponentType';
@@ -51,7 +53,7 @@ const componentSchema = new Schema<ComponentDocType>(
   { timestamps: true, _id: false },
 );
 
-// Full-text search su name e description
+// Full-text search on name and description.
 componentSchema.index({ name: 'text', description: 'text' });
 
 export const ComponentModel = model<ComponentDocType>(

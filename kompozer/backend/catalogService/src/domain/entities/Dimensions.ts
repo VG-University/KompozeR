@@ -1,8 +1,10 @@
-// Dimensions — Value object che rappresenta le dimensioni fisiche di un componente.
-// Tutte le misure sono in millimetri (interi) per evitare errori di arrotondamento
-// floating-point durante i calcoli di compatibilità spaziale nel configuratore.
+/**
+ * Value object describing physical component dimensions.
+ * All measurements are integer millimeters to avoid floating-point rounding
+ * issues in spatial compatibility computations.
+ */
 export interface Dimensions {
-  widthMm:  number; // larghezza
-  heightMm: number; // altezza
-  depthMm:  number; // profondità
+  widthMm:  number; // width
+  heightMm: number; // height
+  depthMm:  number; // depth
 }

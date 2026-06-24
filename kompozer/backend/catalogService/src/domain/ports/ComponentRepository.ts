@@ -1,12 +1,14 @@
-// ComponentRepository — Porta di dominio (interfaccia) per la persistenza dei componenti.
-// Definisce il contratto che deve rispettare qualsiasi implementazione di storage.
-// L'implementazione reale è MongoCatalogRepository; nei test viene usata FakeComponentRepository.
-//
-// Nota su findAll: ritorna sia i dati paginati sia il totale grezzo (per costruire
-// le informazioni di paginazione nel DTO di risposta senza una seconda query).
-//
-// Nota su update [DS]: l'implementazione deve rispettare optimistic concurrency:
-// aggiornare solo se doc.version === component.version - 1, altrimenti lanciare VersionConflictError.
+/**
+ * Domain port (interface) for component persistence.
+ * Defines the contract for any storage implementation.
+ * Production implementation is MongoCatalogRepository; tests use fakes.
+ *
+ * findAll returns paged items plus raw total count.
+ *
+ * [DS] update must enforce optimistic concurrency:
+ * update only when doc.version === component.version - 1,
+ * otherwise throw VersionConflictError.
+ */
 import { Component }       from '../entities/Component';
 import { ComponentFilter } from './ComponentFilter';
 

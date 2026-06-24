@@ -1,6 +1,8 @@
-// bff.test — Test TDD per le route di aggregazione BFF del gateway.
-// Usa un clientFactory fake per isolare la logica di aggregazione
-// senza dipendenze di rete reali verso i microservizi.
+/**
+ * TDD coverage for gateway BFF aggregation routes.
+ * Uses a fake clientFactory to isolate aggregation logic
+ * without real network dependencies.
+ */
 import request from 'supertest';
 import express from 'express';
 import { buildBffRouter, ClientFactory } from '../../src/routes/bff';
@@ -18,9 +20,9 @@ const SERVICES: ServiceUrls = {
   reporting:    'http://reporting:3007',
 };
 
-// ── Fake ClientFactory ─────────────────────────────────────────────────────
+// Fake ClientFactory
 
-/** Mappa baseUrl → (path → risposta o Error) per simulare risposte diverse per servizio. */
+/** Maps baseUrl -> (path -> response or Error) to simulate per-service behavior. */
 type ServiceMocks = Record<string, Record<string, unknown | Error>>;
 
 function makeFakeFactory(mocks: ServiceMocks): ClientFactory {
@@ -35,7 +37,7 @@ function makeFakeFactory(mocks: ServiceMocks): ClientFactory {
   });
 }
 
-/** ClientFactory che verifica anche gli identity header ricevuti. */
+/** ClientFactory variant that also captures incoming identity headers. */
 function makeCapturingFactory(
   mocks: ServiceMocks,
   captured: Array<{ baseUrl: string; identity: IdentityHeaders }>,
@@ -52,7 +54,7 @@ function buildApp(factory: ClientFactory) {
   return app;
 }
 
-// ── GET /bff/dashboard ─────────────────────────────────────────────────────
+// GET /bff/dashboard
 
 const DASHBOARD_MOCKS: ServiceMocks = {
   'http://cart:3004':         { '/cart':                      { items: [], total: 0 } },
@@ -138,7 +140,7 @@ describe('GET /bff/dashboard — forward degli identity header', () => {
   });
 });
 
-// ── GET /bff/configurator/:sessionId ──────────────────────────────────────
+// GET /bff/configurator/:sessionId
 
 const CONFIGURATOR_MOCKS: ServiceMocks = {
   'http://cad:3003':     { '/sessions/sess-abc/snapshot': { operations: [1, 2, 3] } },

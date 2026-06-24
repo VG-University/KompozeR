@@ -1,6 +1,8 @@
-// errorMiddleware — Traduce gli errori di dominio in risposte HTTP JSON.
-// Mappa i `code` dei CatalogError agli status code HTTP appropriati.
-// Qualsiasi errore non riconosciuto viene restituito come 500.
+/**
+ * Maps domain errors to HTTP JSON responses.
+ * Maps CatalogError `code` values to proper HTTP status codes.
+ * Unknown errors are returned as 500.
+ */
 import { Request, Response, NextFunction } from 'express';
 import { CatalogError }                    from '../../domain/entities/errors';
 

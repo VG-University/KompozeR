@@ -1,8 +1,10 @@
-// DeleteComponent — Use case per la rimozione di un componente dal catalogo.
-// Richiede ruolo ADMIN.
-// Lancia ComponentNotFoundError (404) se l'ID non esiste.
-// Nota: la cancellazione è hard delete. Se in futuro si vuole soft delete,
-// aggiungere un campo `deletedAt` e un flag `isDeleted` all'entità.
+/**
+ * Use case for deleting a component from the catalog.
+ *
+ * Requires ADMIN role.
+ * Throws ComponentNotFoundError (404) if id does not exist.
+ * Current behavior is hard delete.
+ */
 import { ComponentRepository }    from '../domain/ports/ComponentRepository';
 import { ComponentNotFoundError } from '../domain/entities/errors';
 import { DeleteComponentInput }   from './types';

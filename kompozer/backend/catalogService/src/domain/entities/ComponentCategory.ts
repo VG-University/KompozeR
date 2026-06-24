@@ -1,6 +1,8 @@
-// ComponentCategory — Enum delle categorie di componenti del catalogo Kompo.
-// Ogni componente appartiene a esattamente una categoria, che determina le
-// regole di compatibilità nel configuratore CAD e i filtri di ricerca nel catalogo.
+/**
+ * Enum of Kompo catalog component categories.
+ * Each component belongs to exactly one category, used by CAD compatibility
+ * rules and catalog filtering.
+ */
 export enum ComponentCategory {
   TONDO = 'TONDO',
   QUADRO = 'QUADRO',

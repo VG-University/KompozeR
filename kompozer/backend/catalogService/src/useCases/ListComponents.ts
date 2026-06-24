@@ -1,6 +1,9 @@
-// ListComponents — Use case per la navigazione e il filtraggio del catalogo.
-// Accesso pubblico: non richiede autenticazione (fruibile anche da sessioni GUEST).
-// Delega il filtraggio al repository e aggiunge la logica di paginazione.
+/**
+ * Use case for catalog browsing and filtering.
+ *
+ * Public access: no authentication required (also available to GUEST sessions).
+ * Delegates filtering to repository and adds pagination behavior.
+ */
 import { ComponentRepository }                   from '../domain/ports/ComponentRepository';
 import { ComponentFilter }                        from '../domain/ports/ComponentFilter';
 import { ListComponentsInput, PaginatedComponentsDto, ComponentDto } from './types';

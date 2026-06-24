@@ -1,5 +1,8 @@
-// index — Entry point del catalogService.
-// Legge PORT, MONGO_URI e REDIS_URL dall'ambiente, si connette a MongoDB e avvia il server.
+/**
+ * catalogService entry point.
+ * Reads PORT, MONGO_URI, and REDIS_URL from environment,
+ * connects to MongoDB, and starts the server.
+ */
 import mongoose from 'mongoose';
 import { buildApp } from './app';
 

@@ -1,10 +1,11 @@
-// MongoCatalogRepository — Implementazione MongoDB di ComponentRepository.
-// Usa Mongoose per le operazioni CRUD sulla collection `components`.
-// toEntity() isola il codice di dominio dalla struttura del documento Mongo.
-//
-// [DS] Optimistic Concurrency Control in update():
-// Usa findOneAndUpdate con filtro { _id, version: component.version - 1 }.
-// Se il documento non viene trovato (versione diversa), lancia VersionConflictError.
+/**
+ * MongoDB implementation of ComponentRepository.
+ * Uses Mongoose for CRUD operations on `components` collection.
+ * toEntity() isolates domain code from Mongo document structure.
+ *
+ * [DS] update() enforces optimistic concurrency via findOneAndUpdate filter
+ * { _id, version: component.version - 1 }. Missing match means conflict.
+ */
 import { Component }           from '../../domain/entities/Component';
 import { ComponentCategory }   from '../../domain/entities/ComponentCategory';
 import { VersionConflictError } from '../../domain/entities/errors';
@@ -65,7 +66,7 @@ export class MongoCatalogRepository implements ComponentRepository {
   }
 
   async update(component: Component): Promise<void> {
-    // [DS] Aggiorna solo se la versione in DB è quella precedente (OCC)
+    // [DS] Update only if DB version is the previous one (OCC).
     const result = await ComponentModel.findOneAndUpdate(
       { _id: component.id, version: component.version - 1 },
       {
@@ -83,7 +84,7 @@ export class MongoCatalogRepository implements ComponentRepository {
     );
 
     if (!result) {
-      // Il documento non è stato trovato con quella versione → conflitto
+      // Document not found with expected version -> conflict.
       const current = await ComponentModel.findById(component.id).lean();
       const actualVersion = current?.version ?? -1;
       throw new VersionConflictError(component.id, component.version - 1, actualVersion);

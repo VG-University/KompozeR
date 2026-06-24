@@ -1,15 +1,17 @@
-// UpdateComponent — Use case per la modifica di un componente esistente.
-// Richiede ruolo ADMIN.
-//
-// [DS] Optimistic Concurrency Control:
-// Il client deve inviare la versione corrente del componente (expectedVersion).
-// Se la versione nel DB è diversa, significa che un altro admin ha modificato
-// il componente nel frattempo → lancia VersionConflictError (409).
-// Se l'aggiornamento ha successo, version viene incrementata di 1.
-//
-// [DS] Event Publishing:
-// Se prezzo o disponibilità cambiano, pubblica il relativo CatalogEvent su Redis.
-// Il notificationService è il subscriber che notifica gli utenti impattati.
+/**
+ * Use case for updating an existing component.
+ *
+ * Requires ADMIN role.
+ *
+ * [DS] Optimistic Concurrency Control:
+ * The client must send expectedVersion.
+ * If DB version differs, VersionConflictError (409) is thrown.
+ * On success, version is incremented by 1.
+ *
+ * [DS] Event publishing:
+ * If price or availability changes, the corresponding CatalogEvent is published.
+ * notificationService subscribes and notifies impacted users.
+ */
 import { ComponentRepository }                             from '../domain/ports/ComponentRepository';
 import { CatalogEventPublisher }                           from '../domain/ports/CatalogEventPublisher';
 import { Clock }                                           from '../domain/ports/Clock';
@@ -57,7 +59,7 @@ export class UpdateComponent {
 
     const now = this.clock.now();
 
-    // Determina i valori aggiornati
+    // Compute updated values.
     const newPrice       = input.price       !== undefined ? Math.floor(input.price) : existing.price;
     const newIsAvailable = input.isAvailable !== undefined ? input.isAvailable : existing.isAvailable;
 
@@ -70,13 +72,13 @@ export class UpdateComponent {
       imageUrl:       input.imageUrl       ?? existing.imageUrl,
       dimensions:     input.dimensions     ?? existing.dimensions,
       compatibleWith: input.compatibleWith ?? existing.compatibleWith,
-      version:        existing.version + 1,  // [DS] incrementa versione
+      version:        existing.version + 1,  // [DS] increment version
       updatedAt:      now,
     };
 
     await this.componentRepo.update(updated);
 
-    // [DS] Pubblica eventi solo se i valori rilevanti sono cambiati
+    // [DS] Publish events only when relevant values changed.
     if (newPrice !== existing.price) {
       const event: PriceChangedEvent = {
         type:        'PRICE_CHANGED',

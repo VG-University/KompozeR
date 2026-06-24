@@ -1,7 +1,8 @@
-// fakes — Implementazioni in-memory delle porte di dominio per i test.
-// Nessuna dipendenza da framework esterni (niente Mongoose, Redis, ecc.).
-// Ogni fake è deterministico e ispezionabile: i test possono leggere lo stato
-// interno (es. published events, stored components) per verificare gli effetti collaterali.
+/**
+ * In-memory fake implementations of domain ports for tests.
+ * No dependency on external frameworks (no Mongoose, Redis, etc.).
+ * Fakes are deterministic and inspectable so tests can assert side effects.
+ */
 import { Component }           from '../../src/domain/entities/Component';
 import { ComponentRepository, FindAllResult } from '../../src/domain/ports/ComponentRepository';
 import { ComponentFilter }     from '../../src/domain/ports/ComponentFilter';
@@ -11,7 +12,7 @@ import { Clock }               from '../../src/domain/ports/Clock';
 import { IdGenerator }         from '../../src/domain/ports/IdGenerator';
 import { VersionConflictError } from '../../src/domain/entities/errors';
 
-// ─── FakeComponentRepository ─────────────────────────────────────────────────
+// FakeComponentRepository
 
 export class FakeComponentRepository implements ComponentRepository {
   private store: Map<string, Component> = new Map();
@@ -57,9 +58,9 @@ export class FakeComponentRepository implements ComponentRepository {
 
   async update(component: Component): Promise<void> {
     const existing = this.store.get(component.id);
-    if (!existing) return; // il use case garantisce l'esistenza prima di chiamare update
-    // [DS] Optimistic concurrency: il use case ha già verificato la versione,
-    // qui ci limitiamo a salvare il documento aggiornato.
+    if (!existing) return; // use case guarantees existence before update call
+    // [DS] Optimistic concurrency: use case already validated version,
+    // here we only persist updated document.
     if (existing.version !== component.version - 1) {
       throw new VersionConflictError(component.id, component.version - 1, existing.version);
     }
@@ -70,12 +71,12 @@ export class FakeComponentRepository implements ComponentRepository {
     this.store.delete(id);
   }
 
-  // Utility per i test
+  // Test utilities.
   all(): Component[] { return [...this.store.values()]; }
   size(): number     { return this.store.size; }
 }
 
-// ─── FakeCatalogEventPublisher ───────────────────────────────────────────────
+// FakeCatalogEventPublisher
 
 export class FakeCatalogEventPublisher implements CatalogEventPublisher {
   readonly published: CatalogEvent[] = [];
@@ -84,11 +85,11 @@ export class FakeCatalogEventPublisher implements CatalogEventPublisher {
     this.published.push(event);
   }
 
-  // Utility per i test
+  // Test utility.
   clear(): void { this.published.length = 0; }
 }
 
-// ─── FakeClock ───────────────────────────────────────────────────────────────
+// FakeClock
 
 export class FakeClock implements Clock {
   constructor(private _now: Date = new Date('2025-01-01T00:00:00.000Z')) {}
@@ -97,7 +98,7 @@ export class FakeClock implements Clock {
   setNow(d: Date): void { this._now = d; }
 }
 
-// ─── FakeIdGenerator ─────────────────────────────────────────────────────────
+// FakeIdGenerator
 
 export class FakeIdGenerator implements IdGenerator {
   private counter = 0;
@@ -111,14 +112,14 @@ export class FakeIdGenerator implements IdGenerator {
   reset(): void { this.counter = 0; }
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// Helpers
 
 import { ComponentCategory } from '../../src/domain/entities/ComponentCategory';
 import { ComponentType }     from '../../src/domain/entities/ComponentType';
 
 /**
- * Costruisce un componente di test con valori di default sovrascrivibili.
- * Utile per inizializzare il FakeComponentRepository nei test.
+ * Builds a test component with overrideable defaults.
+ * Useful for seeding FakeComponentRepository in tests.
  */
 export function makeComponent(overrides: Partial<Component> = {}): Component {
   return {
@@ -128,7 +129,7 @@ export function makeComponent(overrides: Partial<Component> = {}): Component {
     description:    'Ripiano in legno massello 80x30 cm',
     category:       ComponentCategory.TONDO,
     Type:           ComponentType.RIPIANO,
-    price:          1990,       // 19,90€
+    price:          1990,       // EUR 19.90
     isAvailable:    true,
     imageUrl:       'https://cdn.kompo.it/shelf-001.jpg',
     dimensions:     { widthMm: 800, heightMm: 20, depthMm: 300 },

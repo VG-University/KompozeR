@@ -1,15 +1,16 @@
-// ComponentFilter — DTO di input per la ricerca/filtraggio del catalogo.
-// Tutti i campi sono opzionali: se omessi non viene applicato alcun filtro.
-// La paginazione usa page (1-based) + limit; i valori di default sono applicati
-// nel use case ListComponents, non qui nel tipo.
+/**
+ * Input DTO for catalog search/filtering.
+ * All fields are optional: omitted fields mean no filter.
+ * Pagination uses page (1-based) + limit; defaults are applied by ListComponents.
+ */
 import { ComponentCategory } from '../entities/ComponentCategory';
 
 export interface ComponentFilter {
   category?:  ComponentCategory;
-  minPrice?:  number;   // centesimi, inclusivo
-  maxPrice?:  number;   // centesimi, inclusivo
-  available?: boolean;  // se true: solo isAvailable=true
-  search?:    string;   // full-text su name e description
+  minPrice?:  number;   // cents, inclusive
+  maxPrice?:  number;   // cents, inclusive
+  available?: boolean;  // when true: only isAvailable=true
+  search?:    string;   // full-text on name and description
   page?:      number;   // 1-based, default 1
-  limit?:     number;   // max risultati per pagina, default 20
+  limit?:     number;   // max results per page, default 20
 }

@@ -1,14 +1,12 @@
-// catalogRouter — Express router per gli endpoint sotto /catalog.
-// Ruoli:
-//   - GET  /catalog        — pubblico (GUEST, BASE, ADMIN)
-//   - GET  /catalog/:id    — pubblico
-//   - GET  /catalog/health — pubblico (Spring Actuator equivalent)
-//   - POST /catalog        — ADMIN only
-//   - PUT  /catalog/:id    — ADMIN only
-//   - DELETE /catalog/:id  — ADMIN only
-//
-// Il controllo del ruolo ADMIN si basa sull'header X-User-Role iniettato dal
-// gateway dopo la verifica JWT. Il router non tocca mai il JWT raw.
+/**
+ * Express router for endpoints under /catalog.
+ * Roles:
+ * - GET /catalog, GET /catalog/:id, GET /catalog/health are public.
+ * - POST/PUT/DELETE catalog endpoints require ADMIN.
+ *
+ * ADMIN enforcement relies on X-User-Role injected by gateway after JWT
+ * verification. This router never handles raw JWT tokens.
+ */
 import { Router, Request, Response, NextFunction } from 'express';
 import { ListComponents }  from '../../useCases/ListComponents';
 import { GetComponent }    from '../../useCases/GetComponent';
@@ -48,12 +46,12 @@ function wrap(fn: (req: Request, res: Response, next: NextFunction) => Promise<v
 export function buildCatalogRouter(deps: CatalogRouterDeps): Router {
   const router = Router();
 
-  // GET /catalog/health — health check (deve stare prima di /:id)
+  // GET /catalog/health - health check (must be before /:id).
   router.get('/health', (_req, res) => {
     res.json({ status: 'ok' });
   });
 
-  // GET /catalog — lista paginata e filtrata
+  // GET /catalog - paginated and filtered list.
   router.get(
     '/',
     wrap(async (req, res) => {
@@ -71,7 +69,7 @@ export function buildCatalogRouter(deps: CatalogRouterDeps): Router {
     }),
   );
 
-  // GET /catalog/:id — singolo componente
+  // GET /catalog/:id - single component.
   router.get(
     '/:id',
     wrap(async (req, res) => {
@@ -80,7 +78,7 @@ export function buildCatalogRouter(deps: CatalogRouterDeps): Router {
     }),
   );
 
-  // POST /catalog — crea componente (ADMIN)
+  // POST /catalog - create component (ADMIN).
   router.post(
     '/',
     requireAdmin,
@@ -95,7 +93,7 @@ export function buildCatalogRouter(deps: CatalogRouterDeps): Router {
     }),
   );
 
-  // PUT /catalog/:id — aggiorna componente (ADMIN)
+  // PUT /catalog/:id - update component (ADMIN).
   router.put(
     '/:id',
     requireAdmin,
@@ -111,7 +109,7 @@ export function buildCatalogRouter(deps: CatalogRouterDeps): Router {
     }),
   );
 
-  // DELETE /catalog/:id — elimina componente (ADMIN)
+  // DELETE /catalog/:id - delete component (ADMIN).
   router.delete(
     '/:id',
     requireAdmin,

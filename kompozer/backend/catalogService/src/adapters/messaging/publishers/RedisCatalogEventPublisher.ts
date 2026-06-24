@@ -1,9 +1,11 @@
-// RedisCatalogEventPublisher — [DS] Implementazione Redis Pub/Sub di CatalogEventPublisher.
-// Pubblica gli eventi di catalogo sul canale `catalog:events` di Redis.
-// Il notificationService si sottoscrive a questo canale per ricevere le notifiche
-// e inoltrarle agli utenti che hanno configurazioni impattate.
-//
-// Ogni messaggio è una stringa JSON serializzata del CatalogEvent.
+/**
+ * [DS] Redis Pub/Sub implementation of CatalogEventPublisher.
+ * Publishes catalog events on Redis channel `catalog:events`.
+ * notificationService subscribes to this channel to deliver impacted-user
+ * notifications.
+ *
+ * Each message is a JSON-serialized CatalogEvent string.
+ */
 import Redis             from 'ioredis';
 import { CatalogEventPublisher } from '../../../domain/ports/CatalogEventPublisher';
 import { CatalogEvent }          from '../../../domain/entities/CatalogEvent';

@@ -1,4 +1,4 @@
-// SystemClock — Implementazione reale di Clock. Usa `new Date()` del sistema.
+/** Real Clock implementation using system `new Date()`. */
 import { Clock } from '../domain/ports/Clock';
 
 export class SystemClock implements Clock {

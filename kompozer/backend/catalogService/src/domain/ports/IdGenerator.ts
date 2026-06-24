@@ -1,5 +1,7 @@
-// IdGenerator — Porta di dominio per la generazione di identificatori univoci.
-// Astrae UUID v4 (produzione) per permettere id sequenziali e prevedibili nei test.
+/**
+ * Domain port for unique identifier generation.
+ * Abstracts UUID v4 in production and predictable generators in tests.
+ */
 export interface IdGenerator {
   generate(): string;
 }

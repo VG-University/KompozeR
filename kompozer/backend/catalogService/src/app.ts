@@ -1,8 +1,10 @@
-// app — Composition root del catalogService.
-// Istanzia le dipendenze concrete e assembla l'app Express.
-// Il publisher è selezionato in base alla variabile USE_REDIS:
-//   - true  → RedisCatalogEventPublisher (produzione)
-//   - false → NoopCatalogEventPublisher  (sviluppo senza Redis)
+/**
+ * catalogService composition root.
+ * Instantiates concrete dependencies and assembles the Express app.
+ * Publisher selection depends on USE_REDIS:
+ * - true: RedisCatalogEventPublisher (production)
+ * - false: NoopCatalogEventPublisher (development without Redis)
+ */
 import express from 'express';
 import cors    from 'cors';
 import Redis   from 'ioredis';

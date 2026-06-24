@@ -1,8 +1,10 @@
-// CreateComponent — Use case per l'aggiunta di un nuovo componente al catalogo.
-// Richiede ruolo ADMIN (verificato a livello HTTP dall'authMiddleware nel router,
-// non qui nel use case — separazione delle responsabilità).
-// Lancia DuplicateSkuError (409) se lo SKU è già registrato.
-// Lancia ValidationError (422) se i dati obbligatori non sono validi.
+/**
+ * Use case for adding a new component to the catalog.
+ *
+ * Requires ADMIN role (enforced at HTTP layer by auth middleware, not here).
+ * Throws DuplicateSkuError (409) when SKU is already registered.
+ * Throws ValidationError (422) when required input is invalid.
+ */
 import { ComponentRepository }                from '../domain/ports/ComponentRepository';
 import { Clock }                              from '../domain/ports/Clock';
 import { IdGenerator }                        from '../domain/ports/IdGenerator';
@@ -37,7 +39,7 @@ export class CreateComponent {
   ) {}
 
   async execute(input: CreateComponentInput): Promise<ComponentDto> {
-    // Validazione
+    // Input validation.
     const errors: { field: string; reason: string }[] = [];
     if (!input.sku?.trim())  errors.push({ field: 'sku',  reason: 'required' });
     if (!input.name?.trim()) errors.push({ field: 'name', reason: 'required' });
@@ -46,7 +48,7 @@ export class CreateComponent {
     if (errors.length > 0)
       throw new ValidationError('Invalid component data', errors);
 
-    // Unicità SKU
+    // SKU uniqueness.
     const existing = await this.componentRepo.findBySku(input.sku);
     if (existing) throw new DuplicateSkuError(input.sku);
 

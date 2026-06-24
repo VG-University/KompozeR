@@ -1,7 +1,8 @@
-// healthRouter.test — Test TDD per l'endpoint /health del gateway.
-// Verifica l'aggregazione degli stati, i codici HTTP corretti e i dati
-// di latenza iniettati. Usa una FetchFn mockata per isolare la logica
-// senza dipendenze di rete reali.
+/**
+ * TDD coverage for gateway /health endpoint.
+ * Verifies aggregated status, correct HTTP codes, and latency fields.
+ * Uses mocked FetchFn to isolate logic from real network dependencies.
+ */
 import request from 'supertest';
 import express from 'express';
 import { buildHealthRouter, FetchFn } from '../../src/routes/health';
@@ -18,7 +19,7 @@ const SERVICES: ServiceUrls = {
   reporting:    'http://reporting:3007',
 };
 
-/** Crea una FetchFn che risponde con lo status HTTP indicato per ogni URL. */
+/** Builds a FetchFn that returns the configured HTTP status per URL. */
 function makeFetch(statusByUrl: Record<string, number>): FetchFn {
   return async (url: string) => {
     const status = statusByUrl[url] ?? 200;
@@ -26,10 +27,10 @@ function makeFetch(statusByUrl: Record<string, number>): FetchFn {
   };
 }
 
-/** FetchFn che simula un timeout (AbortError). */
+/** FetchFn that simulates a timeout (AbortError). */
 function makeTimeoutFetch(): FetchFn {
   return async (_url: string, _init?: unknown) => {
-    // Lancia subito l'abort error come farebbe AbortController in timeout
+    // Immediately throws abort error, like AbortController timeout.
     const err = new Error('The operation was aborted');
     err.name = 'AbortError';
     throw err;
@@ -42,7 +43,7 @@ function buildApp(fetchFn: FetchFn) {
   return app;
 }
 
-// URL degli endpoint /health di ciascun servizio
+// /health endpoints for each downstream service.
 const ALL_HEALTH_URLS = Object.values(SERVICES).map(u => `${u}/health`);
 const ALL_UP = Object.fromEntries(ALL_HEALTH_URLS.map(u => [u, 200]));
 
