@@ -1,0 +1,69 @@
+\chapter{Test}
+
+\section{Strategia di verifica}
+
+La verifica del progetto si articola su tre livelli: test unitari della logica applicativa, test di integrazione sugli endpoint e test end-to-end sui flussi principali. Questa combinazione e' coerente con un'applicazione distribuita ma con dominio applicativo ben separato.
+
+\section{Test backend}
+
+Nel repository corrente sono presenti suite di test per ogni microservizio backend, con focus su use case e router HTTP. Le principali aree coperte sono:
+
+\begin{itemize}
+\item autenticazione e sessioni;
+\item catalogo e operazioni admin;
+\item CAD e logica di derivazione BOM;
+\item carrello e checkout;
+\item notifiche e subscription;
+\item chatbot e messaggistica contestuale;
+\item ordini e aggiornamento stato;
+\item reporting e trend ordini.
+\end{itemize}
+
+Nel CAD, ad esempio, i test verificano la geometria delle spine, la derivazione della BOM, l'accettazione o il rifiuto dei livelli, la validazione del piano colonne e il comportamento dei servizi HTTP. Questo e' il punto piu' delicato del sistema, perche' da qui dipende la correttezza di carrello, notifiche e chat contestuale.
+
+\section{Test frontend}
+
+Il frontend dispone di una struttura di composables e store che rende naturale testare i flussi principali per vista. Anche se la copertura automatica della UI non e' ancora esaustiva, il progetto include verifiche di stato su:
+
+\begin{itemize}
+\item auth store;
+\item cart badge e refresh contatore;
+\item notifiche non lette e toast;
+\item composables del CAD per list/detail/update/finalize;
+\item integrazione con i service client REST e realtime.
+\end{itemize}
+
+Le viste principali sono state inoltre progettate con stati di caricamento, messaggi di errore e attributi accessibili che rendono piu' semplice una futura automatizzazione con test UI dedicati.
+
+\section{Test end-to-end}
+
+Nel repository sono presenti suite e2e per i flussi principali:
+
+\begin{itemize}
+\item auth integration;
+\item cad integration;
+\item cart integration;
+\item catalog integration;
+\item chatbot integration;
+\item notifications integration;
+\item order integration;
+\item reporting integration.
+\end{itemize}
+
+Lo workspace contiene anche un comando aggregato \texttt{npm run test:baseline} che esegue la suite backend e la suite e2e, oltre ai comandi separati per ogni microservizio.
+
+\section{Lista sintetica dei test fatti}
+
+Nel corso della documentazione e dell'allineamento del progetto sono stati considerati come riferimenti i seguenti test realmente presenti nel codice:
+
+\begin{itemize}
+\item backend: test di unit\`a e router per ciascun microservizio;
+\item e2e: suite per auth, CAD, cart, catalog, chatbot, notifiche, ordini e reporting;
+\item frontend: verifica della logica di store, composables e service layer;
+\item gateway: test dei routing BFF e health route;
+\item CAD: test su \texttt{SpineModel}, \texttt{deriveBom}, comando di configurazione e router.
+\end{itemize}
+
+\section{Stato della copertura}
+
+La traccia di copertura presente in \texttt{utilities/traceability-matrix.md} mostra che i requisiti principali sono coperti, mentre restano aree di completamento soprattutto sul fronte UX, smoke test accessibilita' e robustezza di alcuni casi realtime. Il documento di progetto deve quindi riflettere un sistema gia' solido sui flussi core, ma con margini di crescita ancora evidenti sul lato UI e validazione finale.

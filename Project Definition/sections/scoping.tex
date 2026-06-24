@@ -1,0 +1,52 @@
+\chapter{Scoping e contesto}
+
+\section{Contesto di business}
+
+KompozeR nasce per rendere piu' semplice l'acquisto di scaffalature componibili nel catalogo Kompo. Il prodotto di partenza e' un e-commerce gia' esistente, ma l'esperienza di composizione manuale dei pezzi risulta poco immediata per l'utente non esperto. L'estensione introduce quindi un configuratore visuale che guida la scelta dei componenti, mostra l'evoluzione del progetto e genera automaticamente la distinta dei pezzi necessari.
+
+Le categorie di prodotto gestite dal dominio sono \texttt{TONDO}, \texttt{QUADRO} e \texttt{KUBE}. Il progetto reale conserva questa distinzione sia lato catalogo sia lato CAD, ma non modella tre applicazioni separate: le differenze tra famiglie di prodotto vivono nei vincoli dimensionali e nelle regole di composizione, non nell'architettura applicativa.
+
+\section{Scopo funzionale}
+
+L'obiettivo del sistema e' coprire l'intero ciclo di valore dell'utente:
+
+\begin{itemize}
+\item autenticazione o accesso guest;
+\item esplorazione del catalogo componenti;
+\item creazione e modifica di una configurazione CAD;
+\item passaggio della configurazione al carrello;
+\item supporto conversazionale tramite chatbot;
+\item notifiche su variazioni di prezzo o disponibilita';
+\item funzioni amministrative per catalogo, ordini e reporting.
+\end{itemize}
+
+\section{Ruoli utente}
+
+Il sistema distingue tre ruoli operativi:
+
+\begin{itemize}
+\item \textbf{Guest}: puo' esplorare il catalogo e usare il configuratore, ma non accede alle funzionalita' che richiedono persistenza forte o collaborazione avanzata;
+\item \textbf{Utente autenticato base}: puo' salvare configurazioni, gestire il carrello, usare chatbot e notifiche, e riprendere i propri progetti;
+\item \textbf{Amministratore}: puo' gestire il catalogo, consultare gli ordini e accedere ai report.
+\end{itemize}
+
+L'autenticazione reale avviene tramite token JWT gestiti dal gateway. Il frontend conserva token e profilo utente in localStorage, mentre il backend riceve gli header di identita' gia' normalizzati dal gateway.
+
+\section{Confini del progetto}
+
+Il progetto attuale include tutti i microservizi previsti nella workspace:
+
+\begin{itemize}
+\item \texttt{authenticationService};
+\item \texttt{catalogService};
+\item \texttt{cadService};
+\item \texttt{cartService};
+\item \texttt{notificationService};
+\item \texttt{chatbotService};
+\item \texttt{orderService};
+\item \texttt{reportingService};
+\item \texttt{apiGateway};
+\item \texttt{frontend}.
+\end{itemize}
+
+Rispetto ad alcune note di progetto piu' vecchie, il sistema reale mostra un CAD non collaborativo lato codice corrente, un reporting piu' essenziale e un frontend basato su Vue 3 + Pinia invece del vecchio riferimento a Vuex.

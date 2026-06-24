@@ -1,0 +1,51 @@
+\chapter{Backend}
+
+\section{Organizzazione dei servizi}
+
+Ogni microservizio backend segue una struttura simile: \emph{adapters}, \emph{domain}, \emph{use cases} e \emph{entrypoint}. Questa impostazione rende chiaro il confine tra logica applicativa, dominio e trasporto HTTP o persistence layer.
+
+I database sono separati per servizio. Nei compose file di sviluppo e di esecuzione sono presenti istanze MongoDB dedicate a auth, catalog, cad, cart, notification, chatbot, order e reporting, oltre a Redis per catalogo e notifiche.
+
+\section{Responsabilita' per servizio}
+
+\subsection{authenticationService}
+Gestisce registrazione, login, sessione guest, recupero del profilo corrente, logout, elenco sessioni e revoke selettivo. E' il servizio che definisce il perimetro identitario del sistema e fornisce al gateway i dati necessari per autenticare e qualificare le richieste.
+
+\subsection{catalogService}
+Gestisce i componenti di catalogo e le operazioni admin. Il servizio espone lista, dettaglio, creazione, aggiornamento e cancellazione dei componenti. In piu', i dati di catalogo sono la fonte di verita' per prezzi e disponibilita'.
+
+\subsection{cadService}
+E' il core applicativo: conserva le configurazioni, applica i vincoli geometrici e deriva la distinta base finale. Il servizio coordina la sequenza di step della configurazione e mantiene l'aggregate \texttt{Configuration} come unita' di consistenza.
+
+\subsection{cartService}
+Mantiene il carrello dell'utente, aggiorna quantita' e linee di carrello, permette di svuotare il carrello e gestisce il checkout. Il carrello viene riallineato con il catalogo e, al checkout, interagisce con l'order service.
+
+\subsection{notificationService}
+Gestisce sottoscrizioni, notifiche lette/non lette e conteggio unread. Riceve eventi collegati a variazioni di catalogo e li traduce in notifiche personalizzate.
+
+\subsection{chatbotService}
+Gestisce le sessioni di chat, la cronologia dei messaggi e la generazione di risposte contestuali. Il chatbot interroga catalogo e, se necessario, la configurazione CAD attiva per dare risposte piu' pertinenti.
+
+\subsection{orderService}
+Riceve gli ordini creati dal checkout e ne gestisce lettura, annullamento e aggiornamento di stato da parte dell'amministratore.
+
+\subsection{reportingService}
+Espone un solo aggregato reale e utile al dominio amministrativo: il trend giornaliero degli ordini. L'implementazione usa una query Mongo di aggregazione e restituisce serie temporali coerenti con l'intervallo richiesto.
+
+\section{Dati e integrazioni}
+
+Le integrazioni fra servizi seguono un pattern piuttosto pulito:
+
+\begin{itemize}
+\item il CAD legge dal catalogo le regole dimensionali e, al finalize, scrive sul carrello;
+\item il cart service legge il catalogo per validare prezzi e disponibilita' prima del checkout;
+\item il chatbot legge catalogo e, opzionalmente, CAD per costruire il contesto conversazionale;
+\item il reporting legge gli ordini come base per le metriche amministrative;
+\item il notification service usa Redis e il proprio storage per gestire la parte realtime e le subscription.
+\end{itemize}
+
+\section{Error model e controllo accessi}
+
+Ogni servizio espone errori JSON coerenti con un modello comune: \texttt{code}, \texttt{message}, \texttt{timestamp} e, se necessario, dettagli aggiuntivi. Il gateway conserva o rimappa questi errori senza trasformare tutto in un generico 500, in modo da mantenere la semantica applicativa.
+
+Il controllo accessi e' distribuito ma coerente: il gateway verifica il JWT, i servizi verificano gli header di identita' ricevuti e le route amministrative controllano il ruolo \texttt{ADMIN}.

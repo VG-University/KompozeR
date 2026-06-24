@@ -1,0 +1,21 @@
+\chapter{Introduzione}
+
+KompozeR e' una web application pensata per estendere un e-commerce gia' esistente dedicato a mobili componibili personalizzabili. L'obiettivo del progetto e' accompagnare l'utente nella progettazione di una scaffalatura in modo guidato, coerente e visualmente chiaro, riducendo la complessita' della scelta manuale dei componenti e traducendo la configurazione finale in un carrello pronto per il checkout.
+
+Il sistema integra anche funzioni di supporto all'acquisto: un chatbot contestuale risponde a domande su componenti, compatibilita', misure e prezzi; un sistema di notifiche informa l'utente quando un elemento monitorato cambia disponibilita' o prezzo; lato amministratore sono presenti la gestione del catalogo, la consultazione degli ordini e una vista di reporting sui trend.
+
+Dal punto di vista tecnico, KompozeR e' organizzato come una Single Page Application Vue 3 che comunica con un backend a microservizi tramite API REST e canali Socket.IO selezionati. L'architettura attuale e' molto piu' concreta e lineare di quella descritta nelle prime bozze di progetto: il CAD e' il cuore del flusso utente, mentre il gateway e' il punto di ingresso unico che applica autenticazione, proxy e aggregazione di alcune viste BFF.
+
+\section{Obiettivo del documento}
+
+Questo documento descrive la definizione tecnica del progetto a partire dallo scoping fino agli endpoint pubblici, passando per architettura, backend, frontend, logica del CAD e strategia di test. L'intento e' fornire una fotografia coerente con l'implementazione reale presente nel repository, correggendo le parti delle note iniziali che risultano indietro rispetto al codice attuale.
+
+\section{Metodo di allineamento al codice}
+
+La redazione non si basa solo sui file di supporto presenti in \texttt{utilities}, ma anche su un doppio controllo sull'implementazione effettiva:
+
+\begin{itemize}
+\item i documenti di analisi iniziali hanno fornito il lessico di dominio, la classificazione dei bounded context e la traccia dei requisiti;
+\item il repository reale ha confermato stack, routing, dipendenze tra servizi e struttura delle interfacce utente;
+\item le differenze piu' rilevanti sono state allineate al codice corrente, ad esempio l'uso di Pinia nel frontend, il CAD REST-first e i path effettivi del gateway.
+\end{itemize}

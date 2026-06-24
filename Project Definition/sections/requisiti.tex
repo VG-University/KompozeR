@@ -1,0 +1,43 @@
+\chapter{Requisiti}
+
+\section{Requisiti funzionali}
+
+I requisiti funzionali sono stati tradotti in funzionalita' concrete dei servizi e delle viste principali.
+
+\begin{itemize}
+\item Registrazione, login e accesso guest.
+\item Consultazione del catalogo con filtri per categoria, disponibilita' e ricerca testuale.
+\item Creazione e modifica di una configurazione CAD passo per passo.
+\item Calcolo del design ammesso e dell'opzione successiva disponibile per ogni colonna.
+\item Finalizzazione della configurazione con popolamento automatico del carrello.
+\item Ricreazione del carrello da una configurazione finalizzata tramite riordino.
+\item Gestione notifiche per variazioni di prezzo e disponibilita'.
+\item Chatbot contestuale che usa catalogo e configurazione corrente per dare risposte pertinenti.
+\item Consultazione degli ordini per l'utente e funzioni di gestione stato per l'amministratore.
+\item Visualizzazione dei trend di vendita per la parte di reporting.
+\end{itemize}
+
+\section{Requisiti non funzionali}
+
+Il progetto e' stato impostato con attenzione a modularita', chiarezza del codice e fruibilita' web:
+
+\begin{itemize}
+\item separazione netta tra frontend, gateway e microservizi backend;
+\item uso di API REST semplici e coerenti con status code ed error model uniformi;
+\item presenza di canali real-time solo dove il valore percepito e' reale, cioe' notifiche e chat;
+\item persistenza per servizio, cosi' da non condividere database tra domini distinti;
+\item controlli di accesso espliciti per admin e utenti autenticati;
+\item usabilita' base in desktop e mobile, supportata da layout responsive nel frontend;
+\item test di unita', integrazione ed e2e per ridurre regressioni sui flussi critici.
+\end{itemize}
+
+\section{Tracciabilita' con le note di analisi}
+
+Le note presenti in \texttt{utilities} hanno guidato la classificazione iniziale dei requisiti, la mappa dei bounded context e la traccia di copertura test. Durante il controllo sul codice reale sono emersi alcuni aggiustamenti importanti:
+
+\begin{itemize}
+\item il frontend usa Pinia e non Vuex;
+\item il reporting implementato e' focalizzato sul trend ordini, non su una suite ampia di report;
+\item il cart service espone le operazioni effettive di carrello e checkout, mentre la popolazione da configurazione avviene internamente dal CAD;
+\item il CAD implementato e' un motore di configurazione step-based con logica geometrica e BOM, non un editor collaborativo WebSocket nel codice corrente.
+\end{itemize}

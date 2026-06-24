@@ -1,0 +1,32 @@
+\chapter{Deployment}
+
+\section{Ambiente di sviluppo e avvio}
+
+Il repository include un \texttt{docker-compose.dev.yml} pensato per l'esecuzione locale dell'intero sistema con i servizi effettivamente implementati. Il file di sviluppo avvia:
+
+\begin{itemize}
+\item Redis;
+\item un database Mongo dedicato per auth, catalog, cart, CAD, notifications, chatbot, orders;
+\item i microservizi backend;
+\item il frontend Vite.
+\end{itemize}
+
+La configurazione di sviluppo e' utile anche per il debug manuale di MongoDB Compass e per la verifica dei canali realtime.
+
+\section{Composizione dei container}
+
+Ogni servizio backend ha un proprio Dockerfile e viene eseguito in container separato. La composizione reale evita di condividere il database tra domini distinti e rende chiara la topologia dell'applicazione. Il gateway funge da facade verso il frontend, mentre il frontend dialoga quasi esclusivamente con il prefisso \texttt{/api}.
+
+\section{Avvio locale}
+
+Nel progetto sono presenti comandi di workspace per eseguire test backend, test e2e e build frontend. Il file root \texttt{package.json} definisce inoltre script separati per ciascun servizio. In pratica l'ambiente locale supporta tre scenari:
+
+\begin{itemize}
+\item sviluppo frontend con Vite;
+\item esecuzione e test dei singoli microservizi;
+\item esecuzione coordinata dell'intero stack con Docker Compose.
+\end{itemize}
+
+\section{Considerazioni operative}
+
+Il deployment attuale e' pensato per uno sviluppo riproducibile, non per una infrastruttura cloud complessa. La scelta e' coerente con lo scopo del progetto universitario: privilegiare chiarezza dell'architettura, verificabilita' dei flussi e facilita' di esecuzione locale.

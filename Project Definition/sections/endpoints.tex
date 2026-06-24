@@ -1,0 +1,137 @@
+\chapter{Endpoint e API}
+
+\section{Criterio di dettaglio}
+
+Le API riportate in questa sezione corrispondono ai path effettivamente esposti dai router del repository corrente. Dove le note iniziali in \texttt{utilities} descrivevano endpoint piu' ampi o ancora ipotetici, qui si privilegia la situazione reale del codice.
+
+\section{API Gateway}
+
+Il gateway espone il punto di ingresso unico per la SPA e applica il controllo JWT prima dei servizi protetti. I path effettivi sono:
+
+\begin{itemize}
+\item \texttt{/health};
+\item \texttt{/ws/notifications} per il proxy real-time delle notifiche;
+\item \texttt{/bff/dashboard};
+\item \texttt{/bff/configurator/:sessionId};
+\item proxy REST verso \texttt{/auth}, \texttt{/catalog}, \texttt{/cad}, \texttt{/cart}, \texttt{/orders}, \texttt{/notifications}, \texttt{/chatbot} e \texttt{/reports}.
+\end{itemize}
+
+\section{authenticationService}
+
+I path reali del servizio sono:
+
+\begin{itemize}
+\item \texttt{POST /auth/register};
+\item \texttt{POST /auth/login};
+\item \texttt{POST /auth/guest};
+\item \texttt{GET /auth/me};
+\item \texttt{GET /auth/sessions};
+\item \texttt{POST /auth/logout};
+\item \texttt{DELETE /auth/sessions/:sessionId}.
+\end{itemize}
+
+\section{catalogService}
+
+Il catalogo reale espone:
+
+\begin{itemize}
+\item \texttt{GET /catalog/health};
+\item \texttt{GET /catalog};
+\item \texttt{GET /catalog/:id};
+\item \texttt{POST /catalog};
+\item \texttt{PUT /catalog/:id};
+\item \texttt{DELETE /catalog/:id}.
+\end{itemize}
+
+La vista frontend usa questi path attraverso il client centralizzato, filtrando per ricerca, categoria e disponibilita'.
+
+\section{cadService}
+
+Il CAD attuale e' completamente REST-based e non corrisponde alle vecchie bozze con sessioni collaborative WebSocket. I path reali sono:
+
+\begin{itemize}
+\item \texttt{GET /cad/health};
+\item \texttt{POST /cad/configurations};
+\item \texttt{GET /cad/configurations};
+\item \texttt{GET /cad/configurations/:id};
+\item \texttt{GET /cad/configurations/:id/next-options};
+\item \texttt{PATCH /cad/configurations/:id/environment};
+\item \texttt{PATCH /cad/configurations/:id/category};
+\item \texttt{PATCH /cad/configurations/:id/column-plan};
+\item \texttt{PATCH /cad/configurations/:id/design};
+\item \texttt{POST /cad/configurations/:id/finalize};
+\item \texttt{POST /cad/configurations/:id/reorder}.
+\end{itemize}
+
+\section{cartService}
+
+Il carrello reale espone:
+
+\begin{itemize}
+\item \texttt{GET /cart/health};
+\item \texttt{GET /cart};
+\item \texttt{PUT /cart/items/:sku};
+\item \texttt{DELETE /cart/items/:sku};
+\item \texttt{DELETE /cart};
+\item \texttt{POST /cart/checkout}.
+\end{itemize}
+
+La versione corrente non usa le vecchie rotte di popolamento manuale o order requests separate: il checkout e' il punto di passaggio verso l'order service.
+
+\section{notificationService}
+
+I path REST reali sono:
+
+\begin{itemize}
+\item \texttt{GET /notifications/subscriptions};
+\item \texttt{POST /notifications/subscriptions};
+\item \texttt{GET /notifications/subscriptions/:subscriptionId};
+\item \texttt{PATCH /notifications/subscriptions/:subscriptionId};
+\item \texttt{DELETE /notifications/subscriptions/:subscriptionId};
+\item \texttt{GET /notifications};
+\item \texttt{GET /notifications/unread/count};
+\item \texttt{PATCH /notifications/:notificationId/read}.
+\end{itemize}
+
+\section{chatbotService}
+
+I path reali sono:
+
+\begin{itemize}
+\item \texttt{GET /chatbot/health};
+\item \texttt{POST /chatbot/sessions};
+\item \texttt{GET /chatbot/sessions/:sessionId};
+\item \texttt{GET /chatbot/sessions/:sessionId/messages};
+\item \texttt{PATCH /chatbot/sessions/:sessionId/close};
+\item \texttt{POST /chatbot/sessions/:sessionId/messages}.
+\end{itemize}
+
+Il socket client del frontend usa il path \texttt{/api/chatbot/socket.io} e scambia eventi \texttt{chat:message:send}, \texttt{chat:message:new}, \texttt{chat:typing} e \texttt{chat:error}.
+
+\section{orderService}
+
+I path reali osservati nel router sono:
+
+\begin{itemize}
+\item \texttt{GET /orders/health};
+\item \texttt{POST /orders};
+\item \texttt{GET /orders};
+\item \texttt{GET /orders/:orderId};
+\item \texttt{PATCH /orders/:orderId/cancel};
+\item \texttt{PATCH /orders/:orderId/status}.
+\end{itemize}
+
+\section{reportingService}
+
+Il servizio di reporting espone un'API volutamente ridotta:
+
+\begin{itemize}
+\item \texttt{GET /reports/health};
+\item \texttt{GET /reports/trends/orders}.
+\end{itemize}
+
+La UI admin usa questo endpoint per visualizzare il trend ordini in un intervallo temporale.
+
+\section{Note di coerenza}
+
+Le note in \texttt{utilities} contenevano una mappa endpoint piu' ampia di quella realmente implementata per alcune aree. In questo documento sono stati riportati i path effettivi del repository corrente, evitando di descrivere rotte che non esistono nel codice. Questa scelta rende il documento direttamente verificabile.

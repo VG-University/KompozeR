@@ -1,0 +1,45 @@
+\chapter{Architettura}
+
+\section{Vista d'insieme}
+
+L'architettura reale del progetto e' composta da una SPA, un API Gateway e una costellazione di microservizi specializzati. Il browser parla con il frontend Vue, il frontend usa un client HTTP centralizzato verso il gateway e il gateway inoltra o aggrega le richieste verso i servizi downstream.
+
+A livello infrastrutturale il sistema usa container Docker e database dedicati per servizio. Il principio e' quello del \emph{database per microservizio}: ogni dominio possiede la propria persistenza e non accede direttamente ai dati degli altri domini.
+
+\section{Componenti principali}
+
+\begin{itemize}
+\item \textbf{Frontend}: SPA Vue 3 con Vue Router, Pinia, composables e client HTTP/socket dedicati.
+\item \textbf{API Gateway}: punto di ingresso unico per REST, health-check e alcune aggregazioni BFF.
+\item \textbf{Authentication service}: gestisce identita', sessioni e ruoli.
+\item \textbf{Catalog service}: espone il catalogo componenti e le operazioni admin.
+\item \textbf{CAD service}: orchestra la configurazione dello scaffale e produce la BOM finale.
+\item \textbf{Cart service}: gestisce carrello, quantita' e checkout.
+\item \textbf{Notification service}: subscriptions, inbox notifiche e unread count.
+\item \textbf{Chatbot service}: conversazione contestuale su catalogo e configurazione.
+\item \textbf{Order service}: crea e governa gli ordini.
+\item \textbf{Reporting service}: calcola il trend ordini aggregato.
+\end{itemize}
+
+\section{Stile di comunicazione}
+
+La comunicazione principale e' request-response via HTTP. I casi in cui il progetto usa il tempo reale sono circoscritti e intenzionali:
+
+\begin{itemize}
+\item il chatbot usa Socket.IO con polling trasparente dal client;
+\item le notifiche usano Socket.IO per ricevere push e gestire riconnessioni;
+\item il gateway espone un proxy WebSocket dedicato alle notifiche.
+\end{itemize}
+
+Questa scelta mantiene semplice il dominio applicativo e limita la complessita' distribuita alle aree che ne traggono beneficio diretto.
+
+\section{Gateway e BFF}
+
+Il gateway non si limita al proxy. Oltre a esporre i prefissi REST dei servizi, fornisce due endpoint BFF che aggregano dati utili alla SPA:
+
+\begin{itemize}
+\item \texttt{/bff/dashboard}: aggrega carrello, sessioni CAD e conteggio notifiche non lette;
+\item \texttt{/bff/configurator/:sessionId}: aggrega snapshot CAD e dati catalogo per la schermata configuratore.
+\end{itemize}
+
+Il gateway applica inoltre JWT middleware, header di identita' normalizzati e gestione centralizzata degli errori.

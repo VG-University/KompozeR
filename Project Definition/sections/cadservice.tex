@@ -1,0 +1,108 @@
+\chapter{Approfondimento sul CAD service}
+
+\section{Ruolo del servizio}
+
+Il \texttt{cadService} e' il cuore applicativo di KompozeR. Non si limita a salvare dati di configurazione, ma interpreta il progetto dello scaffale come una sequenza di vincoli e trasformazioni. Il suo compito e' mantenere una \texttt{Configuration} valida sia dal punto di vista strutturale sia dal punto di vista commerciale, fino alla generazione della distinta base finale.
+
+In pratica il servizio prende una configurazione che evolve a step e controlla che ogni passaggio rispetti le regole del catalogo e la geometria della composizione. Quando la configurazione e' completa, il CAD deriva la BOM e la passa al carrello.
+
+\section{Modello di dominio}
+
+Il modello reale del servizio ruota attorno all'aggregate root \texttt{Configuration}, che contiene:
+
+\begin{itemize}
+\item identita' e proprietario;
+\item nome e stato del progetto;
+\item categoria selezionata;
+\item vincoli di ambiente;
+\item piano colonne;
+\item disegni colonna per colonna;
+\item componenti derivati in BOM;
+\item versione ottimistica della configurazione.
+\end{itemize}
+
+L'implementazione valida anche gli invarianti di base: identita' non vuota, proprietario presente, versione almeno pari a 1, coerenza tra numero colonne e piano colonne, livelli crescente e spessori positivi.
+
+\section{Flusso step-based}
+
+Il percorso reale nel codice e' il seguente:
+
+\begin{enumerate}
+\item creazione di una configurazione in stato \texttt{DRAFT};
+\item definizione dell'ambiente fisico massimo/minimo;
+\item selezione della categoria \texttt{TONDO}, \texttt{QUADRO} o \texttt{KUBE};
+\item definizione del piano colonne con larghezze ammesse dal catalogo;
+\item aggiornamento del design colonna per colonna;
+\item calcolo delle opzioni successive disponibili per ciascuna colonna;
+\item derivazione della BOM quando il design e' completo;
+\item finalizzazione e sincronizzazione con il carrello.
+\end{enumerate}
+
+Questo flusso e' implementato dai use case dedicati: \texttt{CreateConfiguration}, \texttt{SetEnvironment}, \texttt{SetCategory}, \texttt{SetColumnPlan}, \texttt{UpdateDesign}, \texttt{FinalizeConfiguration}, \texttt{ReorderConfiguration}, \texttt{GetConfiguration}, \texttt{ListConfigurations} e \texttt{ListNextOptions}.
+
+\section{Logica geometrica}
+
+Il CAD non accetta modifiche arbitrarie. La logica geometrica e' affidata a \texttt{SpineModel} e \texttt{deriveBom}. Le regole principali sono:
+
+\begin{itemize}
+\item la shelf thickness e' server-driven e fissata a 20 mm;
+\item i livelli di una colonna devono crescere in modo strettamente monotono;
+\item le colonne adiacenti non possono condividere livelli incompatibili;
+\item i segmenti tra livelli successivi devono corrispondere a montanti disponibili nel catalogo;
+\item il terminale superiore deve entrare nel vincolo di altezza massima.
+\end{itemize}
+
+La funzione \texttt{validateColumnCandidate} valuta la proposta di aggiungere un nuovo livello in una colonna e controlla sia il conflitto di adiacenza sia la validita' delle spine coinvolte. La funzione \texttt{validateColumnDesigns} verifica l'intero snapshot delle colonne, mentre \texttt{deriveSpineBom} e \texttt{deriveBom} trasformano il design valido in componenti commerciali.
+
+\section{Interazione con il catalogo}
+
+Il CAD consulta il catalogo attraverso \texttt{HttpCatalogRulesProvider}. Questa integrazione traduce i prodotti catalogati in regole utili al configuratore:
+
+\begin{itemize}
+\item larghezze dei ripiani;
+\item altezze disponibili per piedini, montanti e terminali;
+\item SKU e nomi dei componenti;
+\item prezzo associato a ciascun componente.
+\end{itemize}
+
+Il servizio usa queste regole per determinare se una colonna puo' essere costruita e per calcolare la distinta finale. In questo senso il CAD dipende dal catalogo per il \emph{vocabolario fisico} del prodotto, ma conserva la propria logica decisionale.
+
+\section{Derivazione della BOM}
+
+La BOM e' costruita come insieme aggregato di componenti commerciali. La funzione \texttt{deriveBom} procede in tre fasi:
+
+\begin{itemize}
+\item conta i ripiani per colonna e larghezza;
+\item calcola i componenti di spine condivise, cioe' piedini, terminali e montanti;
+\item aggrega gli item con lo stesso SKU prima di restituire il risultato.
+\end{itemize}
+
+Questo passaggio e' centrale per il resto dell'applicazione: il cart service riceve la BOM gia' pronta, il frontend mostra il riepilogo prezzo, e la finalizzazione puo' essere bloccata se la distinta non e' derivabile.
+
+\section{Stati della configurazione}
+
+Nel codice reale gli stati sono:
+
+\begin{itemize}
+\item \texttt{DRAFT};
+\item \texttt{ENVIRONMENT\_DEFINED};
+\item \texttt{CATEGORY_SELECTED};
+\item \texttt{COLUMNS_DEFINED};
+\item \texttt{DESIGN_IN_PROGRESS};
+\item \texttt{READY_FOR_FINALIZE};
+\item \texttt{FINALIZED}.
+\end{itemize}
+
+Il flusso non e' solo descrittivo: ogni use case controlla lo stato corrente e impedisce transizioni non ammesse. Ad esempio non si puo' cambiare ambiente o categoria quando la configurazione e' finalizzata, e non si puo' finalizzare senza componenti derivabili.
+
+\section{Perche' il CAD e' il core}
+
+Il CAD e' il core per tre motivi:
+
+\begin{itemize}
+\item concentra la logica di business piu' specifica e piu' complessa;
+\item governa il passaggio dall'idea del cliente a una distinta realmente acquistabile;
+\item influenza direttamente carrello, notifiche, chatbot e reporting.
+\end{itemize}
+
+Se il CAD sbaglia la geometria o la BOM, il resto del sistema lavora su dati non coerenti. Per questo nel progetto attuale il servizio e' stato modellato con maggiore attenzione rispetto agli altri microservizi, e questo documento lo tratta come il centro del dominio applicativo.

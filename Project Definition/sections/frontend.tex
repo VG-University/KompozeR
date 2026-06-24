@@ -1,0 +1,66 @@
+\chapter{Frontend}
+
+\section{Stack e struttura}
+
+Il frontend reale e' una SPA costruita con Vue 3, TypeScript, Vue Router e Pinia. Il bootstrap avviene in \texttt{main.ts}, dove l'app monta il router, lo store Pinia globale e gli stili condivisi.
+
+La configurazione di sviluppo usa Vite con proxy \texttt{/api} verso il gateway locale su \texttt{localhost:3000}. Questo permette al codice frontend di parlare con un unico prefisso logico anche durante lo sviluppo.
+
+\section{Routing e controllo degli accessi}
+
+Il router divide l'app in viste principali e aree admin. Le rotte effettive includono:
+
+\begin{itemize}
+\item \texttt{/} per autenticazione;
+\item \texttt{/catalog} per il catalogo;
+\item \texttt{/cad} per il configuratore;
+\item \texttt{/cart} per il carrello;
+\item \texttt{/chatbot} per l'assistente;
+\item \texttt{/configurations} per l'elenco configurazioni;
+\item \texttt{/notifications} per le notifiche;
+\item \texttt{/admin/orders}, \texttt{/admin/reports}, \texttt{/admin/catalog} per le aree amministrative.
+\end{itemize}
+
+Le guardie di navigazione leggono lo stato autenticazione da Pinia, distinguono guest, utente base e admin, e indirizzano ogni profilo verso un insieme diverso di sezioni consentite.
+
+\section{Store e stato applicativo}
+
+Lo stato e' diviso in store piccoli e specializzati:
+
+\begin{itemize}
+\item \texttt{authStore}: conserva token, utente, stato guest e home route;
+\item \texttt{cartStore}: mantiene il badge del numero articoli;
+\item \texttt{notificationStore}: gestisce unread count e toast;
+\item composables dedicati orchestrano CAD, catalogo, carrello e notifiche.
+\end{itemize}
+
+Questa scelta riduce l'accoppiamento e mantiene la logica di dominio nella UI in punti chiaramente delimitati.
+
+\section{Layer di servizio}
+
+Il frontend non parla direttamente con i servizi backend: passa da \texttt{httpClient.ts}, che aggiunge l'header \texttt{Authorization} preso dal localStorage, normalizza gli errori e converte le risposte non raggiungibili in un errore di rete leggibile dall'utente.
+
+I service client sono separati per dominio: \texttt{authService}, \texttt{catalogService}, \texttt{cadService}, \texttt{cartService}, \texttt{chatbotService}, \texttt{notificationService}, \texttt{orderService} e \texttt{reportingService}. Ciascuno incapsula i path REST reali e mantiene le viste pulite.
+
+\section{Viste principali}
+
+Le viste principali del frontend sono:
+
+\begin{itemize}
+\item \textbf{AuthView}: login, registrazione e guest access;
+\item \textbf{CatalogView}: filtro e aggiunta al carrello;
+\item \textbf{CadView}: configuratore step-based con anteprima, piano colonne e design;
+\item \textbf{CartView}: gestione quantita', svuotamento e checkout;
+\item \textbf{ConfigurationsView}: panoramica configurazioni e riordino;
+\item \textbf{NotificationsView}: inbox notifiche e unread badge;
+\item \textbf{ChatbotView}: chat contestuale con messaggi e typing indicator;
+\item viste admin per ordini, report e catalogo.
+\end{itemize}
+
+\section{Real-time nel frontend}
+
+Il real-time e' usato solo dove serve davvero. Le notifiche si appoggiano a Socket.IO con riconnessione automatica e aggiornamento del badge; il chatbot usa Socket.IO con polling e ack sul singolo messaggio. Il CAD attuale non ha una modalita' collaborative WebSocket nel codice corrente, quindi il configuratore resta REST-driven e piu' semplice da mantenere.
+
+\section{Accessibilita' e UX}
+
+Le viste usano etichette esplicite, \texttt{role=alert} sugli errori critici, stati di caricamento separati e layout responsive. In particolare il configuratore, il catalogo e il carrello sono stati progettati per funzionare sia su desktop sia su viewport ridotte, con un'attenzione pratica alla leggibilita' dello stato corrente.

@@ -1,0 +1,38 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage{geometry}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\graphicspath{{images/}}
+\geometry{margin=2.7cm}
+\setlist[itemize]{noitemsep, topsep=3pt}
+
+\title{KompozeR \\ \large Definizione tecnica del progetto}
+\author{Valerio Giannini - 0001125005 \{valerio.giannini@studio.unibo.it\}}
+\date{24 giugno 2026}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\clearpage
+
+\input{sections/introduzione}
+\input{sections/scoping}
+\input{sections/requisiti}
+\input{sections/architettura}
+\input{sections/backend}
+\input{sections/frontend}
+\input{sections/endpoints}
+\input{sections/cadservice}
+\input{sections/test}
+\input{sections/deployment}
+\input{sections/conclusioni}
+
+\end{document}
