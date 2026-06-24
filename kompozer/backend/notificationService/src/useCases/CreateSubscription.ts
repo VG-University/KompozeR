@@ -1,3 +1,6 @@
+/**
+ * Use case for creating/upserting a product notification subscription.
+ */
 import { randomUUID } from 'crypto';
 import { NotificationSubscription } from '../domain/entities/Notification';
 import { ValidationError } from '../domain/entities/errors';

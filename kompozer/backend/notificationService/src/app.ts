@@ -1,3 +1,8 @@
+/**
+ * notificationService composition root.
+ * Wires persistence adapters, realtime broadcaster, event subscriber,
+ * and HTTP routes into the runtime.
+ */
 import express from 'express';
 import cors from 'cors';
 import { Server as HttpServer } from 'http';

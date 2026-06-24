@@ -1,3 +1,7 @@
+/**
+ * Redis Pub/Sub subscriber for catalog events.
+ * Forwards decoded events to HandleCatalogEvent use case.
+ */
 import Redis from 'ioredis';
 import { CatalogEvent } from '../../../domain/entities/CatalogEvent';
 import { HandleCatalogEvent } from '../../../useCases/HandleCatalogEvent';

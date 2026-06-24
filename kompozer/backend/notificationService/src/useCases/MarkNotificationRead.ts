@@ -1,3 +1,6 @@
+/**
+ * Use case for marking one user notification as read.
+ */
 import { ForbiddenError, NotificationNotFoundError, ValidationError } from '../domain/entities/errors';
 import { NotificationRepository } from '../domain/ports/NotificationRepository';
 import { NotificationDto, toNotificationDto } from './types';

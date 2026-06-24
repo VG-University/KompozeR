@@ -1,3 +1,6 @@
+/**
+ * Unit tests for HandleCatalogEvent use case.
+ */
 import { HandleCatalogEvent } from '../../src/useCases/HandleCatalogEvent';
 import {
   FakeBroadcaster,

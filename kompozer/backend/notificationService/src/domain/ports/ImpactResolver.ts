@@ -1,3 +1,6 @@
+/**
+ * Domain port for resolving users impacted by a catalog event.
+ */
 import { CatalogEvent } from '../entities/CatalogEvent';
 import { NotificationContextType } from '../entities/Notification';
 

@@ -1,3 +1,6 @@
+/**
+ * Use case for paginated notification listing.
+ */
 import { ValidationError } from '../domain/entities/errors';
 import { NotificationRepository } from '../domain/ports/NotificationRepository';
 import { NotificationDto, toNotificationDto } from './types';

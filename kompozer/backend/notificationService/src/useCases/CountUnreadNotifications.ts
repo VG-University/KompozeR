@@ -1,3 +1,6 @@
+/**
+ * Use case for counting unread notifications of a user.
+ */
 import { ValidationError } from '../domain/entities/errors';
 import { NotificationRepository } from '../domain/ports/NotificationRepository';
 

@@ -1,3 +1,6 @@
+/**
+ * UUID-based id generator used by notification use cases.
+ */
 import { randomUUID } from 'crypto';
 import { IdGenerator } from '../useCases/HandleCatalogEvent';
 

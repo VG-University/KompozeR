@@ -1,3 +1,7 @@
+/**
+ * Use case that transforms a catalog event into user notifications.
+ * Applies idempotency via processed-event repository.
+ */
 import { CatalogEvent } from '../domain/entities/CatalogEvent';
 import { Notification } from '../domain/entities/Notification';
 import { NotificationBroadcaster } from '../domain/ports/NotificationBroadcaster';

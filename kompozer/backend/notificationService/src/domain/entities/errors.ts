@@ -1,3 +1,6 @@
+/**
+ * Domain error hierarchy for notificationService.
+ */
 export class NotificationError extends Error {
   constructor(
     public readonly code: string,

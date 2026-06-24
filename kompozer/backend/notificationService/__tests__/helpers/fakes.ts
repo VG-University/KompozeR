@@ -1,3 +1,6 @@
+/**
+ * In-memory fake adapters used by notificationService unit tests.
+ */
 import { CatalogEvent } from '../../src/domain/entities/CatalogEvent';
 import { Notification, NotificationSubscription } from '../../src/domain/entities/Notification';
 import {

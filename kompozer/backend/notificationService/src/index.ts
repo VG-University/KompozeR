@@ -1,3 +1,8 @@
+/**
+ * notificationService entrypoint.
+ * Loads runtime configuration, connects MongoDB, starts HTTP/WebSocket runtime,
+ * and handles graceful shutdown.
+ */
 import mongoose from 'mongoose';
 import { createServer } from 'http';
 import { buildApp } from './app';

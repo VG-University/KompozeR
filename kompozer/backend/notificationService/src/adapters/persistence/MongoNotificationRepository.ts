@@ -1,3 +1,6 @@
+/**
+ * MongoDB implementation of NotificationRepository.
+ */
 import { Notification, NotificationSubscription } from '../../domain/entities/Notification';
 import {
   ListNotificationsInput,

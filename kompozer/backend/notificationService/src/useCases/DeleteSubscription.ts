@@ -1,3 +1,6 @@
+/**
+ * Use case for deactivating an existing subscription.
+ */
 import {
   ForbiddenError,
   SubscriptionNotFoundError,

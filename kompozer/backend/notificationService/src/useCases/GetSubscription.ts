@@ -1,3 +1,6 @@
+/**
+ * Use case for retrieving one subscription owned by requesting user.
+ */
 import { ForbiddenError, SubscriptionNotFoundError, ValidationError } from '../domain/entities/errors';
 import { NotificationRepository } from '../domain/ports/NotificationRepository';
 import { NotificationSubscriptionDto, toSubscriptionDto } from './types';

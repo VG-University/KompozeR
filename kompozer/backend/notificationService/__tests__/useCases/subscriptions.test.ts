@@ -1,3 +1,6 @@
+/**
+ * Unit tests for notification subscription use cases.
+ */
 import { CreateSubscription } from '../../src/useCases/CreateSubscription';
 import { DeleteSubscription } from '../../src/useCases/DeleteSubscription';
 import { GetSubscription } from '../../src/useCases/GetSubscription';

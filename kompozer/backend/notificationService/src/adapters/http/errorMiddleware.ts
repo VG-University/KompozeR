@@ -1,3 +1,7 @@
+/**
+ * Maps NotificationError domain exceptions to HTTP JSON responses.
+ * Unknown errors are returned as INTERNAL_ERROR.
+ */
 import { NextFunction, Request, Response } from 'express';
 import { NotificationError } from '../../domain/entities/errors';
 

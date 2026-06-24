@@ -1,3 +1,6 @@
+/**
+ * Use case for updating events/active state of an existing subscription.
+ */
 import {
   ForbiddenError,
   SubscriptionNotFoundError,

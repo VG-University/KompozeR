@@ -1,3 +1,6 @@
+/**
+ * MongoDB implementation of ProcessedEventRepository for event idempotency.
+ */
 import { ProcessedEventRepository } from '../../domain/ports/ProcessedEventRepository';
 import { ProcessedEventModel } from './schemas/notificationSchema';
 

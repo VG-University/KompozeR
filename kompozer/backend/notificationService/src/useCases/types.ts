@@ -1,3 +1,6 @@
+/**
+ * DTO contracts and mappers for notificationService use cases.
+ */
 import { Notification } from '../domain/entities/Notification';
 import { NotificationSubscription } from '../domain/entities/Notification';
 

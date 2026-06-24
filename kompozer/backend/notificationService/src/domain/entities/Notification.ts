@@ -1,3 +1,6 @@
+/**
+ * Core domain models for notifications and notification subscriptions.
+ */
 export type NotificationType = 'PRICE_CHANGED' | 'AVAILABILITY_CHANGED';
 
 export type NotificationContextType = 'CAD' | 'CART' | 'SUBSCRIPTION';

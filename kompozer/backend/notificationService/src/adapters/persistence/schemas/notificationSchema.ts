@@ -1,3 +1,6 @@
+/**
+ * Mongoose schemas for notifications, subscriptions, and processed event ids.
+ */
 import { Schema, model } from 'mongoose';
 
 export type NotificationDoc = {

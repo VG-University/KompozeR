@@ -1,3 +1,6 @@
+/**
+ * Domain port for notification and subscription persistence.
+ */
 import { Notification, NotificationSubscription } from '../entities/Notification';
 
 export interface ListNotificationsInput {

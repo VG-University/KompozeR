@@ -1,3 +1,6 @@
+/**
+ * Use case for listing subscriptions owned by the requesting user.
+ */
 import { ValidationError } from '../domain/entities/errors';
 import { NotificationRepository } from '../domain/ports/NotificationRepository';
 import { NotificationSubscriptionDto, toSubscriptionDto } from './types';

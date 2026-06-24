@@ -1,3 +1,7 @@
+/**
+ * ImpactResolver implementation that projects impacted users from
+ * notification subscriptions, carts, and CAD finalized configurations.
+ */
 import mongoose, { Connection, Model, Schema } from 'mongoose';
 import { CatalogEvent } from '../../domain/entities/CatalogEvent';
 import { ImpactedUser, ImpactResolver } from '../../domain/ports/ImpactResolver';
@@ -129,8 +133,8 @@ export class MongoImpactResolver implements ImpactResolver {
 
   private async resolveFromCad(): Promise<ImpactedUser[]> {
     if (!this.cadModel) return [];
-    // CAD impact is coarse-grained for Sprint 3: all users with finalized configurations
-    // are notified when catalog conditions change.
+    // CAD impact is coarse-grained for Sprint 3: notify all users
+    // owning finalized configurations when catalog conditions change.
     const docs = await this.cadModel
       .find({ status: 'FINALIZED' })
       .select({ _id: 1, ownerId: 1 })

@@ -1,3 +1,7 @@
+/**
+ * Express router for notifications and subscriptions endpoints.
+ * Requires X-User-Id identity header and delegates behavior to use cases.
+ */
 import { Router, Request, Response, NextFunction } from 'express';
 import { CountUnreadNotifications } from '../../useCases/CountUnreadNotifications';
 import { ListNotifications } from '../../useCases/ListNotifications';

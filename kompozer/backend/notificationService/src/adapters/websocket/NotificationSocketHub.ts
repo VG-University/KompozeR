@@ -1,3 +1,6 @@
+/**
+ * Socket.IO hub that broadcasts in-app notifications to per-user rooms.
+ */
 import { Server as HttpServer } from 'http';
 import { Server, Socket } from 'socket.io';
 import { Notification } from '../../domain/entities/Notification';

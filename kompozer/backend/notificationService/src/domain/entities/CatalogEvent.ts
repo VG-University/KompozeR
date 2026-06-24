@@ -1,3 +1,6 @@
+/**
+ * Catalog event contract consumed by notificationService.
+ */
 export type CatalogEventType = 'PRICE_CHANGED' | 'AVAILABILITY_CHANGED';
 
 interface CatalogEventBase {
