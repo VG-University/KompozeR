@@ -40,7 +40,7 @@ const notificationsWsProxy = app.locals['notificationsWsProxy'] as
   | undefined;
 
 if (notificationsWsProxy?.upgrade) {
-  server.on('upgrade', (req, socket, head) => {
+  server.on('upgrade', (req: any, socket: any, head: any) => {
     if (req.url?.startsWith('/ws/notifications')) {
       notificationsWsProxy.upgrade?.(req, socket, head);
     }

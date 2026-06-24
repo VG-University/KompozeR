@@ -12,6 +12,6 @@
     "resolveJsonModule": true,
     "sourceMap": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../shared/types/service-shims.d.ts"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

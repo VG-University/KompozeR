@@ -28,7 +28,7 @@ function makeFetch(statusByUrl: Record<string, number>): FetchFn {
 
 /** FetchFn che simula un timeout (AbortError). */
 function makeTimeoutFetch(): FetchFn {
-  return async (_url: string, init?: RequestInit) => {
+  return async (_url: string, _init?: unknown) => {
     // Lancia subito l'abort error come farebbe AbortController in timeout
     const err = new Error('The operation was aborted');
     err.name = 'AbortError';

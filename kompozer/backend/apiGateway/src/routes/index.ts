@@ -37,7 +37,7 @@ export function buildRoutes(services: ServiceUrls): Router {
     createProxyMiddleware({
       target: services.auth,
       changeOrigin: true,
-      pathRewrite: (path) => `/auth${path}`,
+      pathRewrite: (path: string) => `/auth${path}`,
       on: { proxyReq: fixRequestBody },
     }),
   );
@@ -48,7 +48,7 @@ export function buildRoutes(services: ServiceUrls): Router {
     createProxyMiddleware({
       target: services.catalog,
       changeOrigin: true,
-      pathRewrite: (path) => `/catalog${path}`,
+      pathRewrite: (path: string) => `/catalog${path}`,
       on: { proxyReq: fixRequestBody },
     }),
   );
@@ -59,7 +59,7 @@ export function buildRoutes(services: ServiceUrls): Router {
     createProxyMiddleware({
       target: services.cad,
       changeOrigin: true,
-      pathRewrite: (path) => `/cad${path}`,
+      pathRewrite: (path: string) => `/cad${path}`,
       on: { proxyReq: fixRequestBody },
     }),
   );
@@ -70,7 +70,7 @@ export function buildRoutes(services: ServiceUrls): Router {
     createProxyMiddleware({
       target: services.cart,
       changeOrigin: true,
-      pathRewrite: (path) => `/cart${path}`,
+      pathRewrite: (path: string) => `/cart${path}`,
       on: { proxyReq: fixRequestBody },
     }),
   );
@@ -81,7 +81,7 @@ export function buildRoutes(services: ServiceUrls): Router {
     createProxyMiddleware({
       target: services.order,
       changeOrigin: true,
-      pathRewrite: (path) => `/orders${path}`,
+      pathRewrite: (path: string) => `/orders${path}`,
       on: { proxyReq: fixRequestBody },
     }),
   );
@@ -92,7 +92,7 @@ export function buildRoutes(services: ServiceUrls): Router {
     createProxyMiddleware({
       target: services.notification,
       changeOrigin: true,
-      pathRewrite: (path) => `/notifications${path}`,
+      pathRewrite: (path: string) => `/notifications${path}`,
       on: { proxyReq: fixRequestBody },
     }),
   );
@@ -104,7 +104,7 @@ export function buildRoutes(services: ServiceUrls): Router {
       target: services.chatbot,
       changeOrigin: true,
       ws: true,
-      pathRewrite: (path) => `/chatbot${path}`,
+      pathRewrite: (path: string) => `/chatbot${path}`,
       on: { proxyReq: fixRequestBody },
     }),
   );
@@ -115,7 +115,7 @@ export function buildRoutes(services: ServiceUrls): Router {
     createProxyMiddleware({
       target: services.reporting,
       changeOrigin: true,
-      pathRewrite: (path) => `/reports${path}`,
+      pathRewrite: (path: string) => `/reports${path}`,
       on: { proxyReq: fixRequestBody },
     }),
   );
