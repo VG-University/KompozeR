@@ -1,6 +1,11 @@
-// app — Composition root dell'apiGateway.
-// Assembla il middleware JWT, le route di proxy verso i microservizi
-// e il middleware di errore. Esportato come factory per facilità di test.
+/**
+ * Composition root for the API Gateway.
+ *
+ * Builds and wires middleware, protected/public routers, proxy routes,
+ * and centralized gateway error handling.
+ *
+ * Exposed as a factory to simplify test setup.
+ */
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -16,6 +21,16 @@ export interface GatewayConfig {
   services: ServiceUrls;
 }
 
+/**
+ * Creates a configured Express application instance for the gateway.
+ *
+ * Middleware order is intentional:
+ * 1) security and parsing middleware,
+ * 2) public health and websocket channels,
+ * 3) JWT guard,
+ * 4) protected BFF/proxy routes,
+ * 5) centralized error translation.
+ */
 export function buildApp(config: GatewayConfig) {
   const app = express();
 
@@ -31,10 +46,10 @@ export function buildApp(config: GatewayConfig) {
   app.use(helmet());
   app.use(express.json());
 
-  // WebSocket proxy for notifications realtime channel.
+  // Real-time notifications channel is handled before JWT route guarding.
   app.use('/ws/notifications', notificationsWsProxy);
 
-  // Health check — pubblico, prima del JWT middleware
+  // Public health endpoint must remain reachable without authentication.
   app.use(buildHealthRouter(config.services));
 
   // JWT verification — runs before every route except public ones

@@ -1,13 +1,26 @@
-// ServiceClient — Client HTTP iniettabile per le chiamate BFF del gateway.
-// Crea un'istanza Axios pre-configurata con:
-//   - baseURL del servizio di destinazione
-//   - timeout di 5 secondi
-//   - header di identità (X-User-Id / X-User-Role / X-Session-Id) già iniettati
-//     dal jwtMiddleware e forwardati al downstream
-//
-// L'interfaccia `HttpClient` è volutamente minimale per facilitare i test
-// (basta passare un fake che implementa get<T>).
-import axios, { AxiosInstance } from 'axios';
+/**
+ * Injectable HTTP client adapter used by gateway BFF routes.
+ *
+ * Creates an Axios client configured with:
+ * - downstream service base URL,
+ * - 5-second timeout,
+ * - forwarded identity headers from JWT middleware.
+ *
+ * The HttpClient abstraction remains intentionally small to simplify tests.
+ */
+declare const require: (moduleName: string) => unknown;
+
+type AxiosResponse<T = unknown> = { data: T };
+type AxiosClient = { get<T = unknown>(path: string): Promise<AxiosResponse<T>> };
+type AxiosFactory = {
+  create: (config: {
+    baseURL: string;
+    timeout: number;
+    headers: Record<string, string | undefined>;
+  }) => AxiosClient;
+};
+
+const axios = require('axios') as AxiosFactory;
 
 export interface IdentityHeaders {
   'x-user-id'?: string;
@@ -19,13 +32,16 @@ export interface HttpClient {
   get<T = unknown>(path: string): Promise<T>;
 }
 
+/**
+ * Creates a per-request service client that preserves caller identity context.
+ */
 export function createServiceClient(baseUrl: string, identity: IdentityHeaders): HttpClient {
-  const instance: AxiosInstance = axios.create({
+  const instance = axios.create({
     baseURL: baseUrl,
     timeout: 5_000,
     headers: {
-      'x-user-id':    identity['x-user-id'],
-      'x-user-role':  identity['x-user-role'],
+      'x-user-id': identity['x-user-id'],
+      'x-user-role': identity['x-user-role'],
       'x-session-id': identity['x-session-id'],
     },
   });

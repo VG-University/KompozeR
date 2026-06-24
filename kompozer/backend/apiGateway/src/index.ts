@@ -1,6 +1,12 @@
-// index — Entry point dell'apiGateway.
-// Legge le variabili d'ambiente, costruisce l'app e avvia il server HTTP.
-// Termina il processo se JWT_SECRET non è configurato.
+/**
+ * API Gateway process entry point.
+ *
+ * Reads environment variables, builds the Express application,
+ * starts the HTTP server, and wires WebSocket upgrade handling for
+ * the notifications channel.
+ *
+ * The process terminates at startup if JWT_SECRET is missing.
+ */
 import { buildApp } from './app';
 
 const PORT = Number(process.env.PORT) || 3000;

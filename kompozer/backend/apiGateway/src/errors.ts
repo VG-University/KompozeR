@@ -1,5 +1,9 @@
-// GatewayError — Errore interno del gateway, con codice leggibile dalla macchina.
-// Usato dal gatewayErrorMiddleware per produrre risposte JSON uniformi.
+/**
+ * Base gateway domain error.
+ *
+ * Carries a machine-readable error code and an HTTP status used by
+ * the gateway error middleware to produce a uniform JSON error model.
+ */
 export class GatewayError extends Error {
   constructor(
     public readonly code: string,
@@ -11,12 +15,18 @@ export class GatewayError extends Error {
   }
 }
 
+/**
+ * Raised when a protected route is called without a bearer token.
+ */
 export class MissingTokenError extends GatewayError {
   constructor() {
     super('MISSING_TOKEN', 'Authorization header is required', 401);
   }
 }
 
+/**
+ * Raised when token validation fails (invalid format, signature, or expiry).
+ */
 export class InvalidTokenError extends GatewayError {
   constructor() {
     super('INVALID_TOKEN', 'Token is invalid or expired', 401);

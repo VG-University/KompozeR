@@ -1,12 +1,16 @@
-// routes — Configurazione dei proxy verso i microservizi.
-// Ogni route mappa un prefisso URL al servizio di destinazione.
-// Le route non ancora implementate hanno un target placeholder che
-// può essere attivato semplicemente configurando la variabile d'ambiente corretta.
-// Il JWT middleware ha già iniettato gli header X-User-Id / X-User-Role / X-Session-Id
-// prima che la richiesta arrivi qui — i servizi downstream leggono solo quelli.
+/**
+ * Proxy route configuration for downstream microservices.
+ *
+ * Each mounted route maps a gateway prefix to a specific target service.
+ * The JWT middleware has already sanitized and injected identity headers
+ * before requests are forwarded from this router.
+ */
 import { Router } from 'express';
 import { createProxyMiddleware, fixRequestBody } from 'http-proxy-middleware';
 
+/**
+ * Downstream service base URLs used by gateway proxy and BFF layers.
+ */
 export interface ServiceUrls {
   auth: string;
   catalog: string;
@@ -18,6 +22,12 @@ export interface ServiceUrls {
   reporting: string;
 }
 
+/**
+ * Builds the gateway proxy router.
+ *
+ * All proxy routes preserve HTTP method and body while rewriting only
+ * the service-local base path.
+ */
 export function buildRoutes(services: ServiceUrls): Router {
   const router = Router();
 

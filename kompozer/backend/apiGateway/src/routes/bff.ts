@@ -1,12 +1,12 @@
-// bff — Route di aggregazione Backend For Frontend.
-// Invece di far fare N chiamate al browser, queste route aggregano in parallelo
-// i dati di più microservizi e restituiscono un unico payload.
-//
-// Pattern: Promise.allSettled — un servizio down non blocca gli altri;
-// il risultato parziale usa { data } per i successi, { error } per i fallimenti.
-// Il frontend deve gestire entrambi i casi.
-//
-// Tutti gli endpoint /bff/* sono protetti dal JWT middleware montato in app.ts.
+/**
+ * Backend-for-Frontend aggregation routes.
+ *
+ * These routes collapse multiple downstream calls into a single response
+ * for the SPA. Aggregation uses Promise.allSettled so one failing service
+ * does not block successful peers.
+ *
+ * All /bff/* endpoints are protected by the JWT middleware mounted in app.ts.
+ */
 import { Router, Request, Response } from 'express';
 import { ServiceUrls } from './index';
 import {
@@ -17,7 +17,7 @@ import {
 
 export type ClientFactory = (baseUrl: string, identity: IdentityHeaders) => HttpClient;
 
-/** Estrae gli header di identità già iniettati dal jwtMiddleware. */
+/** Extracts identity headers previously injected by the JWT middleware. */
 function extractIdentity(req: Request): IdentityHeaders {
   return {
     'x-user-id':    req.headers['x-user-id'] as string | undefined,
@@ -26,7 +26,7 @@ function extractIdentity(req: Request): IdentityHeaders {
   };
 }
 
-/** Normalizza il risultato di Promise.allSettled in { data } | { error }. */
+/** Normalizes Promise.allSettled entries into { data } | { error }. */
 function settle<T>(
   result: PromiseSettledResult<T>,
 ): { data: T } | { error: string } {
@@ -38,17 +38,17 @@ function settle<T>(
   return { error: msg };
 }
 
+/**
+ * Builds BFF aggregation endpoints backed by downstream service clients.
+ */
 export function buildBffRouter(
   services: ServiceUrls,
   clientFactory: ClientFactory = createServiceClient,
 ): Router {
   const router = Router();
 
-  // ── GET /bff/dashboard ─────────────────────────────────────────────────────
-  // Usato dalla homepage post-login. Ritorna in una sola chiamata:
-  //   - sommario del carrello (cart-service  GET /cart)
-  //   - sessioni CAD attive  (cad-service    GET /sessions)
-  //   - conteggio notifiche  (notification-service GET /notifications/unread/count)
+  // Used by the post-login homepage to aggregate cart, CAD sessions,
+  // and unread notification count in a single call.
   router.get(
     '/bff/dashboard',
     async (req: Request, res: Response): Promise<void> => {
@@ -72,12 +72,8 @@ export function buildBffRouter(
     },
   );
 
-  // ── GET /bff/configurator/:sessionId ──────────────────────────────────────
-  // Usato dalla pagina del configuratore. Ritorna in una sola chiamata:
-  //   - snapshot della sessione CAD (cad-service    GET /sessions/:id/snapshot)
-  //   - lista item del catalogo     (catalog-service GET /catalog/items)
-  // Il frontend usa i prezzi aggiornati del catalogo per aggiornare il preventivo
-  // in tempo reale senza fare N chiamate per N componenti.
+  // Used by the configurator screen to fetch session snapshot and catalog
+  // data together so the SPA can update pricing/state with fewer round-trips.
   router.get(
     '/bff/configurator/:sessionId',
     async (req: Request, res: Response): Promise<void> => {

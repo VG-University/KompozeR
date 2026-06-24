@@ -1,12 +1,14 @@
-// healthRouter — Verifica lo stato di ogni microservizio downstream.
-// Pinga in parallelo l'endpoint /health di ciascun servizio, misura la latenza
-// e restituisce un report aggregato. Equivalente all'endpoint Spring Actuator
-// /actuator/health con show-details: always.
-//
-// Risposte HTTP:
-//   200 — tutti i servizi sono UP
-//   207 — alcuni servizi sono DOWN (stato degraded)
-//   503 — tutti i servizi sono DOWN
+/**
+ * Health router for downstream service availability.
+ *
+ * Probes each service /health endpoint in parallel, measures latency,
+ * and returns an aggregated status report.
+ *
+ * HTTP status policy:
+ * - 200: all services are up
+ * - 207: degraded state (mixed up/down)
+ * - 503: all services are down
+ */
 import { Router, Request, Response } from 'express';
 import { ServiceUrls } from './index';
 
@@ -23,8 +25,9 @@ export interface HealthReport {
   services: Record<string, ServiceStatus>;
 }
 
-// Tipo iniettabile per semplificare i test (default: global fetch di Node 24).
-// Usa solo { ok, status } per evitare conflitti con Express Response.
+/**
+ * Injectable fetch response shape used for deterministic health tests.
+ */
 export interface FetchResponse { ok: boolean; status: number; }
 export type FetchFn = (url: string, init?: RequestInit) => Promise<FetchResponse>;
 
@@ -54,6 +57,9 @@ async function checkService(
   }
 }
 
+/**
+ * Builds the public health-check router.
+ */
 export function buildHealthRouter(services: ServiceUrls, fetchFn: FetchFn = fetch as FetchFn): Router {
   const router = Router();
 

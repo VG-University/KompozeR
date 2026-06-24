@@ -1,13 +1,15 @@
-// jwtMiddleware — Middleware che verifica il JWT e inietta gli header di identità.
-//
-// Strategia (concordata nel progetto):
-//   1. Il gateway è l'UNICO componente che verifica la firma JWT.
-//   2. Dopo la verifica inietta tre header nel request forward:
-//      X-User-Id, X-User-Role, X-Session-Id.
-//   3. Tutti gli altri microservizi si fidano SOLO di quei header, mai del JWT raw.
-//
-// Le route pubbliche (es. POST /auth/register, POST /auth/login, POST /auth/guest)
-// devono essere escluse da questo middleware tramite `publicRoutes`.
+/**
+ * JWT gateway middleware.
+ *
+ * Security model:
+ * 1) The gateway is the only component that verifies JWT signatures.
+ * 2) After successful verification, identity is propagated through
+ *    X-User-Id, X-User-Role, and X-Session-Id headers.
+ * 3) Downstream services trust only these injected identity headers,
+ *    never the original raw JWT.
+ *
+ * Public routes are explicitly excluded from JWT enforcement.
+ */
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { MissingTokenError, InvalidTokenError } from '../errors';
@@ -30,6 +32,9 @@ function isPublic(req: Request): boolean {
   );
 }
 
+/**
+ * Builds the JWT validation middleware with a fixed signing secret.
+ */
 export function buildJwtMiddleware(jwtSecret: string) {
   return function jwtMiddleware(req: Request, _res: Response, next: NextFunction): void {
     // Strip identity headers from every incoming request — including public routes.
@@ -50,8 +55,8 @@ export function buildJwtMiddleware(jwtSecret: string) {
       token = authHeader.slice(7);
     }
 
-    // Browser Socket.io clients cannot reliably set Authorization headers.
-    // For chatbot polling handshake, allow `?token=<jwt>` fallback.
+    // Browser Socket.IO clients cannot reliably set Authorization headers.
+    // For chatbot handshake/polling, allow ?token=<jwt> fallback.
     if (!token && req.path.startsWith('/chatbot/socket.io')) {
       const queryToken = req.query['token'];
       if (typeof queryToken === 'string' && queryToken.trim()) {
