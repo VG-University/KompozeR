@@ -1,3 +1,6 @@
+/**
+ * Event contract emitted by cartService for downstream consumers.
+ */
 export type CartEventType =
   | 'CartCreated'
   | 'ItemAddedToCart'

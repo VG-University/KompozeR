@@ -1,3 +1,7 @@
+/**
+ * Use case for inserting/updating a cart line item.
+ * Validates input, recomputes totals, persists cart, and publishes cart events.
+ */
 import { Cart, CartItem, computeCartTotal, computeLineTotal } from '../domain/entities/Cart';
 import { CartEvent } from '../domain/entities/CartEvent';
 import { ValidationError } from '../domain/entities/errors';

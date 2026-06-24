@@ -1,3 +1,6 @@
+/**
+ * Domain port for cart persistence.
+ */
 import { Cart } from '../entities/Cart';
 
 export interface CartRepository {

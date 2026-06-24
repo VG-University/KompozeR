@@ -1,3 +1,7 @@
+/**
+ * Use case for retrieving a user cart.
+ * Optionally performs synchronization against catalog snapshots.
+ */
 import { CartRepository } from '../domain/ports/CartRepository';
 import { CatalogSnapshotProvider } from '../domain/ports/CatalogSnapshotProvider';
 import { CartEventPublisher } from '../domain/ports/CartEventPublisher';

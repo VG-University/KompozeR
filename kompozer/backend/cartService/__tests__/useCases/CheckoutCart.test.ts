@@ -1,3 +1,6 @@
+/**
+ * Unit tests for CheckoutCart use case.
+ */
 import { CheckoutCart } from '../../src/useCases/CheckoutCart';
 import {
   CartEmptyError,

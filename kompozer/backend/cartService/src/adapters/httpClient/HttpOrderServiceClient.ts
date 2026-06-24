@@ -1,3 +1,6 @@
+/**
+ * HTTP adapter that submits checkout payloads to orderService.
+ */
 import http from 'http';
 import https from 'https';
 import { URL } from 'url';

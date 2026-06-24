@@ -1,3 +1,7 @@
+/**
+ * Redis subscriber for catalog availability events.
+ * Triggers restoration flow when an unavailable SKU becomes available again.
+ */
 import Redis from 'ioredis';
 import { CatalogEvent } from '../../../domain/entities/CatalogEvent';
 import { RestoreUnavailableItems } from '../../../useCases/RestoreUnavailableItems';

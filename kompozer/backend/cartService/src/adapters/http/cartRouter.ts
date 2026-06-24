@@ -1,3 +1,8 @@
+/**
+ * Express router for cart endpoints.
+ * Requires X-User-Id for all stateful cart operations and delegates
+ * business logic to use cases.
+ */
 import { Router, Request, Response, NextFunction } from 'express';
 import { GetCart } from '../../useCases/GetCart';
 import { UpsertCartItem } from '../../useCases/UpsertCartItem';

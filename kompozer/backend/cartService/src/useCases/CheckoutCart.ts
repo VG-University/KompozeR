@@ -1,3 +1,7 @@
+/**
+ * Use case for cart checkout.
+ * Revalidates price/availability against catalog, submits order, and clears cart.
+ */
 import {
   CartEmptyError,
   CartItemUnavailableError,

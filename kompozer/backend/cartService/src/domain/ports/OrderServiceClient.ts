@@ -1,3 +1,6 @@
+/**
+ * Domain port for submitting orders during checkout.
+ */
 import { CartItem } from '../entities/Cart';
 
 export interface SubmitOrderInput {

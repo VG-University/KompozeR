@@ -1,3 +1,6 @@
+/**
+ * Use case for clearing all items in a user cart.
+ */
 import { CartRepository } from '../domain/ports/CartRepository';
 import { CartEvent } from '../domain/entities/CartEvent';
 import { CartEventPublisher } from '../domain/ports/CartEventPublisher';

@@ -1,3 +1,6 @@
+/**
+ * Unit tests for SyncCart use case.
+ */
 import { UpsertCartItem } from '../../src/useCases/UpsertCartItem';
 import { SyncCart } from '../../src/useCases/SyncCart';
 import {

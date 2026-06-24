@@ -1,3 +1,6 @@
+/**
+ * Domain port for reading item availability/price snapshots from catalog.
+ */
 export interface CatalogItemSnapshot {
   sku: string;
   unitPrice: number;

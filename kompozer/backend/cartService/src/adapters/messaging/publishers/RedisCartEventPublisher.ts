@@ -1,3 +1,6 @@
+/**
+ * Redis Pub/Sub implementation of CartEventPublisher.
+ */
 import Redis from 'ioredis';
 import { CartEvent } from '../../../domain/entities/CartEvent';
 import { CartEventPublisher } from '../../../domain/ports/CartEventPublisher';

@@ -1,3 +1,6 @@
+/**
+ * In-memory fake adapters for cartService tests.
+ */
 import { Cart } from '../../src/domain/entities/Cart';
 import { CartEvent } from '../../src/domain/entities/CartEvent';
 import { CatalogItemSnapshot, CatalogSnapshotProvider } from '../../src/domain/ports/CatalogSnapshotProvider';

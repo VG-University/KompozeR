@@ -1,3 +1,6 @@
+/**
+ * Domain error hierarchy for cartService.
+ */
 export class CartError extends Error {
   constructor(
     public readonly code: string,

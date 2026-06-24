@@ -1,3 +1,6 @@
+/**
+ * Unit tests for RemoveCartItem use case.
+ */
 import { RemoveCartItem } from '../../src/useCases/RemoveCartItem';
 import { UpsertCartItem } from '../../src/useCases/UpsertCartItem';
 import { FakeCartEventPublisher, FakeCartRepository } from '../helpers/fakes';

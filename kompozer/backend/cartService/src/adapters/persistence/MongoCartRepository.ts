@@ -1,3 +1,6 @@
+/**
+ * MongoDB implementation of CartRepository.
+ */
 import { Cart } from '../../domain/entities/Cart';
 import { CartRepository } from '../../domain/ports/CartRepository';
 import { CartModel } from './schemas/cartSchema';

@@ -1,3 +1,6 @@
+/**
+ * Mongoose schema definitions for carts collection.
+ */
 import { Schema, model } from 'mongoose';
 
 type CartItemDoc = {

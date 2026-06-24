@@ -1,3 +1,7 @@
+/**
+ * Use case for synchronizing cart with catalog snapshots.
+ * Clears cart when any item becomes unavailable, otherwise updates stale prices.
+ */
 import { Cart, computeLineTotal, computeCartTotal } from '../domain/entities/Cart';
 import { CartEvent } from '../domain/entities/CartEvent';
 import { CartEventPublisher } from '../domain/ports/CartEventPublisher';

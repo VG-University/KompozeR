@@ -1,3 +1,6 @@
+/**
+ * Unit tests for ClearCart use case.
+ */
 import { ClearCart } from '../../src/useCases/ClearCart';
 import { UpsertCartItem } from '../../src/useCases/UpsertCartItem';
 import { FakeCartEventPublisher, FakeCartRepository } from '../helpers/fakes';

@@ -1,3 +1,6 @@
+/**
+ * Use case that restores previously removed cart items once catalog availability returns.
+ */
 import { CartItem, computeCartTotal, computeLineTotal } from '../domain/entities/Cart';
 import { CatalogSnapshotProvider } from '../domain/ports/CatalogSnapshotProvider';
 import { CartEventPublisher } from '../domain/ports/CartEventPublisher';

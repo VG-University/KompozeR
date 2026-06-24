@@ -1,3 +1,6 @@
+/**
+ * Unit tests for UpsertCartItem use case.
+ */
 import { UpsertCartItem } from '../../src/useCases/UpsertCartItem';
 import { ValidationError } from '../../src/domain/entities/errors';
 import { FakeCartEventPublisher, FakeCartRepository } from '../helpers/fakes';

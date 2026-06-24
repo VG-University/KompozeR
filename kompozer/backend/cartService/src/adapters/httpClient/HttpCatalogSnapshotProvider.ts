@@ -1,3 +1,6 @@
+/**
+ * HTTP adapter that fetches product availability/price snapshots from catalogService.
+ */
 import http from 'http';
 import https from 'https';
 import { URL } from 'url';

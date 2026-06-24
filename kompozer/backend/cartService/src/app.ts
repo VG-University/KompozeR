@@ -1,3 +1,8 @@
+/**
+ * cartService composition root.
+ * Wires concrete adapters (Mongo, HTTP clients, Redis publisher/subscriber)
+ * to use cases and mounts the HTTP router.
+ */
 import express from 'express';
 import cors from 'cors';
 import Redis from 'ioredis';

@@ -1,3 +1,7 @@
+/**
+ * Use case for removing a SKU from cart.
+ * If item existed, publishes ItemRemovedFromCart.
+ */
 import { computeCartTotal } from '../domain/entities/Cart';
 import { CartEvent } from '../domain/entities/CartEvent';
 import { CartEventPublisher } from '../domain/ports/CartEventPublisher';

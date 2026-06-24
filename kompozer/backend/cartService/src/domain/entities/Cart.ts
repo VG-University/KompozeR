@@ -1,3 +1,6 @@
+/**
+ * Core cart domain model and total computation helpers.
+ */
 export interface CartItem {
   sku: string;
   name: string;

@@ -1,3 +1,6 @@
+/**
+ * HTTP-level test coverage for cart router endpoints.
+ */
 import express from 'express';
 import request from 'supertest';
 import { buildCartRouter } from '../../src/adapters/http/cartRouter';

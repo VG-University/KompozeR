@@ -1,3 +1,6 @@
+/**
+ * Input/output contracts for cartService use cases.
+ */
 import { CartItem } from '../domain/entities/Cart';
 
 export interface GetCartInput {

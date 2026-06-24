@@ -1,3 +1,7 @@
+/**
+ * Maps domain CartError instances to HTTP JSON responses.
+ * Unknown errors are masked as INTERNAL_ERROR.
+ */
 import { Request, Response, NextFunction } from 'express';
 import { CartError } from '../../domain/entities/errors';
 

@@ -1,3 +1,6 @@
+/**
+ * Unit tests for RedisCartEventPublisher adapter.
+ */
 import { CART_EVENTS_CHANNEL, RedisCartEventPublisher } from '../../../src/adapters/messaging/publishers/RedisCartEventPublisher';
 import { CartEvent } from '../../../src/domain/entities/CartEvent';
 

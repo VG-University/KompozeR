@@ -1,3 +1,6 @@
+/**
+ * Unit tests for RestoreUnavailableItems use case.
+ */
 import { RestoreUnavailableItems } from '../../src/useCases/RestoreUnavailableItems';
 import { SyncCart } from '../../src/useCases/SyncCart';
 import { UpsertCartItem } from '../../src/useCases/UpsertCartItem';
