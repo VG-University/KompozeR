@@ -27,10 +27,12 @@ export interface CadRouterDeps {
   reorderConfiguration: ReorderConfiguration;
 }
 
+/** Wraps async handlers and forwards rejections to Express error middleware. */
 function wrap(fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) {
   return (req: Request, res: Response, next: NextFunction) => fn(req, res, next).catch(next);
 }
 
+/** Enforces gateway-propagated user identity for all protected CAD routes. */
 function requireUserId(req: Request, res: Response, next: NextFunction): void {
   const ownerId = req.headers['x-user-id'];
   if (!ownerId || typeof ownerId !== 'string') {
@@ -47,6 +49,7 @@ function requireUserId(req: Request, res: Response, next: NextFunction): void {
   next();
 }
 
+/** Parses category aliases accepted by the public API payload shape. */
 function parseCategory(body: unknown): Category | null | undefined {
   if (!body || typeof body !== 'object') {
     return undefined;
@@ -80,6 +83,7 @@ function parseCategory(body: unknown): Category | null | undefined {
   return undefined;
 }
 
+/** Parses and validates environment payload. */
 function parseEnvironment(body: unknown): Environment {
   if (!body || typeof body !== 'object') {
     throw new ValidationError('environment payload is required');
@@ -109,6 +113,7 @@ function parseEnvironment(body: unknown): Environment {
   };
 }
 
+/** Parses and validates column plan payload. */
 function parseColumnPlan(body: unknown): ColumnPlan {
   if (!body || typeof body !== 'object') {
     throw new ValidationError('columnPlan payload is required');
@@ -147,6 +152,7 @@ function parseColumnPlan(body: unknown): ColumnPlan {
   return { columnCount, columns };
 }
 
+/** Parses and validates design payload as a full column snapshot. */
 function parseColumnDesigns(body: unknown): ColumnDesign[] {
   if (!body || typeof body !== 'object') {
     throw new ValidationError('design payload is required');
@@ -184,6 +190,7 @@ function parseColumnDesigns(body: unknown): ColumnDesign[] {
   });
 }
 
+/** Builds the HTTP router exposing CAD workflow endpoints. */
 export function buildCadRouter(deps: CadRouterDeps): Router {
   const router = Router();
 

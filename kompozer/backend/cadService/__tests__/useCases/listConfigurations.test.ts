@@ -1,6 +1,7 @@
 import { ListConfigurations } from '../../src/useCases/read/ListConfigurations';
 import { FakeConfigurationRepository, buildConfiguration } from '../helpers/fakes';
 
+/** Unit tests for pagination/filter logic of configuration listing use case. */
 describe('ListConfigurations', () => {
   it('returns only owner configurations ordered by updatedAt desc', async () => {
     const repo = new FakeConfigurationRepository();

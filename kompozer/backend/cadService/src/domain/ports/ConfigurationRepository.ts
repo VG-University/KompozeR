@@ -1,5 +1,6 @@
 import { Configuration } from '../entities/Configuration';
 
+/** Persistence contract for CAD configurations. */
 export interface ConfigurationRepository {
   save(configuration: Configuration): Promise<void>;
   findById(id: string): Promise<Configuration | null>;

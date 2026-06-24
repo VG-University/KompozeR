@@ -27,6 +27,7 @@ export interface CatalogRules {
   defaultTerminal: CatalogComponentRule | null;
 }
 
+/** Read-only contract for resolving catalog rules required by CAD validation and BOM logic. */
 export interface CatalogRulesProvider {
   getRules(category: Category): Promise<CatalogRules>;
 }

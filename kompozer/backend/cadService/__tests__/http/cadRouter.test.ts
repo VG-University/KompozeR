@@ -8,6 +8,7 @@ import {
   buildCatalogRules,
 } from '../helpers/fakes';
 
+/** Integration-style tests for CAD HTTP routes and workflow transitions. */
 describe('cadRouter', () => {
   it('GET /health -> 200', async () => {
     const app = buildApp({

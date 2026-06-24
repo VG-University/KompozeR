@@ -18,6 +18,7 @@ function sumByType(bom: BomItem[]): Record<string, number> {
   return result;
 }
 
+/** Unit tests for BOM derivation from validated CAD configurations. */
 describe('deriveBom', () => {
   it('single column: counts shelves and shared-spine components correctly', () => {
     const cfg = buildConfiguration({

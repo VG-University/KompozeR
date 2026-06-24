@@ -44,6 +44,9 @@ export interface Configuration {
   updatedAt: Date;
 }
 
+/**
+ * Validates the aggregate invariants enforced at domain level.
+ */
 export function validateConfigurationModel(configuration: Configuration): void {
   if (!configuration.id.trim()) {
     throw new ValidationError('Configuration id is required');

@@ -11,6 +11,7 @@ import {
   toConfigurationDto,
 } from '../types';
 
+/** Write use case that starts a new draft configuration for one owner. */
 export class CreateConfiguration {
   constructor(private readonly configurationRepository: ConfigurationRepository) {}
 

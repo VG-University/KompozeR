@@ -8,4 +8,5 @@ export const CONFIGURATION_STATUSES = [
   'FINALIZED',
 ] as const;
 
+/** Lifecycle states for CAD configuration workflow steps. */
 export type ConfigurationStatus = (typeof CONFIGURATION_STATUSES)[number];

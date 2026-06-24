@@ -9,6 +9,7 @@ import { ConfigurationStatus } from '../domain/entities/ConfigurationStatus';
 import { BomItem } from '../domain/entities/Bom';
 import { SpineReasonCode } from '../domain/services/SpineModel';
 
+/** Input payload for draft configuration creation. */
 export interface CreateConfigurationInput {
   ownerId: string;
   name?: string;
@@ -30,6 +31,7 @@ export interface ConfigurationDto {
   bom?: BomItem[];
 }
 
+/** Input payload for loading one configuration. */
 export interface GetConfigurationInput {
   id: string;
   ownerId: string;
@@ -42,6 +44,7 @@ export interface ListConfigurationsInput {
   limit?: number;
 }
 
+/** Paginated response for configuration listing endpoint. */
 export interface ListConfigurationsOutput {
   items: ConfigurationDto[];
   total: number;
@@ -50,35 +53,41 @@ export interface ListConfigurationsOutput {
   totalPages: number;
 }
 
+/** Input payload for environment update step. */
 export interface SetEnvironmentInput {
   id: string;
   ownerId: string;
   environment: Environment;
 }
 
+/** Input payload for category selection step. */
 export interface SetCategoryInput {
   id: string;
   ownerId: string;
   category: Category;
 }
 
+/** Input payload for column-plan step. */
 export interface SetColumnPlanInput {
   id: string;
   ownerId: string;
   columnPlan: ColumnPlan;
 }
 
+/** Input payload for full design snapshot update. */
 export interface UpdateDesignInput {
   id: string;
   ownerId: string;
   columnDesigns: ColumnDesign[];
 }
 
+/** Input payload for finalize step. */
 export interface FinalizeConfigurationInput {
   id: string;
   ownerId: string;
 }
 
+/** Input payload for next-options computation. */
 export interface ListNextOptionsInput {
   id: string;
   ownerId: string;
@@ -87,6 +96,7 @@ export interface ListNextOptionsInput {
 
 export type NextOptionReasonCode = SpineReasonCode | 'INVALID_GAP' | 'SPINE_CONFLICT';
 
+/** Candidate gap option returned for one design column. */
 export interface NextOptionDto {
   heightMm: number;
   allowed: boolean;
@@ -94,6 +104,7 @@ export interface NextOptionDto {
   reason?: string;
 }
 
+/** Output payload for next-options endpoint. */
 export interface ListNextOptionsOutput {
   columnIndex: number;
   options: NextOptionDto[];
@@ -101,6 +112,7 @@ export interface ListNextOptionsOutput {
   version: number;
 }
 
+/** Maps a domain aggregate into the API DTO shape. */
 export function toConfigurationDto(configuration: Configuration): ConfigurationDto {
   return {
     id: configuration.id,

@@ -12,6 +12,7 @@ import {
   toConfigurationDto,
 } from '../types';
 
+/** Write use case that validates and stores the selected column layout. */
 export class SetColumnPlan {
   constructor(
     private readonly configurationRepository: ConfigurationRepository,

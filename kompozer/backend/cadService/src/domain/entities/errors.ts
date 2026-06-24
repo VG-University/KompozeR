@@ -1,3 +1,4 @@
+/** Base class for all CAD domain/application errors exposed by the service. */
 export class CadError extends Error {
   constructor(
     public readonly code: string,
@@ -8,18 +9,21 @@ export class CadError extends Error {
   }
 }
 
+/** Raised when a request payload or domain state is invalid. */
 export class ValidationError extends CadError {
   constructor(message: string) {
     super('VALIDATION_ERROR', message);
   }
 }
 
+/** Raised when a requested configuration/resource cannot be found. */
 export class ResourceNotFoundError extends CadError {
   constructor(message: string) {
     super('RESOURCE_NOT_FOUND', message);
   }
 }
 
+/** Raised when an operation conflicts with current state or external systems. */
 export class ResourceConflictError extends CadError {
   constructor(message: string) {
     super('RESOURCE_CONFLICT', message);

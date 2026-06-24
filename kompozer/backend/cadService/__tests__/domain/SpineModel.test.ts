@@ -8,6 +8,9 @@ import {
   validateSpine,
 } from "../../src/domain/services/SpineModel";
 
+/**
+ * Unit tests for spine geometry helpers used by design validation and BOM derivation.
+ */
 describe("SpineModel", () => {
   const rules = {
     footHeightsMm: [80, 180],

@@ -22,6 +22,7 @@ export interface ListConfigurationsOutput {
   totalPages: number;
 }
 
+/** Read use case that lists owned configurations with optional status filtering. */
 export class ListConfigurations {
   constructor(private readonly configurationRepository: ConfigurationRepository) {}
 

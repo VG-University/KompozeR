@@ -13,6 +13,9 @@ import {
   toConfigurationDto,
 } from '../types';
 
+/**
+ * Write use case that finalizes a configuration and synchronizes its BOM externally.
+ */
 export class FinalizeConfiguration {
   constructor(
     private readonly configurationRepository: ConfigurationRepository,

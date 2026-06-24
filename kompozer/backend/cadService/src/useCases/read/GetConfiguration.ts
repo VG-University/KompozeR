@@ -11,6 +11,7 @@ import {
 } from '../../domain/entities/errors';
 import { deriveBom } from '../../domain/services/deriveBom';
 
+/** Read use case that returns one owned configuration by id. */
 export class GetConfiguration {
   constructor(
     private readonly configurationRepository: ConfigurationRepository,

@@ -11,6 +11,7 @@ import {
   toConfigurationDto,
 } from '../types';
 
+/** Write use case that sets system category after environment selection. */
 export class SetCategory {
   constructor(private readonly configurationRepository: ConfigurationRepository) {}
 

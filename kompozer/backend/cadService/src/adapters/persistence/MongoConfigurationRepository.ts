@@ -9,6 +9,7 @@ import {
   ConfigurationModel,
 } from './schemas/configurationSchema';
 
+/** MongoDB repository implementation for CAD configurations. */
 export class MongoConfigurationRepository implements ConfigurationRepository {
   async save(configuration: Configuration): Promise<void> {
     validateConfigurationModel(configuration);
@@ -51,6 +52,7 @@ export class MongoConfigurationRepository implements ConfigurationRepository {
     }
   }
 
+  /** Maps a persistence document into domain aggregate shape. */
   private toEntity(doc: ConfigurationDoc): Configuration {
     return {
       id: doc._id,
@@ -68,6 +70,7 @@ export class MongoConfigurationRepository implements ConfigurationRepository {
     };
   }
 
+  /** Maps a domain aggregate into the MongoDB document shape. */
   private toDoc(configuration: Configuration): ConfigurationDoc {
     return {
       _id: configuration.id,

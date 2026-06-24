@@ -7,6 +7,9 @@ const CODE_TO_STATUS: Record<string, number> = {
   RESOURCE_CONFLICT: 409,
 };
 
+/**
+ * Maps domain errors to API responses and handles unexpected failures.
+ */
 export function errorMiddleware(
   err: unknown,
   _req: Request,

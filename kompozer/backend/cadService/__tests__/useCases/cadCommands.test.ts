@@ -16,6 +16,7 @@ import {
   buildConfiguration,
 } from '../helpers/fakes';
 
+/** Unit tests covering command-side CAD workflow use cases. */
 describe('CAD command use cases', () => {
   it('CreateConfiguration creates a draft step-based configuration', async () => {
     const repo = new FakeConfigurationRepository();

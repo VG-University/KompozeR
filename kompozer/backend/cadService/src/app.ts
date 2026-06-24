@@ -21,6 +21,12 @@ import { SetColumnPlan } from './useCases/write/SetColumnPlan';
 import { SetEnvironment } from './useCases/write/SetEnvironment';
 import { UpdateDesign } from './useCases/write/UpdateDesign';
 
+/**
+ * Optional dependency overrides used to build the CAD HTTP application.
+ *
+ * Tests provide fakes through this object, while production relies on
+ * the default Mongo/HTTP implementations created inside buildApp.
+ */
 export interface BuildAppDeps {
   configurationRepository?: ConfigurationRepository;
   catalogRulesProvider?: CatalogRulesProvider;
@@ -28,6 +34,9 @@ export interface BuildAppDeps {
   notificationSubscriptionClient?: NotificationSubscriptionClient;
 }
 
+/**
+ * Composes and configures the CAD service Express application.
+ */
 export function buildApp(deps: BuildAppDeps = {}) {
   const configurationRepository = deps.configurationRepository ?? new MongoConfigurationRepository();
   const catalogRulesProvider = deps.catalogRulesProvider

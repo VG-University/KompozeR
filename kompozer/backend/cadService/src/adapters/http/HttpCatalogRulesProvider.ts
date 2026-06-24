@@ -26,6 +26,9 @@ interface CatalogListResponse {
   items: CatalogListItem[];
 }
 
+/**
+ * HTTP adapter that loads catalog components and transforms them into CAD rules.
+ */
 export class HttpCatalogRulesProvider implements CatalogRulesProvider {
   constructor(
     private readonly catalogBaseUrl: string,
@@ -131,6 +134,7 @@ export class HttpCatalogRulesProvider implements CatalogRulesProvider {
     throw new ValidationError('Catalog returned an unknown component type');
   }
 
+  /** Performs a GET request and parses JSON with timeout/error handling. */
   private getJson<T>(url: URL): Promise<T> {
     const client = url.protocol === 'https:' ? https : http;
 
@@ -171,6 +175,7 @@ export class HttpCatalogRulesProvider implements CatalogRulesProvider {
   }
 }
 
+/** Returns sorted unique numeric values from an input list. */
 function uniqueSorted(values: number[]): number[] {
   return [...new Set(values)].sort((a, b) => a - b);
 }

@@ -8,6 +8,7 @@ import { CartServiceClient } from '../../src/domain/ports/CartServiceClient';
 import { NotificationSubscriptionClient } from '../../src/domain/ports/NotificationSubscriptionClient';
 import { ConfigurationRepository } from '../../src/domain/ports/ConfigurationRepository';
 
+/** In-memory repository fake used by CAD unit tests. */
 export class FakeConfigurationRepository implements ConfigurationRepository {
   private readonly store = new Map<string, Configuration>();
 
@@ -55,6 +56,7 @@ export class FakeConfigurationRepository implements ConfigurationRepository {
   }
 }
 
+/** Builds a baseline configuration aggregate for test scenarios. */
 export function buildConfiguration(overrides: Partial<Configuration> = {}): Configuration {
   const now = new Date('2026-06-10T10:00:00.000Z');
   return {
@@ -74,6 +76,7 @@ export function buildConfiguration(overrides: Partial<Configuration> = {}): Conf
   };
 }
 
+/** Catalog-rules provider fake returning deterministic in-memory rules. */
 export class FakeCatalogRulesProvider implements CatalogRulesProvider {
   constructor(private readonly rules: CatalogRules = buildCatalogRules()) {}
 
@@ -91,6 +94,7 @@ export class FakeCatalogRulesProvider implements CatalogRulesProvider {
   }
 }
 
+/** Cart client fake collecting push calls for assertions. */
 export class FakeCartServiceClient implements CartServiceClient {
   readonly calls: Array<{ ownerId: string; items: BomItem[] }> = [];
 
@@ -99,6 +103,7 @@ export class FakeCartServiceClient implements CartServiceClient {
   }
 }
 
+/** Notification client fake collecting subscription calls for assertions. */
 export class FakeNotificationSubscriptionClient implements NotificationSubscriptionClient {
   readonly calls: Array<{ ownerId: string; sku: string }> = [];
 
@@ -107,6 +112,7 @@ export class FakeNotificationSubscriptionClient implements NotificationSubscript
   }
 }
 
+/** Builds default catalog rules and allows selective overrides for tests. */
 export function buildCatalogRules(overrides: Partial<CatalogRules> = {}): CatalogRules {
   const shelfMap = new Map([
     [600,  { type: 'RIPIANO' as const, sku: 'RIP-600', name: 'Ripiano 600', priceCents: 2990, widthMm: 600,  heightMm: 20, depthMm: 300 }],

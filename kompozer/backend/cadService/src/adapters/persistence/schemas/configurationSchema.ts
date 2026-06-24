@@ -50,6 +50,7 @@ export type ConfigurationDoc = {
   updatedAt: Date;
 };
 
+/** Embedded schema for environment constraints. */
 const environmentSchema = new Schema<EnvironmentDoc>(
   {
     maxWidthMm: { type: Number, required: true },
@@ -61,6 +62,7 @@ const environmentSchema = new Schema<EnvironmentDoc>(
   { _id: false },
 );
 
+/** Embedded schema for a single planned column. */
 const columnPlanItemSchema = new Schema<ColumnPlanItemDoc>(
   {
     index: { type: Number, required: true },
@@ -69,6 +71,7 @@ const columnPlanItemSchema = new Schema<ColumnPlanItemDoc>(
   { _id: false },
 );
 
+/** Embedded schema for overall column plan. */
 const columnPlanSchema = new Schema<ColumnPlanDoc>(
   {
     columnCount: { type: Number, required: true },
@@ -77,6 +80,7 @@ const columnPlanSchema = new Schema<ColumnPlanDoc>(
   { _id: false },
 );
 
+/** Embedded schema for per-column design levels. */
 const columnDesignSchema = new Schema<ColumnDesignDoc>(
   {
     columnIndex: { type: Number, required: true },
@@ -86,6 +90,7 @@ const columnDesignSchema = new Schema<ColumnDesignDoc>(
   { _id: false },
 );
 
+/** Embedded schema for persisted BOM line items. */
 const bomItemSchema = new Schema<BomItemDoc>(
   {
     sku: { type: String, required: true },
@@ -97,6 +102,7 @@ const bomItemSchema = new Schema<BomItemDoc>(
   { _id: false },
 );
 
+/** Root schema for CAD configurations collection. */
 const configurationSchema = new Schema<ConfigurationDoc>(
   {
     _id: { type: String, required: true },

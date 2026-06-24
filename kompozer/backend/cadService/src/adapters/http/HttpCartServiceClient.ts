@@ -5,6 +5,7 @@ import { BomItem } from '../../domain/entities/Bom';
 import { ResourceConflictError } from '../../domain/entities/errors';
 import { CartServiceClient } from '../../domain/ports/CartServiceClient';
 
+/** HTTP adapter for pushing derived BOM items into cart service endpoints. */
 export class HttpCartServiceClient implements CartServiceClient {
   constructor(
     private readonly cartBaseUrl: string,
@@ -17,6 +18,7 @@ export class HttpCartServiceClient implements CartServiceClient {
     }
   }
 
+  /** Upserts a single BOM line item into the user's cart. */
   private upsertItem(ownerId: string, item: BomItem): Promise<void> {
     const url = new URL(`/cart/items/${encodeURIComponent(item.sku)}`, this.cartBaseUrl);
     const body = JSON.stringify({

@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
 import { buildApp } from './app';
 
+/** HTTP listening port for the CAD service. */
 const PORT = Number(process.env['CAD_PORT'] ?? process.env['PORT']) || 3002;
+/** Mongo connection string for CAD persistence. */
 const MONGO_URI = process.env['CAD_MONGO_URI'] ?? process.env['MONGO_URI'] ?? 'mongodb://localhost:27017/kompozer-cad';
 
 const app = buildApp();

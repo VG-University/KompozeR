@@ -4,6 +4,7 @@ import { URL } from 'url';
 import { ResourceConflictError } from '../../domain/entities/errors';
 import { NotificationSubscriptionClient } from '../../domain/ports/NotificationSubscriptionClient';
 
+/** HTTP adapter that creates notification subscriptions for product availability. */
 export class HttpNotificationSubscriptionClient implements NotificationSubscriptionClient {
   constructor(
     private readonly notificationBaseUrl: string,

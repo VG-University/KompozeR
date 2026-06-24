@@ -11,6 +11,7 @@ import {
   toConfigurationDto,
 } from '../types';
 
+/** Write use case that sets environment boundaries and resets dependent steps. */
 export class SetEnvironment {
   constructor(private readonly configurationRepository: ConfigurationRepository) {}
 
