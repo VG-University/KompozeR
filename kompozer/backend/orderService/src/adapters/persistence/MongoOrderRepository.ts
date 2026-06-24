@@ -1,3 +1,6 @@
+/**
+ * MongoDB implementation of OrderRepository.
+ */
 import { Order } from '../../domain/entities/Order';
 import { OrderRepository } from '../../domain/ports/OrderRepository';
 import { OrderModel } from './schemas/orderSchema';

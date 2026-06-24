@@ -1,3 +1,7 @@
+/**
+ * Use case for listing orders.
+ * ADMIN can list all orders, non-admin users list only owned orders.
+ */
 import { ValidationError } from '../domain/entities/errors';
 import { OrderRepository } from '../domain/ports/OrderRepository';
 import { ListOrdersInput, OrderDto, toOrderDto } from './types';

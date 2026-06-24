@@ -1,3 +1,6 @@
+/**
+ * Core order domain model.
+ */
 export type OrderStatus = 'SUBMITTED' | 'DONE' | 'CANCELLED';
 
 export interface OrderItem {

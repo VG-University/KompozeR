@@ -1,3 +1,6 @@
+/**
+ * In-memory fake implementations for orderService tests.
+ */
 import { Order } from '../../src/domain/entities/Order';
 import { OrderRepository } from '../../src/domain/ports/OrderRepository';
 

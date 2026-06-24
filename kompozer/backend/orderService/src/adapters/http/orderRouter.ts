@@ -1,3 +1,7 @@
+/**
+ * Express router for order endpoints.
+ * Enforces identity/role headers and delegates business rules to use cases.
+ */
 import { NextFunction, Request, Response, Router } from 'express';
 import { CancelOrder } from '../../useCases/CancelOrder';
 import { CreateOrder } from '../../useCases/CreateOrder';

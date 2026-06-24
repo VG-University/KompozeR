@@ -1,3 +1,6 @@
+/**
+ * Unit tests for UpdateOrderStatus use case.
+ */
 import { CreateOrder } from '../../src/useCases/CreateOrder';
 import { UpdateOrderStatus } from '../../src/useCases/UpdateOrderStatus';
 import {

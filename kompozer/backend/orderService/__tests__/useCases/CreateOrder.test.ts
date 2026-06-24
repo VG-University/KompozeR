@@ -1,3 +1,6 @@
+/**
+ * Unit tests for CreateOrder use case.
+ */
 import { CreateOrder } from '../../src/useCases/CreateOrder';
 import { ValidationError } from '../../src/domain/entities/errors';
 import { FakeOrderRepository } from '../helpers/fakes';

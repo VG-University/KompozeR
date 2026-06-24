@@ -1,3 +1,6 @@
+/**
+ * Unit tests for CancelOrder use case.
+ */
 import { CancelOrder } from '../../src/useCases/CancelOrder';
 import { CreateOrder } from '../../src/useCases/CreateOrder';
 import {

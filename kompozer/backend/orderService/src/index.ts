@@ -1,3 +1,8 @@
+/**
+ * orderService entrypoint.
+ * Reads runtime configuration, connects to MongoDB,
+ * and starts the HTTP server.
+ */
 import mongoose from 'mongoose';
 import { buildApp } from './app';
 

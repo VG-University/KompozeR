@@ -1,3 +1,6 @@
+/**
+ * Domain error hierarchy for orderService.
+ */
 export class OrderError extends Error {
   constructor(
     public readonly code: string,

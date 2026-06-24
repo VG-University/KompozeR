@@ -1,3 +1,6 @@
+/**
+ * Input/output contracts for orderService use cases.
+ */
 import { Order, OrderItem, OrderStatus } from '../domain/entities/Order';
 
 export interface OrderDto {

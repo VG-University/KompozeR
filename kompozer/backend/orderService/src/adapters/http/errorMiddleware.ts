@@ -1,3 +1,7 @@
+/**
+ * Maps OrderError domain exceptions to HTTP JSON responses.
+ * Unknown errors are exposed as INTERNAL_ERROR.
+ */
 import { NextFunction, Request, Response } from 'express';
 import { OrderError } from '../../domain/entities/errors';
 

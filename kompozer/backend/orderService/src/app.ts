@@ -1,3 +1,8 @@
+/**
+ * orderService composition root.
+ * Wires concrete repository and use cases, mounts HTTP routes,
+ * and configures middleware.
+ */
 import cors from 'cors';
 import express from 'express';
 import { buildOrderRouter } from './adapters/http/orderRouter';

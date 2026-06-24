@@ -1,3 +1,6 @@
+/**
+ * Use case for retrieving a single order owned by the requesting user.
+ */
 import { ForbiddenError, OrderNotFoundError, ValidationError } from '../domain/entities/errors';
 import { OrderRepository } from '../domain/ports/OrderRepository';
 import { GetOrderInput, OrderDto, toOrderDto } from './types';

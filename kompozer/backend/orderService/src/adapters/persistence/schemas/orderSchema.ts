@@ -1,3 +1,6 @@
+/**
+ * Mongoose schema definitions for orders collection.
+ */
 import { Schema, model } from 'mongoose';
 
 export type OrderDoc = {

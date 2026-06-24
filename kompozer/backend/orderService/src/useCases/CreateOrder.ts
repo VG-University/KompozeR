@@ -1,3 +1,6 @@
+/**
+ * Use case for creating a new order in SUBMITTED state.
+ */
 import { randomUUID } from 'crypto';
 import { Order } from '../domain/entities/Order';
 import { ValidationError } from '../domain/entities/errors';

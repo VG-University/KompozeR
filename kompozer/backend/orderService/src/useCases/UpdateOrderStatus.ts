@@ -1,3 +1,7 @@
+/**
+ * Use case for transitioning order status to DONE.
+ * Accepts only SUBMITTED -> DONE transition.
+ */
 import {
   OrderAlreadyCancelledError,
   OrderAlreadyDoneError,

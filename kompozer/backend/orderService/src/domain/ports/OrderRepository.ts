@@ -1,3 +1,6 @@
+/**
+ * Domain port for order persistence.
+ */
 import { Order } from '../entities/Order';
 
 export interface OrderRepository {

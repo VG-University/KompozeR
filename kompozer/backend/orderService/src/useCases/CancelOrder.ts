@@ -1,3 +1,7 @@
+/**
+ * Use case for cancelling an order.
+ * Allowed for owner or ADMIN when order is still SUBMITTED.
+ */
 import {
   ForbiddenError,
   OrderAlreadyCancelledError,

@@ -1,3 +1,6 @@
+/**
+ * HTTP-level test coverage for order router endpoints.
+ */
 import express from 'express';
 import request from 'supertest';
 import { buildOrderRouter } from '../../src/adapters/http/orderRouter';
