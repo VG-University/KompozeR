@@ -9,6 +9,7 @@ import { ListSessionMessages } from '../../src/useCases/ListSessionMessages';
 import { SendSessionMessage } from '../../src/useCases/SendSessionMessage';
 import { FakeCatalogQaProvider, FakeChatRepository } from '../helpers/fakes';
 
+/** Integration-style tests for chatbot REST routes. */
 function buildTestApp() {
   const repo = new FakeChatRepository();
   const catalog = new FakeCatalogQaProvider();

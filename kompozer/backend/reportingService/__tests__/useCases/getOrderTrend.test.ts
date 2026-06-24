@@ -2,6 +2,7 @@ import { DailyOrderTrendPoint, OrderTrendReader } from '../../src/domain/ports/O
 import { ValidationError } from '../../src/domain/entities/errors';
 import { GetOrderTrend } from '../../src/useCases/GetOrderTrend';
 
+/** Unit tests for order trend aggregation and range validation. */
 class FakeOrderTrendReader implements OrderTrendReader {
   constructor(private readonly points: DailyOrderTrendPoint[]) {}
 

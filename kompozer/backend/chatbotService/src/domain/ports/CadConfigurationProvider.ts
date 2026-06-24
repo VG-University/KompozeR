@@ -1,3 +1,4 @@
+/** Snapshot returned by CAD lookups when the chatbot needs configuration context. */
 export interface CadConfigurationSnapshot {
   id: string;
   status: string;
@@ -8,6 +9,7 @@ export interface CadConfigurationSnapshot {
   componentCount: number;
 }
 
+/** Read-only contract for retrieving CAD configuration context. */
 export interface CadConfigurationProvider {
   getById(userId: string, configurationId: string): Promise<CadConfigurationSnapshot | null>;
 }

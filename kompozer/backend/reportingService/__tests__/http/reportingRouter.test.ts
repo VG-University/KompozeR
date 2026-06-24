@@ -2,6 +2,7 @@ import request from 'supertest';
 import { buildApp } from '../../src/app';
 import { DailyOrderTrendPoint, OrderTrendReader } from '../../src/domain/ports/OrderTrendReader';
 
+/** HTTP tests for reporting routes and authorization checks. */
 class FakeOrderTrendReader implements OrderTrendReader {
   async fetchDaily(fromInclusive: Date, toInclusive: Date): Promise<DailyOrderTrendPoint[]> {
     return [

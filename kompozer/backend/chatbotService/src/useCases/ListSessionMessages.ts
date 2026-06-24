@@ -2,6 +2,7 @@ import { ForbiddenError, SessionNotFoundError, ValidationError } from '../domain
 import { ChatRepository } from '../domain/ports/ChatRepository';
 import { ChatMessageDto, toMessageDto } from './types';
 
+/** Input required to list messages for one session. */
 export interface ListSessionMessagesInput {
   userId: string;
   sessionId: string;
@@ -11,6 +12,7 @@ export interface ListSessionMessagesOutput {
   items: ChatMessageDto[];
 }
 
+/** Lists all messages stored for one owned session. */
 export class ListSessionMessages {
   constructor(private readonly repo: ChatRepository) {}
 

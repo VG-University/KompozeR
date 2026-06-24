@@ -1,14 +1,17 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { GetOrderTrend } from '../../useCases/GetOrderTrend';
 
+/** Dependencies required by reporting HTTP routes. */
 export interface ReportingRouterDeps {
   getOrderTrend: GetOrderTrend;
 }
 
+/** Wraps async route handlers and forwards failures to Express. */
 function wrap(fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) {
   return (req: Request, res: Response, next: NextFunction) => fn(req, res, next).catch(next);
 }
 
+/** Requires the gateway-propagated user identity header. */
 function requireUserId(req: Request, res: Response, next: NextFunction): void {
   const userId = req.headers['x-user-id'];
   if (!userId || typeof userId !== 'string') {
@@ -24,6 +27,7 @@ function requireUserId(req: Request, res: Response, next: NextFunction): void {
   next();
 }
 
+/** Requires an ADMIN role for reporting endpoints. */
 function requireAdmin(req: Request, res: Response, next: NextFunction): void {
   const role = req.headers['x-user-role'];
   if (typeof role !== 'string' || role.toUpperCase() !== 'ADMIN') {
@@ -39,6 +43,7 @@ function requireAdmin(req: Request, res: Response, next: NextFunction): void {
   next();
 }
 
+/** Builds the reporting router. */
 export function buildReportingRouter(deps: ReportingRouterDeps): Router {
   const router = Router();
 

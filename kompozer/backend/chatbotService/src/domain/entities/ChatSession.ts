@@ -1,5 +1,6 @@
 export type ChatSessionStatus = 'ACTIVE' | 'CLOSED';
 
+/** Persistent session aggregate for chatbot conversations. */
 export interface ChatSession {
   id: string;
   userId: string;
@@ -11,6 +12,7 @@ export interface ChatSession {
 
 export type ChatMessageRole = 'USER' | 'BOT';
 
+/** Persistent message aggregate for chatbot conversations. */
 export interface ChatMessage {
   id: string;
   sessionId: string;

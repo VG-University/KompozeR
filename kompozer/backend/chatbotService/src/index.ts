@@ -3,12 +3,16 @@ import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import { buildApp } from './app';
 
+/** HTTP port used by the chatbot service. */
 const PORT = Number(process.env['CHATBOT_PORT'] ?? process.env['PORT']) || 3006;
+/** MongoDB connection string for chatbot persistence. */
 const MONGO_URI =
   process.env['CHAT_MONGO_URI'] ??
   process.env['MONGO_URI'] ??
   'mongodb://localhost:27017/kompozer-chatbot';
+/** Base URL for catalog lookup requests. */
 const CATALOG_BASE_URL = process.env['CATALOG_BASE_URL'] ?? 'http://catalog-service:3002';
+/** Base URL for CAD configuration lookups. */
 const CAD_BASE_URL = process.env['CAD_SERVICE_URL'] ?? 'http://cad-service:3003';
 
 const { app, deps } = buildApp({
@@ -23,6 +27,7 @@ const io = new SocketIOServer(httpServer, {
     origin: true,
     credentials: true,
   },
+  /** Keep polling enabled so gateway proxying remains simple. */
   // Polling works through API Gateway HTTP proxy without special upgrade wiring.
   transports: ['polling', 'websocket'],
 });

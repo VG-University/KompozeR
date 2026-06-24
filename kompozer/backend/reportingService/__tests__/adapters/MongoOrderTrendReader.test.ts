@@ -1,6 +1,7 @@
 import { OrderModel } from '../../src/adapters/persistence/schemas/orderSchema';
 import { MongoOrderTrendReader } from '../../src/adapters/persistence/MongoOrderTrendReader';
 
+/** Adapter tests for the Mongo order trend reader aggregation pipeline. */
 describe('MongoOrderTrendReader', () => {
   it('aggregates revenue excluding CANCELLED orders', async () => {
     const exec = jest.fn().mockResolvedValue([

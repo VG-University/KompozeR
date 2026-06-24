@@ -2,11 +2,13 @@ import { ForbiddenError, SessionClosedError, SessionNotFoundError, ValidationErr
 import { ChatRepository } from '../domain/ports/ChatRepository';
 import { ChatSessionDto, toSessionDto } from './types';
 
+/** Input required to close one chatbot session. */
 export interface CloseSessionInput {
   userId: string;
   sessionId: string;
 }
 
+/** Marks an owned session as closed. */
 export class CloseSession {
   constructor(private readonly repo: ChatRepository) {}
 

@@ -11,11 +11,13 @@ import { GetSession } from './useCases/GetSession';
 import { ListSessionMessages } from './useCases/ListSessionMessages';
 import { SendSessionMessage } from './useCases/SendSessionMessage';
 
+/** Optional dependency overrides used to assemble the chatbot HTTP app. */
 export interface ChatbotAppConfig {
   catalogBaseUrl?: string;
   cadBaseUrl?: string;
 }
 
+/** Builds the Express app and its use-case wiring for the chatbot service. */
 export function buildApp(config: ChatbotAppConfig = {}) {
   const repo = new MongoChatRepository();
   const catalog = new HttpCatalogQaProvider(config.catalogBaseUrl ?? 'http://catalog-service:3002');

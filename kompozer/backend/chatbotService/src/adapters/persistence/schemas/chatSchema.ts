@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 
+/** MongoDB document shape for chatbot sessions. */
 export type ChatSessionDoc = {
   _id: string;
   userId: string;
@@ -9,6 +10,7 @@ export type ChatSessionDoc = {
   updatedAt: Date;
 };
 
+/** Embedded schema for chatbot session persistence. */
 const chatSessionSchema = new Schema<ChatSessionDoc>(
   {
     _id: { type: String, required: true },
@@ -29,6 +31,7 @@ export const ChatSessionModel = model<ChatSessionDoc>(
   'chatSessions',
 );
 
+/** MongoDB document shape for chatbot messages. */
 export type ChatMessageDoc = {
   _id: string;
   sessionId: string;
@@ -38,6 +41,7 @@ export type ChatMessageDoc = {
   createdAt: Date;
 };
 
+/** Embedded schema for chatbot message persistence. */
 const chatMessageSchema = new Schema<ChatMessageDoc>(
   {
     _id: { type: String, required: true },

@@ -5,6 +5,7 @@ import { GetSession } from '../../useCases/GetSession';
 import { ListSessionMessages } from '../../useCases/ListSessionMessages';
 import { SendSessionMessage } from '../../useCases/SendSessionMessage';
 
+/** Dependencies required by the chatbot HTTP router. */
 export interface ChatbotRouterDeps {
   createSession: CreateSession;
   getSession: GetSession;
@@ -13,10 +14,12 @@ export interface ChatbotRouterDeps {
   sendSessionMessage: SendSessionMessage;
 }
 
+/** Wraps async handlers and forwards failures to Express error middleware. */
 function wrap(fn: (req: Request, res: Response, next: NextFunction) => Promise<void>) {
   return (req: Request, res: Response, next: NextFunction) => fn(req, res, next).catch(next);
 }
 
+/** Enforces the gateway-propagated user identity for protected routes. */
 function requireUserId(req: Request, res: Response, next: NextFunction): void {
   const userId = req.headers['x-user-id'];
   if (!userId || typeof userId !== 'string') {
@@ -32,6 +35,7 @@ function requireUserId(req: Request, res: Response, next: NextFunction): void {
   next();
 }
 
+/** Builds the chatbot REST router. */
 export function buildChatbotRouter(deps: ChatbotRouterDeps): Router {
   const router = Router();
 

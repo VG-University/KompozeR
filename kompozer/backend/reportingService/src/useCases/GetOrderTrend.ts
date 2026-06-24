@@ -6,11 +6,13 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_DAYS = 7;
 const MAX_DAYS = 90;
 
+/** Input payload for the order trend query use case. */
 export interface GetOrderTrendInput {
   from?: string;
   to?: string;
 }
 
+/** Aggregated trend payload returned to reporting clients. */
 export interface GetOrderTrendOutput {
   from: string;
   to: string;
@@ -54,6 +56,7 @@ function enumerateDays(from: Date, to: Date): string[] {
   return days;
 }
 
+/** Computes daily order trends for a date range. */
 export class GetOrderTrend {
   constructor(private readonly reader: OrderTrendReader) {}
 

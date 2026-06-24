@@ -4,6 +4,7 @@ import { URL } from 'url';
 import { CatalogLookupError } from '../../domain/entities/errors';
 import { CatalogQaItem, CatalogQaProvider } from '../../domain/ports/CatalogQaProvider';
 
+/** HTTP adapter that queries catalog search results for chatbot answers. */
 type CatalogListResponse = {
   items?: Array<{
     id?: string;
@@ -14,6 +15,9 @@ type CatalogListResponse = {
   }>;
 };
 
+/**
+ * Retrieves and normalizes catalog QA results from the catalog service.
+ */
 export class HttpCatalogQaProvider implements CatalogQaProvider {
   constructor(
     private readonly catalogBaseUrl: string,
@@ -45,6 +49,7 @@ export class HttpCatalogQaProvider implements CatalogQaProvider {
       }));
   }
 
+  /** Performs a GET request and decodes the JSON payload. */
   private getJson<T>(url: URL): Promise<T> {
     return new Promise<T>((resolve, reject) => {
       const client = url.protocol === 'https:' ? https : http;

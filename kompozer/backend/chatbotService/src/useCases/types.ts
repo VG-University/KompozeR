@@ -1,5 +1,6 @@
 import { ChatMessage, ChatSession, ChatSessionStatus } from '../domain/entities/ChatSession';
 
+/** API view of a chatbot session. */
 export interface ChatSessionDto {
   id: string;
   userId: string;
@@ -9,6 +10,7 @@ export interface ChatSessionDto {
   updatedAt: string;
 }
 
+/** API view of a chatbot message. */
 export interface ChatMessageDto {
   id: string;
   sessionId: string;
@@ -18,6 +20,7 @@ export interface ChatMessageDto {
   createdAt: string;
 }
 
+/** Maps a domain session to the transport DTO. */
 export function toSessionDto(session: ChatSession): ChatSessionDto {
   return {
     id: session.id,
@@ -29,6 +32,7 @@ export function toSessionDto(session: ChatSession): ChatSessionDto {
   };
 }
 
+/** Maps a domain message to the transport DTO. */
 export function toMessageDto(message: ChatMessage): ChatMessageDto {
   return {
     id: message.id,

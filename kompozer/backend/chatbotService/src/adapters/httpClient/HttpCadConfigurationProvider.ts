@@ -3,6 +3,7 @@ import https from 'https';
 import { URL } from 'url';
 import { CadConfigurationProvider, CadConfigurationSnapshot } from '../../domain/ports/CadConfigurationProvider';
 
+/** HTTP adapter that loads CAD configuration context for chatbot answers. */
 type CadConfigurationResponse = {
   id?: string;
   status?: string;
@@ -17,6 +18,9 @@ type CadConfigurationResponse = {
   bom?: Array<unknown>;
 };
 
+/**
+ * Retrieves a CAD configuration snapshot through the CAD service API.
+ */
 export class HttpCadConfigurationProvider implements CadConfigurationProvider {
   constructor(
     private readonly cadBaseUrl: string,
@@ -54,6 +58,7 @@ export class HttpCadConfigurationProvider implements CadConfigurationProvider {
     };
   }
 
+  /** Performs a GET request with identity headers and parses the response. */
   private getJson<T>(url: URL, headers: Record<string, string>): Promise<T> {
     return new Promise<T>((resolve, reject) => {
       const client = url.protocol === 'https:' ? https : http;

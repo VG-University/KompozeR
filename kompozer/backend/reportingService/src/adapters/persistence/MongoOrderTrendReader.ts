@@ -1,6 +1,7 @@
 import { DailyOrderTrendPoint, OrderTrendReader } from '../../domain/ports/OrderTrendReader';
 import { OrderModel } from './schemas/orderSchema';
 
+/** Mongo aggregation reader for daily order trends. */
 type TrendAggDoc = {
   _id: string;
   submitted: number;
@@ -10,6 +11,7 @@ type TrendAggDoc = {
   revenue: number;
 };
 
+/** Reads trend data directly from the orders collection. */
 export class MongoOrderTrendReader implements OrderTrendReader {
   async fetchDaily(fromInclusive: Date, toInclusive: Date): Promise<DailyOrderTrendPoint[]> {
     const fromStart = new Date(fromInclusive);

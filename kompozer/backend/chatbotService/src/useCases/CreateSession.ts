@@ -4,11 +4,13 @@ import { ValidationError } from '../domain/entities/errors';
 import { ChatRepository } from '../domain/ports/ChatRepository';
 import { ChatSessionDto, toSessionDto } from './types';
 
+/** Starts a new chatbot session for one user. */
 export interface CreateSessionInput {
   userId: string;
   configurationId?: string;
 }
 
+/** Creates and persists a new session aggregate. */
 export class CreateSession {
   constructor(private readonly repo: ChatRepository) {}
 

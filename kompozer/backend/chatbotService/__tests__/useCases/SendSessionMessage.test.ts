@@ -3,6 +3,7 @@ import { CreateSession } from '../../src/useCases/CreateSession';
 import { SendSessionMessage } from '../../src/useCases/SendSessionMessage';
 import { FakeCatalogQaProvider, FakeChatRepository } from '../helpers/fakes';
 
+/** Unit tests for chatbot message sending and answer generation. */
 describe('SendSessionMessage', () => {
   it('stores user and bot message with catalog contextual answer', async () => {
     const repo = new FakeChatRepository();

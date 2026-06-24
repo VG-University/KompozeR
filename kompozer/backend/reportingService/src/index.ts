@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
 import { buildApp } from './app';
 
+/** HTTP port used by the reporting service. */
 const PORT = Number(process.env['REPORTING_PORT'] ?? process.env['PORT']) || 3007;
+/** MongoDB connection string used by the reporting service. */
 const MONGO_URI =
   process.env['REPORTING_MONGO_URI'] ??
   process.env['ORDER_MONGO_URI'] ??

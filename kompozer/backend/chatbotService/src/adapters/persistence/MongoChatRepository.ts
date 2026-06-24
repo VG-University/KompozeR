@@ -2,6 +2,7 @@ import { ChatMessage, ChatSession } from '../../domain/entities/ChatSession';
 import { ChatRepository } from '../../domain/ports/ChatRepository';
 import { ChatMessageModel, ChatSessionModel } from './schemas/chatSchema';
 
+/** MongoDB repository implementation for chatbot sessions and messages. */
 export class MongoChatRepository implements ChatRepository {
   async createSession(session: ChatSession): Promise<void> {
     await ChatSessionModel.create({
@@ -14,6 +15,7 @@ export class MongoChatRepository implements ChatRepository {
     });
   }
 
+  /** Maps a chat session document into the domain aggregate. */
   async findSessionById(sessionId: string): Promise<ChatSession | null> {
     const doc = await ChatSessionModel.findById(sessionId).lean();
     if (!doc) return null;
@@ -28,6 +30,7 @@ export class MongoChatRepository implements ChatRepository {
     };
   }
 
+  /** Replaces the persisted session state with the provided aggregate. */
   async updateSession(session: ChatSession): Promise<void> {
     await ChatSessionModel.findByIdAndUpdate(session.id, {
       userId: session.userId,
@@ -38,6 +41,7 @@ export class MongoChatRepository implements ChatRepository {
     });
   }
 
+  /** Persists a single chat message document. */
   async saveMessage(message: ChatMessage): Promise<void> {
     await ChatMessageModel.create({
       _id: message.id,
@@ -49,6 +53,7 @@ export class MongoChatRepository implements ChatRepository {
     });
   }
 
+  /** Loads all messages for one session ordered by creation time. */
   async listMessagesBySessionId(sessionId: string): Promise<ChatMessage[]> {
     const docs = await ChatMessageModel.find({ sessionId }).sort({ createdAt: 1 }).lean();
 

@@ -9,6 +9,7 @@ const CODE_TO_STATUS: Record<string, number> = {
   CATALOG_LOOKUP_FAILED: 503,
 };
 
+/** Maps chatbot domain errors to API responses. */
 export function errorMiddleware(
   err: unknown,
   _req: Request,

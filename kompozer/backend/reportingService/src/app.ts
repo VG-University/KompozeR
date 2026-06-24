@@ -6,10 +6,12 @@ import { MongoOrderTrendReader } from './adapters/persistence/MongoOrderTrendRea
 import { OrderTrendReader } from './domain/ports/OrderTrendReader';
 import { GetOrderTrend } from './useCases/GetOrderTrend';
 
+/** Optional overrides for reporting service wiring. */
 export interface BuildAppDeps {
   trendReader?: OrderTrendReader;
 }
 
+/** Builds the Express application for reporting endpoints. */
 export function buildApp(deps: BuildAppDeps = {}) {
   const trendReader = deps.trendReader ?? new MongoOrderTrendReader();
   const getOrderTrend = new GetOrderTrend(trendReader);

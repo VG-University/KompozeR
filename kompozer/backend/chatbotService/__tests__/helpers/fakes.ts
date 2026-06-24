@@ -2,6 +2,7 @@ import { ChatMessage, ChatSession } from '../../src/domain/entities/ChatSession'
 import { ChatRepository } from '../../src/domain/ports/ChatRepository';
 import { CatalogQaItem, CatalogQaProvider } from '../../src/domain/ports/CatalogQaProvider';
 
+/** In-memory repository fake used by chatbot tests. */
 export class FakeChatRepository implements ChatRepository {
   private sessions = new Map<string, ChatSession>();
   private messages: ChatMessage[] = [];
@@ -30,6 +31,7 @@ export class FakeChatRepository implements ChatRepository {
   }
 }
 
+/** Catalog QA fake returning a deterministic list of items. */
 export class FakeCatalogQaProvider implements CatalogQaProvider {
   private items: CatalogQaItem[] = [];
 

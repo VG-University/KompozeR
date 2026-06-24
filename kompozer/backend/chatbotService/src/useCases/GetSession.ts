@@ -2,11 +2,13 @@ import { ForbiddenError, SessionNotFoundError, ValidationError } from '../domain
 import { ChatRepository } from '../domain/ports/ChatRepository';
 import { ChatSessionDto, toSessionDto } from './types';
 
+/** Input required to load one chatbot session. */
 export interface GetSessionInput {
   userId: string;
   sessionId: string;
 }
 
+/** Loads one owned chatbot session. */
 export class GetSession {
   constructor(private readonly repo: ChatRepository) {}
 

@@ -12,6 +12,7 @@ import { CatalogQaProvider } from '../domain/ports/CatalogQaProvider';
 import { ChatRepository } from '../domain/ports/ChatRepository';
 import { ChatMessageDto, toMessageDto } from './types';
 
+/** Input required to append a message to a chatbot session. */
 export interface SendSessionMessageInput {
   userId: string;
   sessionId: string;
@@ -24,6 +25,7 @@ export interface SendSessionMessageOutput {
   botMessage: ChatMessageDto;
 }
 
+/** Saves the user message and generates the bot answer. */
 export class SendSessionMessage {
   constructor(
     private readonly repo: ChatRepository,
