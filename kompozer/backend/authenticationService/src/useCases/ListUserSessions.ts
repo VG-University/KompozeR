@@ -1,6 +1,9 @@
-// ListUserSessions — Use case: elenco di tutte le sessioni di un utente.
-// Restituisce la lista completa, incluse quelle scadute o revocate,
-// così il client può mostrare la cronologia e permettere la revoca selettiva.
+/**
+ * Use case for listing all sessions of a user.
+ *
+ * Returns complete session history, including expired and revoked sessions,
+ * so clients can render history and support selective revocation.
+ */
 import { SessionRepository } from '../domain/ports/SessionRepository';
 import { ListUserSessionsInput, ListUserSessionsOutput } from './types';
 

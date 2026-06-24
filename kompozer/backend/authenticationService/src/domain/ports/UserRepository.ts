@@ -1,6 +1,9 @@
-// UserRepository — Porta di dominio (interfaccia) per la persistenza degli utenti.
-// Definisce il contratto che deve rispettare qualsiasi implementazione di storage.
-// L'implementazione reale è MongoUserRepository; nei test viene usata FakeUserRepository.
+/**
+ * Domain port (interface) for user persistence.
+ *
+ * Defines the contract for any storage implementation.
+ * Production implementation is MongoUserRepository; tests may use fakes.
+ */
 import { User } from '../entities/User';
 
 export interface UserRepository {

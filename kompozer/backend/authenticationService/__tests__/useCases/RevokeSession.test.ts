@@ -1,7 +1,13 @@
-// RevokeSession.test — Test TDD per i use case RevokeSession e ListUserSessions.
-// RevokeSession: revoca corretta (isRevoked=true), SessionNotFoundError, revoca da parte di ADMIN,
-// ForbiddenError se un utente BASE tenta di revocare una sessione altrui.
-// ListUserSessions: restituzione di tutte le sessioni, lista vuota per utente senza sessioni.
+/**
+ * TDD coverage for RevokeSession and ListUserSessions use cases.
+ *
+ * RevokeSession: successful revocation (isRevoked=true), SessionNotFoundError,
+ * ADMIN revocation of third-party sessions, and ForbiddenError for BASE users
+ * revoking other users' sessions.
+ *
+ * ListUserSessions: complete session listing and empty result for users with
+ * no sessions.
+ */
 import { RevokeSession } from '../../src/useCases/RevokeSession';
 import { ListUserSessions } from '../../src/useCases/ListUserSessions';
 import { LoginUser } from '../../src/useCases/LoginUser';

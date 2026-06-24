@@ -1,7 +1,11 @@
-// authRouter.test — Test HTTP (supertest) per tutti gli endpoint di /auth.
-// Usa buildTestApp() che monta l'app Express con fake repository, senza MongoDB.
-// Verifica status code, shape della risposta e codici di errore per ogni endpoint:
-// POST /register, POST /login, POST /guest, GET /me, GET /sessions, POST /logout, DELETE /sessions/:id.
+/**
+ * HTTP (supertest) coverage for all /auth endpoints.
+ *
+ * Uses buildTestApp() to mount an Express app with fake repositories (no MongoDB).
+ * Verifies status codes, response shapes, and error codes for each endpoint:
+ * POST /register, POST /login, POST /guest, GET /me, GET /sessions,
+ * POST /logout, DELETE /sessions/:id.
+ */
 import request from 'supertest';
 import { buildTestApp } from '../helpers/buildTestApp';
 
@@ -17,7 +21,7 @@ async function registerAndLogin(
   return res.body as { token: string; session: { id: string }; user: { id: string } };
 }
 
-// ── POST /auth/register ───────────────────────────────────────────────────────
+// POST /auth/register
 
 describe('POST /auth/register', () => {
   it('returns 201 with user on success', async () => {
@@ -68,7 +72,7 @@ describe('POST /auth/register', () => {
   });
 });
 
-// ── POST /auth/login ──────────────────────────────────────────────────────────
+// POST /auth/login
 
 describe('POST /auth/login', () => {
   it('returns 200 with token and session on valid credentials', async () => {
@@ -108,7 +112,7 @@ describe('POST /auth/login', () => {
   });
 });
 
-// ── POST /auth/guest ──────────────────────────────────────────────────────────
+// POST /auth/guest
 
 describe('POST /auth/guest', () => {
   it('returns 200 with a GUEST token', async () => {
@@ -121,7 +125,7 @@ describe('POST /auth/guest', () => {
   });
 });
 
-// ── POST /auth/logout ─────────────────────────────────────────────────────────
+// POST /auth/logout
 
 describe('POST /auth/logout', () => {
   it('returns 204 on successful logout', async () => {
@@ -162,7 +166,7 @@ describe('POST /auth/logout', () => {
   });
 });
 
-// ── GET /auth/me ──────────────────────────────────────────────────────────────
+// GET /auth/me
 
 describe('GET /auth/me', () => {
   it('returns 200 with user profile', async () => {
@@ -191,12 +195,12 @@ describe('GET /auth/me', () => {
   });
 });
 
-// ── GET /auth/sessions ────────────────────────────────────────────────────────
+// GET /auth/sessions
 
 describe('GET /auth/sessions', () => {
   it('returns 200 with list of sessions', async () => {
     const { user } = await registerAndLogin('sessions_user', 'sessions@example.com');
-    // second login creates a second session
+    // A second login creates a second session.
     await request(app)
       .post('/auth/login')
       .send({ username: 'sessions_user', password: 'Password123!' });
@@ -212,7 +216,7 @@ describe('GET /auth/sessions', () => {
   });
 });
 
-// ── DELETE /auth/sessions/:sessionId ─────────────────────────────────────────
+// DELETE /auth/sessions/:sessionId
 
 describe('DELETE /auth/sessions/:sessionId', () => {
   it('returns 204 on successful revocation', async () => {

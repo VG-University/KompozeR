@@ -1,7 +1,13 @@
-// app — Composition root dell'authenticationService.
-// Istanzia le dipendenze concrete (repository Mongo, hasher bcrypt, signer JWT, clock, idGen),
-// crea tutti i use case con dependency injection e assembla l'app Express con CORS, routing
-// e error middleware. Esportato come factory per facilitare i test di integrazione.
+/**
+ * Composition root for the Authentication Service.
+ *
+ * Instantiates concrete dependencies (Mongo repositories, bcrypt hasher,
+ * JWT signer, clock, id generators), wires use cases through dependency
+ * injection, and assembles the Express app with CORS, routing, and
+ * centralized error middleware.
+ *
+ * Exported as a factory to simplify integration testing.
+ */
 import express from 'express';
 import cors from 'cors';
 import { RegisterUser } from './useCases/RegisterUser';
@@ -25,6 +31,9 @@ export interface AppConfig {
   sessionTtlMs: number;
 }
 
+/**
+ * Builds the configured Express application instance.
+ */
 export function buildApp(config: AppConfig) {
   const userRepo = new MongoUserRepository();
   const sessionRepo = new MongoSessionRepository();

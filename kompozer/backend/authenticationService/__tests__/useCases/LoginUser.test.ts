@@ -1,7 +1,10 @@
-// LoginUser.test — Test TDD per il use case LoginUser.
-// Verifica: login con credenziali valide (token, sessione, profilo), calcolo di expiresAt,
-// errore per password errata, errore per utente inesistente, persistenza della sessione
-// e unicità del tokenId tra login successivi.
+/**
+ * TDD coverage for the LoginUser use case.
+ *
+ * Verifies valid-credential login output (token/session/profile), expiresAt
+ * calculation, wrong-password and missing-user failures, session persistence,
+ * and tokenId uniqueness across logins.
+ */
 import { LoginUser } from '../../src/useCases/LoginUser';
 import { RegisterUser } from '../../src/useCases/RegisterUser';
 import {

@@ -1,7 +1,12 @@
-// authRouter — Express router per gli endpoint sotto /auth.
-// Monta tutti gli endpoint di autenticazione (register, login, guest, me, sessions, logout, revoke)
-// e delega l'esecuzione ai rispettivi use case. L'identità dell'utente autenticato viene letta
-// dagli header X-User-Id / X-User-Role / X-Session-Id iniettati dall'API gateway, mai dal JWT raw.
+/**
+ * Express router for /auth endpoints.
+ *
+ * Registers all authentication routes (register, login, guest, me,
+ * sessions, logout, revoke) and delegates execution to dedicated use cases.
+ *
+ * Authenticated identity is read from X-User-Id / X-User-Role / X-Session-Id
+ * headers injected by the API Gateway, never from the raw JWT.
+ */
 import { Router, Request, Response, NextFunction } from 'express';
 import { RegisterUser } from '../../useCases/RegisterUser';
 import { LoginUser } from '../../useCases/LoginUser';

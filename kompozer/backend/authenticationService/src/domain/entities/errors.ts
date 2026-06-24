@@ -1,7 +1,10 @@
-// errors — Gerarchia di errori di dominio per l'authenticationService.
-// AuthError è la classe base con un campo `code` leggibile dalla macchina.
-// Le sottoclassi coprono tutti i casi di errore applicativo (credenziali, duplicati,
-// sessioni, permessi, validazione) e vengono tradotti in HTTP da errorMiddleware.
+/**
+ * Domain error hierarchy for the Authentication Service.
+ *
+ * AuthError is the base class with a machine-readable `code`.
+ * Subclasses cover application error scenarios (credentials, duplicates,
+ * sessions, authorization, validation) and are mapped to HTTP by errorMiddleware.
+ */
 export class AuthError extends Error {
   constructor(
     public readonly code: string,

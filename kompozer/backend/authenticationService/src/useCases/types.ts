@@ -1,6 +1,9 @@
-// types — Tipi input/output per tutti gli use case dell'authenticationService.
-// Raccoglie in un unico file le interfacce delle richieste e delle risposte
-// così da avere un contratto leggibile separato dalla logica applicativa.
+/**
+ * Input/output contracts for Authentication Service use cases.
+ *
+ * Centralizes request and response interfaces in a single file,
+ * keeping API contracts readable and separated from business logic.
+ */
 import { UserRole } from '../domain/entities/UserRole';
 
 // ── RegisterUser ─────────────────────────────────────────────────────────────

@@ -1,6 +1,8 @@
-// BcryptPasswordHasher — Implementazione reale di PasswordHasher.
-// Usa bcryptjs con SALT_ROUNDS=12 per garantire un hashing sicuro e resistente
-// ad attacchi brute-force. Non dipende da API native di Node (compatibile con edge).
+/**
+ * BcryptPasswordHasher — Real implementation of PasswordHasher.
+ * Uses bcryptjs with SALT_ROUNDS=12 to ensure secure and resilient hashing
+ * against brute-force attacks. Does not depend on native Node APIs (compatible with edge).
+ */
 import bcrypt from 'bcryptjs';
 import { PasswordHasher } from '../domain/ports/PasswordHasher';
 

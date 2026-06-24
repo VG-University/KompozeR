@@ -1,6 +1,9 @@
-// GetCurrentUser.test — Test TDD per il use case GetCurrentUser.
-// Verifica: restituzione corretta del profilo per un utente registrato
-// e UserNotFoundError per un userId inesistente.
+/**
+ * TDD coverage for the GetCurrentUser use case.
+ *
+ * Verifies successful profile retrieval for registered users and
+ * UserNotFoundError for non-existing user IDs.
+ */
 import { GetCurrentUser } from '../../src/useCases/GetCurrentUser';
 import { RegisterUser } from '../../src/useCases/RegisterUser';
 import { LoginUser } from '../../src/useCases/LoginUser';

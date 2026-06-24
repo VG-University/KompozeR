@@ -1,7 +1,10 @@
-// sessionSchema — Schema Mongoose per la collection `sessions`.
-// Definisce la struttura del documento MongoDB per le sessioni autenticate.
-// Usa _id: String (UUID) e indicizza userId per le query findAllByUserId.
-// loggedOut e isRevoked vengono aggiornati durante logout e revoca.
+/**
+ * Mongoose schema for the `sessions` collection.
+ *
+ * Defines the MongoDB document shape for authenticated sessions.
+ * Uses _id: String (UUID) and indexes userId for findAllByUserId queries.
+ * loggedOut and isRevoked are updated during logout and revocation flows.
+ */
 import { Schema, model } from 'mongoose';
 
 type SessionDocType = {

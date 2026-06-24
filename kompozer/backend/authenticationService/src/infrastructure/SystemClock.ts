@@ -1,7 +1,9 @@
-// SystemClock — Implementazione reale di Clock.
-// Restituisce semplicemente `new Date()` dal sistema operativo.
-// Separata in una classe per consentire l'iniezione di FakeClock nei test
-// e rendere deterministici tutti i calcoli temporali.
+/**
+ * Real implementation of Clock.
+ * Returns `new Date()` from system time.
+ * Kept as a dedicated class so tests can inject FakeClock
+ * and make all time-dependent computations deterministic.
+ */
 import { Clock } from '../domain/ports/Clock';
 
 export class SystemClock implements Clock {

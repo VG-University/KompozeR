@@ -1,6 +1,9 @@
-// LogoutUser.test — Test TDD per il use case LogoutUser.
-// Verifica: logout corretto (loggedOut impostato), SessionNotFoundError per sessione inesistente,
-// ForbiddenError quando un utente cerca di chiudere la sessione di un altro utente.
+/**
+ * TDD coverage for the LogoutUser use case.
+ *
+ * Verifies successful logout (loggedOut set), SessionNotFoundError for
+ * missing sessions, and ForbiddenError for cross-user logout attempts.
+ */
 import { LogoutUser } from '../../src/useCases/LogoutUser';
 import { LoginUser } from '../../src/useCases/LoginUser';
 import { RegisterUser } from '../../src/useCases/RegisterUser';
@@ -99,7 +102,7 @@ describe('LogoutUser', () => {
     });
     const loginResult = await login.execute({ username: 'gateway-user', password: 'Password123!' });
 
-    // Simula X-Session-Id iniettato dal gateway: contiene tokenId, non session.id.
+    // Simulates gateway-injected X-Session-Id: tokenId, not session.id.
     await logout.execute({
       userId: loginResult.user.id,
       sessionId: loginResult.session.tokenId,

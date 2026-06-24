@@ -1,7 +1,12 @@
-// errorMiddleware — Middleware Express per la gestione centralizzata degli errori.
-// Intercetta le istanze di AuthError lanciate dai use case e le traduce in risposte HTTP
-// conformi al RESTErrorModel del progetto ({ error: { code, message, details, timestamp } }).
-// Gli errori sconosciuti vengono oscurati e restituiti come 500 INTERNAL_ERROR.
+/**
+ * Centralized Express error middleware for the Authentication Service.
+ *
+ * Intercepts AuthError instances raised by use cases and maps them to HTTP
+ * responses aligned with the project REST error model
+ * ({ error: { code, message, details, timestamp } }).
+ *
+ * Unknown errors are masked and returned as 500 INTERNAL_ERROR.
+ */
 import { Request, Response, NextFunction } from 'express';
 import {
   AuthError,

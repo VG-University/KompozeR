@@ -1,8 +1,11 @@
-// fakes — Implementazioni fake (in-memory) delle porte di dominio per i test.
-// FakeUserRepository e FakeSessionRepository usano una Map come storage volatile.
-// FakePasswordHasher usa una trasformazione deterministica ('hashed:<plain>').
-// FakeTokenSigner produce token leggibili senza crittografia reale.
-// FakeClock restituisce un orario fisso iniettabile; FakeIdGenerator produce id sequenziali.
+/**
+ * In-memory fake implementations of domain ports for tests.
+ *
+ * FakeUserRepository and FakeSessionRepository use Map as volatile storage.
+ * FakePasswordHasher uses deterministic transformation ('hashed:<plain>').
+ * FakeTokenSigner emits readable non-cryptographic tokens.
+ * FakeClock returns injectable fixed time; FakeIdGenerator emits sequential IDs.
+ */
 import { User } from '../../src/domain/entities/User';
 import { Session } from '../../src/domain/entities/Session';
 import { UserRepository } from '../../src/domain/ports/UserRepository';
@@ -13,7 +16,7 @@ import { Clock } from '../../src/domain/ports/Clock';
 import { IdGenerator } from '../../src/domain/ports/IdGenerator';
 import { UserRole } from '../../src/domain/entities/UserRole';
 
-// ── Fake UserRepository ───────────────────────────────────────────────────────
+// Fake UserRepository
 
 export class FakeUserRepository implements UserRepository {
   private store: Map<string, User> = new Map();
@@ -49,7 +52,7 @@ export class FakeUserRepository implements UserRepository {
   }
 }
 
-// ── Fake SessionRepository ────────────────────────────────────────────────────
+// Fake SessionRepository
 
 export class FakeSessionRepository implements SessionRepository {
   private store: Map<string, Session> = new Map();
@@ -82,7 +85,7 @@ export class FakeSessionRepository implements SessionRepository {
   }
 }
 
-// ── Fake PasswordHasher ───────────────────────────────────────────────────────
+// Fake PasswordHasher
 
 export class FakePasswordHasher implements PasswordHasher {
   async hash(plain: string): Promise<string> {
@@ -94,7 +97,7 @@ export class FakePasswordHasher implements PasswordHasher {
   }
 }
 
-// ── Fake TokenSigner ──────────────────────────────────────────────────────────
+// Fake TokenSigner
 
 export class FakeTokenSigner implements TokenSigner {
   sign(payload: TokenPayload, _expiresIn: number): string {
@@ -114,7 +117,7 @@ export class FakeTokenSigner implements TokenSigner {
   }
 }
 
-// ── Fake Clock ────────────────────────────────────────────────────────────────
+// Fake Clock
 
 export class FakeClock implements Clock {
   constructor(private fixed: Date = new Date('2026-05-30T10:00:00Z')) {}
@@ -124,7 +127,7 @@ export class FakeClock implements Clock {
   }
 }
 
-// ── Fake IdGenerator ──────────────────────────────────────────────────────────
+// Fake IdGenerator
 
 export class FakeIdGenerator implements IdGenerator {
   private counter = 0;

@@ -1,6 +1,9 @@
-// RegisterUser — Use case: registrazione di un nuovo utente.
-// Valida i dati in ingresso (username, email, password), verifica l'assenza di duplicati
-// su username ed email, esegue il hash della password e persiste il nuovo utente con ruolo BASE.
+/**
+ * Use case for registering a new user.
+ *
+ * Validates input (username, email, password), ensures no username/email
+ * duplicates exist, hashes the password, and persists the user with BASE role.
+ */
 import { UserRepository } from '../domain/ports/UserRepository';
 import { PasswordHasher } from '../domain/ports/PasswordHasher';
 import { Clock } from '../domain/ports/Clock';

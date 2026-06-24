@@ -1,6 +1,8 @@
-// UuidIdGenerator — Implementazione reale di IdGenerator.
-// Genera UUID v4 tramite la libreria `uuid`, garantendo identificatori
-// globalmente univoci per utenti, sessioni e token.
+/**
+ * Real implementation of IdGenerator.
+ * Generates UUID v4 values via the `uuid` package, providing globally
+ * unique identifiers for users, sessions, and tokens.
+ */
 import { v4 as uuidv4 } from 'uuid';
 import { IdGenerator } from '../domain/ports/IdGenerator';
 

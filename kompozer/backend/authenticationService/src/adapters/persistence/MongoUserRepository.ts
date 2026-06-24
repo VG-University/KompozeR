@@ -1,7 +1,10 @@
-// MongoUserRepository — Implementazione MongoDB di UserRepository.
-// Usa Mongoose per le operazioni CRUD sulla collection `users`.
-// Il metodo toEntity() isola il codice di dominio dalla struttura del documento Mongo
-// (nessuna fuga di tipi Mongoose verso il dominio).
+/**
+ * MongoDB implementation of UserRepository.
+ *
+ * Uses Mongoose for CRUD operations on the `users` collection.
+ * The toEntity() mapper isolates domain code from Mongo/Mongoose document
+ * structure (no Mongoose types leaking into the domain layer).
+ */
 import { User } from '../../domain/entities/User';
 import { UserRole } from '../../domain/entities/UserRole';
 import { UserRepository } from '../../domain/ports/UserRepository';

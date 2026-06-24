@@ -1,6 +1,9 @@
-// LogoutUser — Use case: chiusura volontaria della sessione corrente.
-// Verifica che la sessione esista e appartenga all'utente richiedente,
-// poi imposta il campo loggedOut al timestamp corrente.
+/**
+ * Use case for voluntarily closing the current session.
+ *
+ * Verifies session existence and ownership,
+ * then sets loggedOut with the current timestamp.
+ */
 import { SessionRepository } from '../domain/ports/SessionRepository';
 import { Clock } from '../domain/ports/Clock';
 import { SessionNotFoundError, ForbiddenError } from '../domain/entities/errors';

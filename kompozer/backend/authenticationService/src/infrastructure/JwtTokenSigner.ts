@@ -1,7 +1,9 @@
-// JwtTokenSigner — Implementazione reale di TokenSigner.
-// Firma i JWT con algoritmo HS256 usando il secret iniettato via env (JWT_SECRET).
-// verify() decodifica e valida la struttura del payload prima di restituirlo,
-// lanciando un errore generico per non rivelare dettagli interni al chiamante.
+/**
+ * Real implementation of TokenSigner.
+ * Signs JWTs using the HS256 algorithm with the secret injected via env (JWT_SECRET).
+ * verify() decodes and validates the payload structure before returning it,
+ * throwing a generic error to avoid revealing internal details to the caller.
+ */
 import jwt from 'jsonwebtoken';
 import { TokenSigner, TokenPayload } from '../domain/ports/TokenSigner';
 

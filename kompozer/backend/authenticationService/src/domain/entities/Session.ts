@@ -1,7 +1,10 @@
-// Session — Value object che rappresenta una sessione autenticata.
-// Tiene traccia del ciclo di vita del token: creazione (loggedIn), scadenza (expiresAt),
-// logout volontario (loggedOut) e revoca forzata (isRevoked).
-// Il campo tokenId collega la sessione al JWT firmato corrispondente.
+/**
+ * Value object representing an authenticated session.
+ *
+ * Tracks token lifecycle events: creation (loggedIn), expiry (expiresAt),
+ * voluntary logout (loggedOut), and forced revocation (isRevoked).
+ * tokenId links the session to the corresponding signed JWT.
+ */
 export interface Session {
   id: string;
   userId: string;

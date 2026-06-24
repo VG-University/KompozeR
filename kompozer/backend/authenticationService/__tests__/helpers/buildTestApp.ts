@@ -1,6 +1,9 @@
-// buildTestApp — Factory che costruisce l'app Express con dipendenze fake per i test HTTP.
-// Istanzia tutti i use case iniettando i fake al posto delle implementazioni reali,
-// così i test dell'adapter HTTP girano senza MongoDB né JWT reali.
+/**
+ * Factory that builds the Express app with fake dependencies for HTTP tests.
+ *
+ * Instantiates all use cases by injecting fakes instead of production adapters,
+ * allowing HTTP adapter tests to run without MongoDB or real JWT signing.
+ */
 import express from 'express';
 import { RegisterUser } from '../../src/useCases/RegisterUser';
 import { LoginUser } from '../../src/useCases/LoginUser';

@@ -1,6 +1,9 @@
-// Clock — Porta di dominio per l'ottenimento del timestamp corrente.
-// Astrae `new Date()` in modo che i test possano iniettare un orario fisso (FakeClock)
-// e rendere deterministici tutti i calcoli temporali (expiresAt, loggedIn, loggedOut).
+/**
+ * Domain port for obtaining the current timestamp.
+ *
+ * Abstracts `new Date()` so tests can inject fixed time (FakeClock)
+ * and keep time-based logic deterministic.
+ */
 export interface Clock {
   now(): Date;
 }

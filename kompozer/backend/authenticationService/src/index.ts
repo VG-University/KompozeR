@@ -1,7 +1,11 @@
-// index — Entry point dell'authenticationService.
-// Legge le variabili d'ambiente (PORT, MONGO_URI, JWT_SECRET, SESSION_TTL_HOURS),
-// si connette a MongoDB e avvia il server HTTP. Termina il processo se JWT_SECRET
-// non è configurato o se la connessione al DB fallisce.
+/**
+ * Authentication Service process entry point.
+ *
+ * Reads environment variables (PORT, MONGO_URI, JWT_SECRET, SESSION_TTL_HOURS),
+ * connects to MongoDB, and starts the HTTP server.
+ *
+ * The process exits early if JWT_SECRET is missing or if database connection fails.
+ */
 import mongoose from 'mongoose';
 import { buildApp } from './app';
 

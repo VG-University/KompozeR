@@ -1,6 +1,9 @@
-// TokenSigner — Porta di dominio per la firma e la verifica dei JWT.
-// Astrae la libreria crittografica (jsonwebtoken in produzione, FakeTokenSigner nei test).
-// Il payload include userId, tokenId (per collegare il token alla sessione DB) e il ruolo.
+/**
+ * Domain port for JWT signing and verification.
+ *
+ * Abstracts cryptographic implementation (jsonwebtoken in production,
+ * fake signers in tests). Payload includes userId, tokenId (linked to DB session), and role.
+ */
 import { UserRole } from '../entities/UserRole';
 
 export interface TokenPayload {

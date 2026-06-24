@@ -1,7 +1,9 @@
-// RegisterUser.test — Test TDD per il use case RegisterUser.
-// Verifica: registrazione corretta (ruolo BASE, password hashata), errori per username/email
-// duplicati, errori di validazione (username vuoto, email invalida, password troppo corta)
-// e unicità degli id assegnati.
+/**
+ * TDD coverage for the RegisterUser use case.
+ *
+ * Verifies successful registration (BASE role, hashed password),
+ * duplicate username/email errors, validation errors, and assigned ID uniqueness.
+ */
 import { RegisterUser } from '../../src/useCases/RegisterUser';
 import {
   FakeUserRepository,

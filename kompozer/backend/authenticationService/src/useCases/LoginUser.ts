@@ -1,6 +1,9 @@
-// LoginUser — Use case: autenticazione di un utente esistente.
-// Verifica le credenziali, crea una nuova sessione in DB e firma un JWT con userId,
-// tokenId e ruolo. Restituisce il token, il riepilogo della sessione e del profilo utente.
+/**
+ * Use case for authenticating an existing user.
+ *
+ * Verifies credentials, creates a DB session, and signs a JWT with userId,
+ * tokenId, and role. Returns token plus session and user summaries.
+ */
 import { UserRepository } from '../domain/ports/UserRepository';
 import { SessionRepository } from '../domain/ports/SessionRepository';
 import { PasswordHasher } from '../domain/ports/PasswordHasher';

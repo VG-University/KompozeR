@@ -1,7 +1,10 @@
-// userSchema — Schema Mongoose per la collection `users`.
-// Definisce la struttura del documento MongoDB per gli utenti.
-// Usa _id: String (UUID) invece del default ObjectId per coerenza con il modello di dominio.
-// I campi createdAt e updatedAt sono gestiti automaticamente dall'opzione timestamps.
+/**
+ * Mongoose schema for the `users` collection.
+ *
+ * Defines the MongoDB document shape for users.
+ * Uses _id: String (UUID) instead of default ObjectId for domain consistency.
+ * createdAt and updatedAt are managed automatically via timestamps.
+ */
 import { Schema, model } from 'mongoose';
 import { UserRole } from '../../../domain/entities/UserRole';
 

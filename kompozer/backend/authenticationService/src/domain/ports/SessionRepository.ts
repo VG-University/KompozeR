@@ -1,6 +1,9 @@
-// SessionRepository — Porta di dominio (interfaccia) per la persistenza delle sessioni.
-// Definisce il contratto che deve rispettare qualsiasi implementazione di storage.
-// L'implementazione reale è MongoSessionRepository; nei test viene usata FakeSessionRepository.
+/**
+ * Domain port (interface) for session persistence.
+ *
+ * Defines the contract for any storage implementation.
+ * Production implementation is MongoSessionRepository; tests may use fakes.
+ */
 import { Session } from '../entities/Session';
 
 export interface SessionRepository {

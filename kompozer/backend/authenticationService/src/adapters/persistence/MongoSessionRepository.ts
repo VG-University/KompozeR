@@ -1,7 +1,10 @@
-// MongoSessionRepository — Implementazione MongoDB di SessionRepository.
-// Usa Mongoose per le operazioni CRUD sulla collection `sessions`.
-// update() aggiorna solo i campi mutabili (loggedOut, isRevoked) lasciando immutabili
-// gli altri dati della sessione (userId, tokenId, loggedIn, expiresAt).
+/**
+ * MongoDB implementation of SessionRepository.
+ *
+ * Uses Mongoose for CRUD operations on the `sessions` collection.
+ * update() mutates only mutable fields (loggedOut, isRevoked) and keeps
+ * immutable session data unchanged (userId, tokenId, loggedIn, expiresAt).
+ */
 import { Session } from '../../domain/entities/Session';
 import { SessionRepository } from '../../domain/ports/SessionRepository';
 import { SessionModel } from './schemas/sessionSchema';

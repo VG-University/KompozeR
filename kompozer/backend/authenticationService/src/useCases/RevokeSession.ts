@@ -1,6 +1,9 @@
-// RevokeSession — Use case: revoca forzata di una sessione.
-// Un utente BASE può revocare solo le proprie sessioni; un ADMIN può revocare
-// qualsiasi sessione. La revoca imposta isRevoked=true nel DB.
+/**
+ * Use case for forced session revocation.
+ *
+ * A BASE user can revoke only owned sessions, while an ADMIN can revoke any
+ * session. Revocation sets isRevoked=true in persistence.
+ */
 import { SessionRepository } from '../domain/ports/SessionRepository';
 import { UserRepository } from '../domain/ports/UserRepository';
 import { UserRole } from '../domain/entities/UserRole';

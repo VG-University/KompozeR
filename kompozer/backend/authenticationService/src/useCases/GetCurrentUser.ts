@@ -1,6 +1,9 @@
-// GetCurrentUser — Use case: recupero del profilo dell'utente autenticato.
-// Riceve l'userId iniettato dall'API gateway tramite header X-User-Id
-// e restituisce il profilo completo (senza passwordHash).
+/**
+ * Use case for retrieving the authenticated user's profile.
+ *
+ * Receives userId injected by API Gateway (X-User-Id header)
+ * and returns complete profile data excluding password hash.
+ */
 import { Clock } from '../domain/ports/Clock';
 import { SessionRepository } from '../domain/ports/SessionRepository';
 import { UserRepository } from '../domain/ports/UserRepository';

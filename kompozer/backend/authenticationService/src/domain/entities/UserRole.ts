@@ -1,6 +1,10 @@
-// UserRole — Enum dei ruoli utente del sistema.
-// Definisce i tre livelli di accesso: GUEST (sessione ospite anonima),
-// BASE (utente registrato standard) e ADMIN (amministratore con privilegi estesi).
+/**
+ * System user roles.
+ *
+ * Defines three access levels:
+ * GUEST (anonymous guest session), BASE (standard registered user),
+ * and ADMIN (elevated privileges).
+ */
 export enum UserRole {
   GUEST = 'GUEST',
   BASE = 'BASE',

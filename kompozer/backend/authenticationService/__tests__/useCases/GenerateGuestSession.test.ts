@@ -1,6 +1,10 @@
-// GenerateGuestSession.test — Test TDD per il use case GenerateGuestSession.
-// Verifica: generazione di token con ruolo GUEST, unicità dello guestId, calcolo di expiresAt,
-// persistenza della sessione con isRevoked=false e loggedOut=null, prefisso 'guest_' nello username.
+/**
+ * TDD coverage for the GenerateGuestSession use case.
+ *
+ * Verifies GUEST token generation, guestId uniqueness, expiresAt calculation,
+ * session persistence with isRevoked=false and loggedOut=null,
+ * and guest_ username prefix in the response.
+ */
 import { GenerateGuestSession } from '../../src/useCases/GenerateGuestSession';
 import {
   FakeSessionRepository,

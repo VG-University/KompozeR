@@ -1,11 +1,16 @@
-// seed — Script di inizializzazione del database.
-// Legge DEVUSER.json dalla root del progetto, fa l'hash della password e
-// esegue un UPSERT dell'utente ADMIN su MongoDB. È idempotente: può essere
-// eseguito più volte senza creare duplicati. Se l'utente esiste già, aggiorna
-// password hash, email e ruolo in modo da restare sincronizzato con il file.
-//
-// Uso: npm run seed
-// Prerequisiti: MONGO_URI e JWT_SECRET devono essere definiti (o usa i default di sviluppo).
+/**
+ * Database seed script.
+ *
+ * Reads DEVUSER.json from the project root, hashes the password,
+ * and performs an ADMIN user upsert in MongoDB.
+ *
+ * The script is idempotent: running it multiple times does not create duplicates.
+ * If the user already exists, password hash, email, and role are updated to match
+ * the configuration file.
+ *
+ * Usage: npm run seed
+ * Prerequisites: MONGO_URI and JWT_SECRET must be set (or development defaults are used).
+ */
 
 import fs from 'fs';
 import path from 'path';
@@ -28,7 +33,7 @@ interface DevUserConfig {
 
 function readDevUserConfig(): DevUserConfig {
   const raw = fs.readFileSync(DEVUSER_PATH, 'utf-8');
-  // Rimuove i commenti // (non validi in JSON standard) prima del parsing.
+  // Remove // comments (not valid in standard JSON) before parsing.
   const stripped = raw.replace(/^\s*\/\/.*$/gm, '');
   return JSON.parse(stripped) as DevUserConfig;
 }

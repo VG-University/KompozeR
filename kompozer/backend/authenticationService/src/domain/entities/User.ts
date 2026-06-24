@@ -1,6 +1,9 @@
-// User — Entità di dominio che rappresenta un utente del sistema.
-// Contiene dati anagrafici, l'hash della password (mai la password in chiaro),
-// il ruolo e il flag isActive. Non dipende da nessun framework esterno.
+/**
+ * Domain entity representing a system user.
+ *
+ * Contains profile data, password hash (never plain password), role,
+ * and activation state. Framework-independent.
+ */
 import { UserRole } from './UserRole';
 
 export interface User {
