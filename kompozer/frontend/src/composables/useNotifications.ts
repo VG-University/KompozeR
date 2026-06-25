@@ -1,3 +1,4 @@
+/** Manages notification list state, unread counters, and mark-as-read actions. */
 import { computed, ref } from 'vue';
 import { notificationService } from '@/services/notificationService';
 import { useNotificationStore } from '@/store/notificationStore';
@@ -20,6 +21,7 @@ export function useNotifications() {
 
   const notifications = useNotificationStore();
 
+  /** Fetches paginated notifications and refreshes the global unread counter. */
   async function load(): Promise<void> {
     loading.value = true;
     error.value = '';
@@ -40,6 +42,7 @@ export function useNotifications() {
     }
   }
 
+  /** Marks a single notification as read via store, updating local state and badge. */
   async function markAsRead(item: Notification): Promise<void> {
     if (item.read) {
       return;
@@ -55,12 +58,14 @@ export function useNotifications() {
     }
   }
 
+  /** Toggles unread-only filter and reloads from page 1. */
   async function setUnreadOnly(value: boolean): Promise<void> {
     unreadOnly.value = value;
     page.value = 1;
     await load();
   }
 
+  /** Advances to the next notification page when available. */
   async function nextPage(): Promise<void> {
     if (!canNext.value) {
       return;
@@ -69,6 +74,7 @@ export function useNotifications() {
     await load();
   }
 
+  /** Returns to the previous notification page when available. */
   async function prevPage(): Promise<void> {
     if (!canPrev.value) {
       return;

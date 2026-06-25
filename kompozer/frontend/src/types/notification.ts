@@ -1,3 +1,4 @@
+/** Notification domain contracts for push events and unread counters. */
 export type NotificationType = 'PRICE_CHANGED' | 'AVAILABILITY_CHANGED';
 
 export interface Notification {

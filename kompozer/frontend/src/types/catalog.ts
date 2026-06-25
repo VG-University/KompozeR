@@ -1,3 +1,4 @@
+/** Catalog domain contracts for product listing and administrative operations. */
 export interface CatalogItem {
   id: string;
   sku: string;

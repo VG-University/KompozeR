@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** Authentication view for login, registration flow, and guest access. */
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/store/authStore';
@@ -17,6 +18,7 @@ const showRegistrationSuccess = ref(false);
 const login = reactive({ username: '', password: '' });
 const register = reactive({ username: '', email: '', password: '' });
 
+/** Maps login API failures to user-facing localized messages. */
 function mapLoginError(err: unknown): string {
   if (!(err instanceof ApiError)) {
     return 'Errore di accesso';
@@ -33,6 +35,7 @@ function mapLoginError(err: unknown): string {
   return 'Invalid username or password';
 }
 
+/** Maps registration failures and surfaces password validation details when available. */
 function mapRegisterError(err: unknown): string {
   if (!(err instanceof ApiError)) {
     return 'Errore di registrazione';
@@ -54,6 +57,7 @@ function mapRegisterError(err: unknown): string {
   return err.message;
 }
 
+/** Submits login credentials and redirects to the role-specific home route. */
 async function handleLogin(): Promise<void> {
   error.value = '';
   loading.value = true;
@@ -67,6 +71,7 @@ async function handleLogin(): Promise<void> {
   }
 }
 
+/** Registers a new user and returns the flow to login mode with success feedback. */
 async function handleRegister(): Promise<void> {
   error.value = '';
   loading.value = true;
@@ -85,12 +90,14 @@ async function handleRegister(): Promise<void> {
   }
 }
 
+/** Closes registration success modal and restores login state. */
 function handleRegistrationSuccessAcknowledge(): void {
   showRegistrationSuccess.value = false;
   error.value = '';
   mode.value = 'login';
 }
 
+/** Starts a guest session and navigates to the default guest landing page. */
 async function handleGuest(): Promise<void> {
   error.value = '';
   loading.value = true;

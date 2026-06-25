@@ -1,3 +1,4 @@
+/** Cart API client for cart mutation, retrieval, and checkout operations. */
 import { http } from './httpClient';
 import type { Cart, CheckoutResult } from '@/types/cart';
 

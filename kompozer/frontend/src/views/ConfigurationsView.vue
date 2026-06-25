@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** Dashboard view for configuration overview, quick creation, and reorder actions. */
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { cadService } from '@/services/cadService';
@@ -30,6 +31,7 @@ onMounted(() => {
   void loadDashboard();
 });
 
+/** Formats ISO datetime values for configuration cards. */
 function formatDate(iso: string): string {
   return new Intl.DateTimeFormat('it-IT', {
     dateStyle: 'short',
@@ -37,11 +39,13 @@ function formatDate(iso: string): string {
   }).format(new Date(iso));
 }
 
+/** Returns total configurations for a single lifecycle status. */
 async function countByStatus(status: ConfigurationStatus): Promise<number> {
   const result = await cadService.list({ status, page: 1, limit: 1 });
   return result.total;
 }
 
+/** Loads dashboard KPIs and recent configurations in parallel. */
 async function loadDashboard(): Promise<void> {
   loading.value = true;
   error.value = '';
@@ -66,6 +70,7 @@ async function loadDashboard(): Promise<void> {
   }
 }
 
+/** Creates a draft configuration from quick form and opens CAD workspace. */
 async function quickCreate(): Promise<void> {
   createLoading.value = true;
   try {
@@ -83,10 +88,12 @@ async function quickCreate(): Promise<void> {
   }
 }
 
+/** Opens an existing configuration directly in the CAD view. */
 async function openInCad(configuration: ConfigurationDto): Promise<void> {
   await router.push({ name: 'cad', query: { configurationId: configuration.id } });
 }
 
+/** Reorders a finalized configuration and redirects to cart overview. */
 async function reorder(configuration: ConfigurationDto): Promise<void> {
   reorderLoadingId.value = configuration.id;
   try {

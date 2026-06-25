@@ -1,3 +1,4 @@
+/** Loads catalog data and bridges catalog actions with cart updates. */
 import { ref } from 'vue';
 import { catalogService } from '@/services/catalogService';
 import { cartService } from '@/services/cartService';
@@ -18,6 +19,7 @@ export function useCatalog() {
 
   const notifications = useNotificationStore();
 
+  /** Fetches catalog items applying current search, category, and availability filters. */
   async function load(): Promise<void> {
     loading.value = true;
     error.value = '';
@@ -37,6 +39,7 @@ export function useCatalog() {
     }
   }
 
+  /** Adds one unit of a catalog item to cart and updates the header badge count. */
   async function addToCart(item: CatalogItem): Promise<void> {
     try {
       const updatedCart = await cartService.addItem(item.sku, {

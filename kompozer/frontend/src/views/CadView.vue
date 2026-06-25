@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** CAD configurator view orchestrating environment, design, and BOM workflows. */
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import type {
@@ -234,6 +235,7 @@ function formatDate(iso: string): string {
   }).format(new Date(iso));
 }
 
+/** Formats BOM or pricing values using localized euro currency. */
 function formatPrice(value: number): string {
   return new Intl.NumberFormat('it-IT', {
     style: 'currency',
@@ -242,15 +244,18 @@ function formatPrice(value: number): string {
   }).format(value);
 }
 
+/** Clamps and synchronizes the draft number of columns for plan editing. */
 function syncDraftLengths(nextCount: number): void {
   const safeCount = Math.max(1, Math.min(8, nextCount));
   columnCountDraft.value = safeCount;
 }
 
+/** Normalizes catalog component type values for safe comparisons. */
 function normalizedType(item: CatalogItem): string {
   return String(item.Type ?? '').trim().toUpperCase();
 }
 
+/** Maps backend component type identifiers to user-facing labels. */
 function formatComponentTypeLabel(componentType?: string): string {
   switch (componentType) {
     case 'RIPIANO':
@@ -266,10 +271,12 @@ function formatComponentTypeLabel(componentType?: string): string {
   }
 }
 
+/** Deduplicates and sorts numeric values in ascending order. */
 function uniqueSortedNumeric(values: number[]): number[] {
   return Array.from(new Set(values)).sort((a, b) => a - b);
 }
 
+/** Loads all available catalog items for the selected category across pages. */
 async function loadCatalogForCategory(category: Category | null): Promise<void> {
   if (!category) {
     categoryCatalogItems.value = [];
@@ -302,6 +309,7 @@ async function loadCatalogForCategory(category: Category | null): Promise<void> 
   }
 }
 
+/** Saves environment parameters, with reset confirmation when required. */
 async function saveEnvironment(): Promise<void> {
   if (!selected.value) return;
 
@@ -319,6 +327,7 @@ async function saveEnvironment(): Promise<void> {
   await updateEnvironment(environmentDraft.value);
 }
 
+/** Saves selected category, with reset confirmation when design already progressed. */
 async function saveCategory(value: string): Promise<void> {
   if (!selected.value || !value) {
     return;
@@ -343,11 +352,13 @@ async function saveCategory(value: string): Promise<void> {
   await updateCategory(nextCategory);
 }
 
+/** Advances reset confirmation flow to final irreversible confirmation. */
 async function confirmResetStepOne(): Promise<void> {
   showResetConfirm.value = false;
   showResetFinalConfirm.value = true;
 }
 
+/** Applies pending reset changes for environment and category updates. */
 async function confirmResetStepTwo(): Promise<void> {
   showResetFinalConfirm.value = false;
 
@@ -362,6 +373,7 @@ async function confirmResetStepTwo(): Promise<void> {
   }
 }
 
+/** Aborts reset flow and restores drafts from persisted configuration state. */
 function cancelReset(): void {
   showResetConfirm.value = false;
   showResetFinalConfirm.value = false;
@@ -373,6 +385,7 @@ function cancelReset(): void {
   }
 }
 
+/** Persists current column count and shelf width draft as column plan. */
 async function saveColumnPlan(): Promise<void> {
   const columnPlan: ColumnPlan = {
     columnCount: columnCountDraft.value,
@@ -381,14 +394,17 @@ async function saveColumnPlan(): Promise<void> {
   await updateColumnPlan(columnPlan);
 }
 
+/** Returns raw next-step options for a given column index. */
 function getOptions(columnIndex: number): NextOption[] {
   return nextOptionsByColumn.value[columnIndex] ?? [];
 }
 
+/** Returns effective options currently shown to user for a column. */
 function effectiveOptions(columnIndex: number): NextOption[] {
   return getOptions(columnIndex);
 }
 
+/** Maps option reason codes to localized explanatory messages. */
 function optionReason(option: NextOption): string {
   switch (option.reasonCode) {
     case 'INVALID_GAP':
@@ -417,10 +433,12 @@ function optionReason(option: NextOption): string {
   }
 }
 
+/** Checks whether at least one currently available option is selectable. */
 function hasAllowedOption(columnIndex: number): boolean {
   return effectiveOptions(columnIndex).some((option) => option.allowed);
 }
 
+/** Collects distinct blocking reasons for disabled options in a column. */
 function blockedReasons(columnIndex: number): string[] {
   const reasons = effectiveOptions(columnIndex)
     .filter((option) => !option.allowed)
@@ -429,6 +447,7 @@ function blockedReasons(columnIndex: number): string[] {
   return Array.from(new Set(reasons));
 }
 
+/** Builds compact UI summary for blocked reasons, truncating long lists. */
 function blockedReasonsSummary(columnIndex: number): string {
   const reasons = blockedReasons(columnIndex);
   if (reasons.length === 0) {
@@ -443,6 +462,7 @@ function blockedReasonsSummary(columnIndex: number): string {
     : visible.join(' · ');
 }
 
+  /** Fetches and stores next options for a column, selecting default allowed gap. */
 async function openNextOptions(columnIndex: number): Promise<void> {
   const options = await fetchNextOptions(columnIndex);
   setNextOptions(columnIndex, options);
@@ -452,6 +472,7 @@ async function openNextOptions(columnIndex: number): Promise<void> {
   };
 }
 
+/** Refreshes option sets for current column and adjacent impacted columns. */
 async function refreshOptionsAround(columnIndex: number): Promise<void> {
   const planIndexes = new Set(
     selected.value?.columnPlan?.columns.map((column) => column.index) ?? [],
@@ -463,6 +484,7 @@ async function refreshOptionsAround(columnIndex: number): Promise<void> {
   await Promise.all(valid.map((index) => openNextOptions(index)));
 }
 
+/** Adds a top shelf using selected or first allowed gap for the target column. */
 async function addShelf(columnIndex: number): Promise<void> {
   const gap = selectedGapByColumn.value[columnIndex] ?? effectiveOptions(columnIndex).find((o) => o.allowed)?.heightMm ?? null;
   if (!gap) {
@@ -476,11 +498,13 @@ async function addShelf(columnIndex: number): Promise<void> {
   await refreshOptionsAround(columnIndex);
 }
 
+/** Removes top shelf from a column and refreshes dependent options. */
 async function removeShelf(columnIndex: number): Promise<void> {
   await removeTopShelf(columnIndex, shelfThicknessDraft.value);
   await refreshOptionsAround(columnIndex);
 }
 
+/** Reloads currently selected configuration detail from backend source. */
 async function reloadSelected(): Promise<void> {
   if (!selected.value) {
     return;
@@ -489,14 +513,17 @@ async function reloadSelected(): Promise<void> {
   await loadDetail(selected.value.id);
 }
 
+/** Creates a new configuration directly from CAD landing state. */
 async function createFromCad(): Promise<void> {
   await createConfiguration();
 }
 
+/** Returns true when the requested step has already been completed. */
 function stepDone(index: number): boolean {
   return currentStepIndex.value > index;
 }
 
+/** Returns true for the currently active step in configurator wizard. */
 function stepActive(index: number): boolean {
   return currentStepIndex.value === index;
 }

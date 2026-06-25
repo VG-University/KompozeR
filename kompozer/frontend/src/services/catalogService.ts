@@ -1,3 +1,4 @@
+/** Catalog API client for browsing, filtering, and admin catalog management. */
 import { http } from './httpClient';
 import type { CatalogItem, CatalogListDto } from '@/types/catalog';
 

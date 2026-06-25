@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** Admin orders board for status filtering and order state transitions. */
 import { computed, onMounted, ref } from 'vue';
 import { orderService } from '@/services/orderService';
 import { useNotificationStore } from '@/store/notificationStore';
@@ -30,6 +31,7 @@ onMounted(() => {
   void load();
 });
 
+/** Formats order totals from cents to localized euro string. */
 function formatCurrency(cents: number): string {
   return new Intl.NumberFormat('it-IT', {
     style: 'currency',
@@ -37,6 +39,7 @@ function formatCurrency(cents: number): string {
   }).format(cents / 100);
 }
 
+/** Formats optional order timestamps, returning placeholder when absent. */
 function formatDate(iso?: string): string {
   if (!iso) {
     return '-';
@@ -47,6 +50,7 @@ function formatDate(iso?: string): string {
   }).format(new Date(iso));
 }
 
+/** Loads full order list used by status metrics and management actions. */
 async function load(): Promise<void> {
   loading.value = true;
   error.value = '';
@@ -60,6 +64,7 @@ async function load(): Promise<void> {
   }
 }
 
+/** Transitions a submitted order to DONE status. */
 async function markDone(order: Order): Promise<void> {
   updatingOrderId.value = order.id;
   try {
@@ -75,6 +80,7 @@ async function markDone(order: Order): Promise<void> {
   }
 }
 
+/** Transitions a submitted order to CANCELLED status. */
 async function markCancelled(order: Order): Promise<void> {
   updatingOrderId.value = order.id;
   try {
@@ -89,18 +95,22 @@ async function markCancelled(order: Order): Promise<void> {
   }
 }
 
+/** Applies status filter used by table and KPI highlighting. */
 function setStatusFilter(status: OrderStatus | ''): void {
   statusFilter.value = status;
 }
 
+/** Opens confirmation modal for DONE transition. */
 function openDoneConfirmation(order: Order): void {
   orderToConfirmDone.value = order;
 }
 
+/** Closes DONE confirmation modal without changing order state. */
 function closeDoneConfirmation(): void {
   orderToConfirmDone.value = null;
 }
 
+/** Confirms DONE transition for currently selected order. */
 function confirmMarkDone(): void {
   if (!orderToConfirmDone.value) {
     return;
@@ -108,10 +118,12 @@ function confirmMarkDone(): void {
   void markDone(orderToConfirmDone.value);
 }
 
+/** Closes informational modal for blocked state transitions. */
 function closeBlockedActionModal(): void {
   blockedActionMessage.value = '';
 }
 
+/** Guards DONE transition requests to submitted orders only. */
 function requestMarkDone(order: Order): void {
   if (order.status !== 'SUBMITTED') {
     blockedActionMessage.value = `Operazione non consentita: l'ordine ${order.id} e' in stato ${order.status}.`;
@@ -120,6 +132,7 @@ function requestMarkDone(order: Order): void {
   openDoneConfirmation(order);
 }
 
+/** Guards CANCELLED transition requests to submitted orders only. */
 function requestMarkCancelled(order: Order): void {
   if (order.status !== 'SUBMITTED') {
     blockedActionMessage.value = `Operazione non consentita: l'ordine ${order.id} e' in stato ${order.status}.`;

@@ -1,3 +1,4 @@
+/** Cart domain contracts used by cart services, store, and views. */
 export interface CartItem {
   sku: string;
   name: string;

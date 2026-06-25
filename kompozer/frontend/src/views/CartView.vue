@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** Cart view for quantity updates, totals review, and checkout actions. */
 import { computed, onMounted } from 'vue';
 import { RouterLink } from 'vue-router';
 import { useCart } from '@/composables/useCart';

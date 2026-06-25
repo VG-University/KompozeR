@@ -1,3 +1,4 @@
+/** Coordinates cart operations and local UI state for cart interactions. */
 import { ref } from 'vue';
 import { cartService } from '@/services/cartService';
 import { useNotificationStore } from '@/store/notificationStore';
@@ -15,6 +16,7 @@ export function useCart() {
   const notifications = useNotificationStore();
   const cartStore = useCartStore();
 
+  /** Fetches current cart from the API and syncs local store badge count. */
   async function load(): Promise<void> {
     loading.value = true;
     error.value = '';
@@ -28,6 +30,7 @@ export function useCart() {
     }
   }
 
+  /** Sets item quantity, removing the line when quantity reaches zero. */
   async function setQuantity(item: CartItem, quantity: number): Promise<void> {
     const safeQuantity = Math.max(0, quantity);
     try {
@@ -47,6 +50,7 @@ export function useCart() {
     }
   }
 
+  /** Submits cart as order, clears badge, and reloads cart state. */
   async function checkout(): Promise<void> {
     checkoutLoading.value = true;
     try {
@@ -62,6 +66,7 @@ export function useCart() {
     }
   }
 
+  /** Empties the cart entirely and resets the header badge to zero. */
   async function clearCart(): Promise<void> {
     clearLoading.value = true;
     try {

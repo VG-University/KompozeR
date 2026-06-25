@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** Root shell that wires auth-aware realtime notifications and global layout. */
 import { onUnmounted, watch } from 'vue';
 import { RouterView } from 'vue-router';
 import { useAuthStore } from '@/store/authStore';
@@ -15,6 +16,7 @@ const cart = useCartStore();
 let removeNotificationPushListener: (() => void) | null = null;
 let removeConnectionRestoredListener: (() => void) | null = null;
 
+/** Rebinds realtime listeners whenever authentication state changes. */
 watch(
   () => auth.isLoggedIn,
   async (isLoggedIn) => {
@@ -69,6 +71,7 @@ watch(
   { immediate: true },
 );
 
+/** Clears socket listeners and closes connection when the root view is destroyed. */
 onUnmounted(() => {
   removeNotificationPushListener?.();
   removeConnectionRestoredListener?.();

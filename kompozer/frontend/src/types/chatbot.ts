@@ -1,3 +1,4 @@
+/** Chatbot domain contracts for sessions, message payloads, and history responses. */
 export type ChatSessionStatus = 'ACTIVE' | 'CLOSED';
 export type ChatMessageRole = 'USER' | 'BOT';
 

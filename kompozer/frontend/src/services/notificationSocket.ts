@@ -1,3 +1,4 @@
+/** WebSocket client for receiving realtime notification events. */
 import { io, type Socket } from 'socket.io-client';
 import type { Notification } from '@/types/notification';
 

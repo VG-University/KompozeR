@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** Chatbot view handling session lifecycle, realtime events, and message exchange. */
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { chatbotService } from '@/services/chatbotService';
@@ -30,6 +31,7 @@ const configurationId = computed(() => {
 
 const isClosed = computed(() => session.value?.status === 'CLOSED');
 
+/** Immediately hides typing state and clears any delayed hide timers. */
 function resetTypingIndicator(): void {
   if (typingHideTimer) {
     clearTimeout(typingHideTimer);
@@ -39,6 +41,10 @@ function resetTypingIndicator(): void {
   typingVisibleSince = 0;
 }
 
+/**
+ * Updates bot typing UI while enforcing a minimum visible duration.
+ * @param active True when the typing indicator should be shown.
+ */
 function setTypingIndicator(active: boolean): void {
   if (active) {
     if (typingHideTimer) {
@@ -70,6 +76,7 @@ function setTypingIndicator(active: boolean): void {
   }, wait);
 }
 
+/** Formats ISO timestamps for the chat timeline. */
 function formatTime(iso: string): string {
   return new Intl.DateTimeFormat('it-IT', {
     dateStyle: 'short',
@@ -77,6 +84,7 @@ function formatTime(iso: string): string {
   }).format(new Date(iso));
 }
 
+/** Opens a brand-new chat session, optionally scoped to a configuration. */
 async function openFreshSession(): Promise<void> {
   loading.value = true;
   error.value = '';
@@ -91,6 +99,7 @@ async function openFreshSession(): Promise<void> {
   }
 }
 
+/** Restores chat from route session id or starts a new one when absent. */
 async function initializeChat(): Promise<void> {
   const sessionId = typeof route.query['sessionId'] === 'string' ? route.query['sessionId'] : '';
   if (!sessionId) {
@@ -115,6 +124,7 @@ async function initializeChat(): Promise<void> {
   }
 }
 
+/** Sends current draft text and appends resulting user/bot messages. */
 async function sendMessage(): Promise<void> {
   const content = draft.value.trim();
   if (!content || !session.value || isClosed.value) {
@@ -135,6 +145,7 @@ async function sendMessage(): Promise<void> {
   }
 }
 
+/** Appends a message only if it belongs to the active session and is new. */
 function pushMessageIfMissing(message: ChatMessageDto): void {
   if (!session.value || message.sessionId !== session.value.id) {
     return;
@@ -151,6 +162,7 @@ function pushMessageIfMissing(message: ChatMessageDto): void {
   }
 }
 
+/** Closes active chat session and prevents further message submissions. */
 async function closeChat(): Promise<void> {
   if (!session.value || isClosed.value) {
     return;

@@ -1,3 +1,4 @@
+/** Reporting contracts for trend charts and aggregate dashboard metrics. */
 export interface DailyTrendPoint {
   date: string;
   submitted: number;

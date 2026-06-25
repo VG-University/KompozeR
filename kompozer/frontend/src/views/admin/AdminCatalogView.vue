@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** Admin catalog management view for component CRUD and commercial updates. */
 import { onMounted, reactive, ref } from 'vue';
 import { catalogService, type CatalogListParams } from '@/services/catalogService';
 import { useNotificationStore } from '@/store/notificationStore';
@@ -44,6 +45,7 @@ onMounted(() => {
   void load();
 });
 
+/** Formats prices from cents for admin table display. */
 function formatCurrency(cents: number): string {
   return new Intl.NumberFormat('it-IT', {
     style: 'currency',
@@ -51,6 +53,7 @@ function formatCurrency(cents: number): string {
   }).format(cents / 100);
 }
 
+/** Builds catalog query parameters from current admin filters. */
 function buildListParams(): CatalogListParams {
   return {
     page: 1,
@@ -61,6 +64,7 @@ function buildListParams(): CatalogListParams {
   };
 }
 
+/** Converts euro decimal input to integer cents expected by APIs. */
 function parseEuroToCents(value: string): number {
   const normalized = value.replace(',', '.').trim();
   const num = Number(normalized);
@@ -70,6 +74,7 @@ function parseEuroToCents(value: string): number {
   return Math.round(num * 100);
 }
 
+/** Parses and validates non-negative integer dimensions from form inputs. */
 function parseNonNegativeInt(value: string, fieldLabel: string): number {
   const n = Number(value);
   if (!Number.isFinite(n) || n < 0 || !Number.isInteger(n)) {
@@ -78,6 +83,7 @@ function parseNonNegativeInt(value: string, fieldLabel: string): number {
   return n;
 }
 
+/** Initializes editable commercial fields from loaded catalog items. */
 function initCommercialState(list: CatalogItem[]): void {
   for (const item of list) {
     editCommercial[item.id] = {
@@ -87,6 +93,7 @@ function initCommercialState(list: CatalogItem[]): void {
   }
 }
 
+/** Loads catalog list for admin management and syncs editable state map. */
 async function load(): Promise<void> {
   loading.value = true;
   error.value = '';
@@ -101,6 +108,7 @@ async function load(): Promise<void> {
   }
 }
 
+/** Resets the create-component modal form to default values. */
 function resetCreateForm(): void {
   createForm.sku = '';
   createForm.name = '';
@@ -116,15 +124,18 @@ function resetCreateForm(): void {
   createForm.compatibleCategory = '';
 }
 
+/** Opens creation modal and prepares a clean form state. */
 function openCreateModal(): void {
   resetCreateForm();
   isCreateModalOpen.value = true;
 }
 
+/** Closes component creation modal. */
 function closeCreateModal(): void {
   isCreateModalOpen.value = false;
 }
 
+/** Creates a new catalog component and refreshes the admin list. */
 async function createComponent(): Promise<void> {
   creating.value = true;
   try {
@@ -159,6 +170,7 @@ async function createComponent(): Promise<void> {
   }
 }
 
+/** Saves price and availability updates for a single catalog component. */
 async function saveCommercial(item: CatalogItem): Promise<void> {
   const state = editCommercial[item.id];
   if (!state) return;
@@ -185,6 +197,7 @@ async function saveCommercial(item: CatalogItem): Promise<void> {
   }
 }
 
+/** Deletes a catalog component after explicit user confirmation. */
 async function deleteComponent(item: CatalogItem): Promise<void> {
   const confirmDelete = confirm(`Eliminare il componente ${item.sku}?`);
   if (!confirmDelete) return;

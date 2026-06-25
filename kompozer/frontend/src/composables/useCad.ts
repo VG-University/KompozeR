@@ -1,3 +1,4 @@
+/** Exposes reactive CAD workflow state and actions for configurator views. */
 import { computed, ref } from 'vue';
 import { cadService, type ConfigurationStatus as ServiceConfigurationStatus } from '@/services/cadService';
 import { useNotificationStore } from '@/store/notificationStore';
@@ -43,6 +44,7 @@ export function useCad() {
   const canPrev = computed(() => page.value > 1);
   const canNext = computed(() => page.value < totalPages.value);
 
+  /** Loads paginated configuration list applying current status filter. */
   async function loadList(): Promise<void> {
     loading.value = true;
     error.value = '';
@@ -69,6 +71,7 @@ export function useCad() {
     }
   }
 
+  /** Loads a single configuration by id into the selected slot. */
   async function loadDetail(id: string): Promise<void> {
     detailLoading.value = true;
     try {
@@ -81,6 +84,7 @@ export function useCad() {
     }
   }
 
+  /** Creates a new draft configuration from the current name input and selects it. */
   async function createConfiguration(): Promise<void> {
     createLoading.value = true;
     try {
@@ -98,6 +102,7 @@ export function useCad() {
     }
   }
 
+  /** Sets category on the selected configuration and refreshes list state. */
   async function updateCategory(category: Category): Promise<void> {
     if (!selected.value) {
       return;
@@ -115,6 +120,7 @@ export function useCad() {
     }
   }
 
+  /** Saves environment dimensions on the selected configuration. */
   async function updateEnvironment(environment: Environment): Promise<void> {
     if (!selected.value) {
       return;
@@ -132,6 +138,7 @@ export function useCad() {
     }
   }
 
+  /** Persists column layout plan on the selected configuration. */
   async function updateColumnPlan(columnPlan: ColumnPlan): Promise<void> {
     if (!selected.value) {
       return;
@@ -149,6 +156,7 @@ export function useCad() {
     }
   }
 
+  /** Saves full column design array (shelf levels) on the selected configuration. */
   async function updateDesign(columnDesigns: ColumnDesign[]): Promise<void> {
     if (!selected.value) {
       return;
@@ -166,6 +174,7 @@ export function useCad() {
     }
   }
 
+  /** Retrieves allowed/blocked next-shelf options for a column from the backend. */
   async function fetchNextOptions(columnIndex: number): Promise<NextOptionsDto['options']> {
     if (!selected.value) {
       return [];
@@ -190,6 +199,7 @@ export function useCad() {
     }
   }
 
+  /** Writes preloaded options into the reactive map without an API call. */
   function setNextOptions(columnIndex: number, options: NextOptionsDto['options']): void {
     nextOptionsByColumn.value = {
       ...nextOptionsByColumn.value,
@@ -197,6 +207,7 @@ export function useCad() {
     };
   }
 
+  /** Builds a mutable design draft from the selected configuration's current state. */
   function createDesignDraft(defaultShelfThicknessMm = SHELF_THICKNESS_MM): ColumnDesign[] {
     if (!selected.value?.columnPlan) {
       return [];
@@ -219,6 +230,7 @@ export function useCad() {
       });
   }
 
+  /** Appends a shelf at the next valid level for the specified column, then persists the design. */
   async function addTopShelf(
     columnIndex: number,
     gapHeightMm: number,
@@ -244,6 +256,7 @@ export function useCad() {
     await updateDesign(draft);
   }
 
+  /** Removes the highest shelf from the specified column and persists the updated design. */
   async function removeTopShelf(
     columnIndex: number,
     shelfThicknessMm = SHELF_THICKNESS_MM,
@@ -262,6 +275,7 @@ export function useCad() {
     await updateDesign(draft);
   }
 
+  /** Finalizes the selected configuration and adds its BOM to the cart. */
   async function finalizeSelected(): Promise<void> {
     if (!selected.value) {
       return;
@@ -279,12 +293,14 @@ export function useCad() {
     }
   }
 
+  /** Applies a lifecycle status filter and reloads from page 1. */
   async function setStatusFilter(value: ServiceConfigurationStatus | ''): Promise<void> {
     statusFilter.value = value;
     page.value = 1;
     await loadList();
   }
 
+  /** Advances to the next configuration list page when available. */
   async function nextPage(): Promise<void> {
     if (!canNext.value) {
       return;
@@ -293,6 +309,7 @@ export function useCad() {
     await loadList();
   }
 
+  /** Returns to the previous configuration list page when available. */
   async function prevPage(): Promise<void> {
     if (!canPrev.value) {
       return;

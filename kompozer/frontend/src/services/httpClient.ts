@@ -1,3 +1,4 @@
+/** Shared HTTP wrapper that normalizes API calls and error handling. */
 import { ApiError, type ApiErrorResponse } from '@/types/api';
 
 const BASE_URL = '/api';

@@ -1,3 +1,4 @@
+/** Order domain contracts for order listing and status transitions. */
 export type OrderStatus = 'SUBMITTED' | 'DONE' | 'CANCELLED';
 
 export interface OrderItem {

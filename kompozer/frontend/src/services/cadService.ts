@@ -1,3 +1,4 @@
+/** CAD API client for configuration lifecycle operations and snapshots. */
 import { http } from './httpClient';
 import type {
   ConfigurationDto,

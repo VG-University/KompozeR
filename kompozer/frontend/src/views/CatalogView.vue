@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** Catalog browsing view with filters and add-to-cart interactions. */
 import { onMounted } from 'vue';
 import { useCatalog } from '@/composables/useCatalog';
 

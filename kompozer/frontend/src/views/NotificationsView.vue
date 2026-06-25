@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** Notifications inbox view with unread filtering and pagination controls. */
 import { onMounted } from 'vue';
 import type { NotificationType } from '@/types/notification';
 import { useNotifications } from '@/composables/useNotifications';
@@ -24,6 +25,7 @@ onMounted(() => {
   void load();
 });
 
+/** Formats notification creation timestamps for list rendering. */
 function formatDate(iso: string): string {
   return new Intl.DateTimeFormat('it-IT', {
     dateStyle: 'short',
@@ -31,6 +33,7 @@ function formatDate(iso: string): string {
   }).format(new Date(iso));
 }
 
+/** Converts notification type codes to localized labels. */
 function typeLabel(type: NotificationType): string {
   if (type === 'PRICE_CHANGED') {
     return 'Prezzo aggiornato';

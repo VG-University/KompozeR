@@ -1,3 +1,4 @@
+/** Chatbot HTTP client for sessions, history retrieval, and message posting. */
 import { http } from './httpClient';
 import type { ChatMessagesListDto, ChatSessionDto, SendChatMessageDto } from '@/types/chatbot';
 

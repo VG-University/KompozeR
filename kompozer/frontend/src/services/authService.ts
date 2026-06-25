@@ -1,3 +1,4 @@
+/** Authentication API client for login, register, guest, and session endpoints. */
 import { http } from './httpClient';
 import type { AuthResponse, AuthUser, GuestAuthResponse, LoginRequest, RegisterRequest } from '@/types/auth';
 

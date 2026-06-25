@@ -1,3 +1,4 @@
+/** Orders API client for querying and updating order states. */
 import { http } from './httpClient';
 import type { Order, OrdersListDto } from '@/types/order';
 

@@ -1,3 +1,4 @@
+/** Notifications API client for list retrieval, unread counters, and mark-as-read. */
 import { http } from './httpClient';
 import type { NotificationsListDto, UnreadCountDto, Notification } from '@/types/notification';
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** Admin reporting view for date-range trends, KPIs, and daily order analytics. */
 import { computed, onMounted, ref } from 'vue';
 import { reportingService } from '@/services/reportingService';
 import type { OrderTrendDto } from '@/types/reporting';
@@ -51,6 +52,7 @@ onMounted(() => {
   void load();
 });
 
+/** Formats monetary KPI values from cents to localized euro string. */
 function formatCurrency(cents: number): string {
   return new Intl.NumberFormat('it-IT', {
     style: 'currency',
@@ -58,12 +60,14 @@ function formatCurrency(cents: number): string {
   }).format(cents / 100);
 }
 
+/** Formats reporting date keys as local calendar dates. */
 function formatDate(iso: string): string {
   return new Intl.DateTimeFormat('it-IT', {
     dateStyle: 'short',
   }).format(new Date(`${iso}T00:00:00.000Z`));
 }
 
+/** Loads trend dataset for selected date range filters. */
 async function load(): Promise<void> {
   loading.value = true;
   error.value = '';
@@ -79,6 +83,7 @@ async function load(): Promise<void> {
   }
 }
 
+/** Clears date filters and reloads report for full available range. */
 async function setAllTime(): Promise<void> {
   from.value = '';
   to.value = '';

@@ -1,3 +1,4 @@
+/** Reporting API client for dashboard trend and aggregate data retrieval. */
 import { http } from './httpClient';
 import type { OrderTrendDto } from '@/types/reporting';
 

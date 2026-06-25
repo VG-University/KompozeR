@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** Global toast presenter that renders notification store messages via Teleport. */
 import { useNotificationStore } from '@/store/notificationStore';
 
 const store = useNotificationStore();

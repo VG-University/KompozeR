@@ -1,3 +1,4 @@
+/** CAD domain contracts for configurations, components, and lifecycle statuses. */
 export type ConfigurationStatus =
   | 'DRAFT'
   | 'ENVIRONMENT_DEFINED'

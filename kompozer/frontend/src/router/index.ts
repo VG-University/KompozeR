@@ -1,3 +1,4 @@
+/** Defines frontend route map and role-based navigation guards. */
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 import { useAuthStore } from '@/store/authStore';
 

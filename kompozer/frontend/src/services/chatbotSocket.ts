@@ -1,3 +1,4 @@
+/** WebSocket client for realtime chatbot message exchange and connection state. */
 import { io, type Socket } from 'socket.io-client';
 import type { ChatMessageDto, SendChatMessageDto } from '@/types/chatbot';
 

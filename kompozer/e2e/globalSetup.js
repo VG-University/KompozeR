@@ -1,9 +1,10 @@
-// globalSetup.js — Plain CJS, eseguito una volta prima di tutti i test.
-// 1. Verifica che il gateway su localhost:3000 sia raggiungibile.
-// 2. Esegue il seed idempotente dell'admin (devuser) su authdb,
-//    in modo che i test catalog abbiano sempre un ADMIN disponibile.
-//
-// Prerequisito: docker compose -f docker-compose.dev.yml up
+/**
+ * Global setup executed once before the e2e suite.
+ * 1) Waits for gateway and dependent services readiness.
+ * 2) Runs idempotent admin seed for tests requiring ADMIN privileges.
+ *
+ * Prerequisite: docker compose -f docker-compose.dev.yml up
+ */
 
 const http         = require('http');
 const { execSync } = require('child_process');
@@ -12,6 +13,10 @@ const fs           = require('fs');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+/**
+ * Checks if API gateway is reachable and responsive.
+ * @returns {Promise<boolean>} True when the gateway responds without server errors.
+ */
 function checkGateway() {
   return new Promise(resolve => {
     http
@@ -22,6 +27,14 @@ function checkGateway() {
   });
 }
 
+/**
+ * Performs an HTTP request against the gateway and returns parsed payload metadata.
+ * @param {string} pathname Relative gateway path.
+ * @param {string} [method='GET'] HTTP method.
+ * @param {Record<string, string>} [headers={}] Request headers.
+ * @param {string|null} [body=null] Optional request body.
+ * @returns {Promise<{status:number, body:unknown, raw:string}>} Parsed response information.
+ */
 function requestGateway(pathname, method = 'GET', headers = {}, body = null) {
   return new Promise(resolve => {
     const req = http.request(
@@ -62,10 +75,19 @@ function requestGateway(pathname, method = 'GET', headers = {}, body = null) {
   });
 }
 
+/**
+ * Waits for the provided milliseconds.
+ * @param {number} ms Delay in milliseconds.
+ * @returns {Promise<void>} Promise resolved after the delay.
+ */
 function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
 }
 
+/**
+ * Resolves the npm executable command across platforms.
+ * @returns {string} Shell-ready npm command string.
+ */
 function resolveNpmCommand() {
   if (process.platform !== 'win32') {
     return 'npm';
@@ -91,6 +113,11 @@ function resolveNpmCommand() {
   return 'npm.cmd';
 }
 
+/**
+ * Prepends current Node.js runtime directory to PATH variables.
+ * @param {NodeJS.ProcessEnv} env Base environment object.
+ * @returns {NodeJS.ProcessEnv} Environment with PATH and Path updated.
+ */
 function withNodeInPath(env) {
   const nodeDir = path.dirname(process.execPath);
   const currentPath = env.PATH || env.Path || '';
@@ -102,6 +129,10 @@ function withNodeInPath(env) {
   };
 }
 
+/**
+ * Derives setup prerequisites from selected test targets.
+ * @returns {{needsAuth:boolean,needsCatalog:boolean,needsCad:boolean,needsReporting:boolean,needsAdminSeed:boolean}} Required setup flags.
+ */
 function detectTargetNeeds() {
   const rawArgs = [process.argv.join(' '), process.env.npm_config_argv || '']
     .join(' ')
@@ -149,6 +180,10 @@ function detectTargetNeeds() {
 
 // ── globalSetup ──────────────────────────────────────────────────────────────
 
+/**
+ * Orchestrates service readiness checks and optional admin seeding before tests.
+ * @returns {Promise<void>} Resolves when environment is ready or throws on critical failures.
+ */
 module.exports = async function globalSetup() {
   const targets = detectTargetNeeds();
 

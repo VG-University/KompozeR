@@ -1,3 +1,4 @@
+/** Authentication request and response contracts shared across frontend modules. */
 export interface LoginRequest {
   username: string;
   password: string;

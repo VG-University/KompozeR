@@ -1,3 +1,4 @@
+/** Jest configuration for gateway-based end-to-end integration tests. */
 /** @type {import('jest').Config} */
 module.exports = {
   preset:          'ts-jest',

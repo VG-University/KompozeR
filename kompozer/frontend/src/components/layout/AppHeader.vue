@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** Main application header with role-based navigation and live badge counters. */
 import { computed, onMounted, onUnmounted } from 'vue';
 import { RouterLink, useRouter } from 'vue-router';
 import { useAuthStore } from '@/store/authStore';

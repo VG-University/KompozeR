@@ -1,3 +1,4 @@
+/** Central authentication store for session state and user identity. */
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { AuthUser } from '@/types/auth';
@@ -7,6 +8,7 @@ const TOKEN_KEY = 'kompozer_token';
 const USER_KEY = 'kompozer_user';
 const GUEST_KEY = 'kompozer_guest';
 
+/** Reads and deserializes the persisted user from localStorage, clearing stale data on failure. */
 function readStoredUser(): AuthUser | null {
   const raw = localStorage.getItem(USER_KEY);
   if (!raw) {
@@ -31,11 +33,13 @@ export const useAuthStore = defineStore('auth', () => {
   const isBaseUser = computed(() => isLoggedIn.value && !isGuest.value && !isAdmin.value);
   const homeRouteName = computed(() => (isAdmin.value ? 'admin-orders' : 'cad'));
 
+  /** Stores the JWT in memory and localStorage. */
   function persistToken(t: string): void {
     token.value = t;
     localStorage.setItem(TOKEN_KEY, t);
   }
 
+  /** Stores or clears the authenticated user in memory and localStorage. */
   function persistUser(nextUser: AuthUser | null): void {
     user.value = nextUser;
     if (nextUser) {
@@ -45,6 +49,7 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem(USER_KEY);
   }
 
+  /** Tracks guest flag in memory and localStorage. */
   function persistGuest(nextValue: boolean): void {
     isGuest.value = nextValue;
     if (nextValue) {
@@ -54,6 +59,7 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem(GUEST_KEY);
   }
 
+  /** Wipes all session data from memory and localStorage. */
   function clearSession(): void {
     token.value = null;
     persistUser(null);
@@ -61,6 +67,7 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem(TOKEN_KEY);
   }
 
+  /** Fetches the current user from the API when a token exists but user data is missing. */
   async function hydrateCurrentUser(): Promise<void> {
     if (!token.value || isGuest.value || user.value) {
       return;
@@ -74,6 +81,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  /** Authenticates with credentials, persisting token and user on success. */
   async function login(username: string, password: string): Promise<void> {
     const res = await authService.login({ username, password });
     persistToken(res.token);
@@ -81,6 +89,7 @@ export const useAuthStore = defineStore('auth', () => {
     persistGuest(false);
   }
 
+  /** Registers a new user and immediately persists the resulting session. */
   async function register(username: string, email: string, password: string): Promise<void> {
     const res = await authService.register({ username, email, password });
     persistToken(res.token);
@@ -88,6 +97,7 @@ export const useAuthStore = defineStore('auth', () => {
     persistGuest(false);
   }
 
+  /** Creates an anonymous guest session and persists the token without user data. */
   async function loginAsGuest(): Promise<void> {
     const res = await authService.guest();
     persistToken(res.token);
@@ -95,6 +105,7 @@ export const useAuthStore = defineStore('auth', () => {
     persistGuest(true);
   }
 
+  /** Clears all session data and triggers logout across the application. */
   function logout(): void {
     clearSession();
   }
