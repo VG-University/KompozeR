@@ -1,6 +1,8 @@
 \section{Requisiti}
 
-La definizione dei requisiti di KompozeR e' stata costruita seguendo un approccio orientato all'utente. In particolare, la fase di analisi e' stata articolata a partire dall'individuazione degli stakeholder principali, dalla costruzione di personas rappresentative e dalla descrizione di scenari e casi d'uso centrali. Questo consente di giustificare i requisiti di business, funzionali e non funzionali come derivazione diretta di esigenze concrete del dominio applicativo.
+La definizione dei requisiti di KompozeR e' stata costruita seguendo un approccio orientato all'utente. 
+In particolare, la fase di analisi e' stata articolata a partire dall'individuazione degli stakeholder principali, dalla costruzione di personas rappresentative e dalla descrizione di scenari e casi d'uso centrali. 
+Questo consente di giustificare i requisiti di business, funzionali e non funzionali come derivazione diretta di esigenze concrete del dominio applicativo.
 
 \subsection{Stakeholder}
 
@@ -17,7 +19,7 @@ L'identificazione degli stakeholder consente di chiarire chi trae valore dal sis
 \hline
 Cliente finale & Utente che desidera progettare e acquistare una scaffalatura personalizzata & Configurare rapidamente il prodotto corretto, capire prezzo e compatibilita', completare l'acquisto senza errori & Configuratore chiaro, anteprima affidabile, salvataggio configurazioni \\
 \hline
-Cliente registrato ricorrente & Utente che torna sul sito per modificare o riordinare una configurazione & Riutilizzare o modificare configurazioni salvate & Storico configurazioni, accesso rapido \\
+Cliente registrato ricorrente & Utente che torna sul sito per modificare o riordinare una configurazione & Riordinare o modificare configurazioni salvate & Storico configurazioni, accesso rapido \\
 \hline
 Amministratore catalogo & Operatore che gestisce prodotti, componenti, disponibilita' e prezzi & Mantenere coerente il catalogo e rendere acquistabili solo combinazioni valide & Interfacce di gestione chiare, aggiornamenti rapidi, controllo consistenza dati \\
 \hline
@@ -34,13 +36,13 @@ Amministratore catalogo & Operatore che gestisce prodotti, componenti, disponibi
 \hline
 \textbf{Stakeholder} & \textbf{Ruolo nel progetto} & \textbf{Interesse principale} \\
 \hline
-Azienda Kompo & Committente del prodotto & Aumentare conversione, ridurre abbandono, migliorare esperienza d'acquisto \\
+Azienda Kompo & Committente del prodotto & Aumentare vendite, ridurre abbandono in fase di progettazione, migliorare esperienza d'acquisto \\
 \hline
-Team di sviluppo & Realizza e mantiene il sistema & Requisiti chiari, comportamento verificabile, architettura evolvibile \\
+Team di sviluppo & Realizza e mantiene il sistema & Requisiti chiari, comportamento verificabile, architettura manutenibile ed estendibile \\
 \hline
 Servizio clienti & Supporta utenti con dubbi o problemi & Ridurre richieste ripetitive grazie a configuratore e assistenza automatizzata \\
 \hline
-Responsabile business/reportistica & Analizza andamento vendite e utilizzo del sistema & Ottenere insight utili su trend di vendita e utilizzo delle funzionalita' \\
+Responsabile business/reportistica & Analizza andamento ordini e utilizzo del sistema & Ottenere insight utili su trend ordini \\
 \hline
 \end{tabular}
 \end{center}
@@ -52,38 +54,40 @@ Per guidare la definizione dei requisiti sono state individuate tre personas rap
 
 \subsubsection{Marta, cliente orientata alla praticita'}
 
-Marta ha 34 anni, e' architetta freelance e desidera arredare uno studio domestico con una soluzione modulare compatibile con lo spazio disponibile. Ha buone competenze digitali e si aspetta un configuratore guidato, capace di mostrare chiaramente il risultato finale e il prezzo complessivo. Le sue principali frustrazioni riguardano la complessita' dei cataloghi tecnici, i dubbi sulla compatibilita' tra componenti e il rischio di perdere il lavoro svolto durante la configurazione.
+Marta ha 34 anni, e' architetta freelance e desidera arredare uno studio domestico con una soluzione modulare compatibile con lo spazio disponibile. 
+Ha buone competenze digitali e si aspetta un configuratore guidato, capace di mostrare il risultato finale e il prezzo complessivo.
+Le criticità che solitamente riscontra riguardano la complessita' dei cataloghi tecnici, i dubbi sulla compatibilita' tra componenti, un mancato check sulla correttezza del progetto e il rischio di perdere il lavoro svolto durante la configurazione.
 
 \subsubsection{Luca, cliente indeciso ma motivato all'acquisto}
 
-Luca ha 28 anni, e' impiegato e vuole arredare il soggiorno pur non conoscendo in dettaglio il dominio dei mobili componibili. Ha competenze digitali medie e necessita di un'interfaccia semplice, di un supporto contestuale sui prezzi e della possibilita' di salvare una configurazione per riprenderla in seguito. La sua esigenza principale e' evitare errori di comprensione durante il processo di acquisto.
+Luca ha 28 anni, e' impiegato e vuole arredare il soggiorno pur non conoscendo in dettaglio il dominio Kompo.
+Ha competenze digitali medie e necessita di un'interfaccia semplice, di un supporto contestuale sui prezzi e della possibilita' di mettere in standby una configurazione per riprenderla in seguito. 
+La sua esigenza principale e' evitare errori di comprensione durante il processo di acquisto.
 
-\subsubsection{Giulia, amministratrice del catalogo}
+\subsubsection{Fabio, amministratore del catalogo}
 
-Giulia ha 41 anni ed e' responsabile operativa dell'e-commerce. Si occupa di aggiornare prezzi e disponibilita' dei componenti e ha bisogno di strumenti amministrativi chiari, rapidi e coerenti con il resto del sistema. Il suo obiettivo e' garantire che le configurazioni costruite dagli utenti restino allineate con i dati reali del catalogo e con le informazioni operative.
+Fabio ha 48 anni ed e' responsabile operativo dell'e-commerce. 
+Si occupa di aggiornare prezzi e disponibilita' dei componenti e ha bisogno di strumenti amministrativi chiari, rapidi e coerenti con il resto del sistema. 
+Il suo obiettivo e' garantire che le configurazioni costruite dagli utenti restino allineate con i dati reali del catalogo.
 
 \subsection{Scenari d'uso principali}
 
-Gli scenari d'uso permettono di rappresentare in modo narrativo le interazioni rilevanti da cui derivano i requisiti del sistema.
-
 \begin{itemize}
-	\item \textbf{Configurazione iniziale}: l'utente seleziona una categoria di prodotto, inserisce eventuali preferenze iniziali e compone la scaffalatura attraverso il configuratore visuale. Il sistema mostra soltanto componenti compatibili e aggiorna dinamicamente anteprima e prezzo.
+	\item \textbf{Configurazione iniziale}: l'utente seleziona una categoria di prodotto, inserisce eventuali preferenze iniziali e compone la scaffalatura attraverso i comendi del configuratore visuale. Il sistema mostra soltanto componenti compatibili e aggiorna dinamicamente anteprima e prezzo.
 	\item \textbf{Supporto contestuale}: durante la configurazione l'utente apre il chatbot e richiede chiarimenti sul prezzo di uno o piu' componenti, senza interrompere il flusso operativo principale.
-	\item \textbf{Salvataggio e ripresa}: l'utente autenticato salva una configurazione, la recupera in una sessione successiva e la modifica prima dell'acquisto.
+	\item \textbf{Salvataggio e ripresa}: l'utente autenticato salva una configurazione (automaticamente dopo ogni step), la recupera in una sessione successiva per terminarla o modificarla.
 	\item \textbf{Notifica di variazione}: il sistema informa l'utente quando una configurazione salvata o attiva viene impattata da una variazione di prezzo o disponibilita' di uno dei componenti coinvolti.
-	\item \textbf{Gestione amministrativa}: l'amministratore aggiorna dati di catalogo e consulta ordini e report sintetici per monitorare l'andamento operativo e commerciale.
+	\item \textbf{Gestione amministrativa}: l'amministratore aggiorna dati di catalogo e consulta ordini e report sintetici per monitorare l'andamento commerciale.
 \end{itemize}
 
 \subsection{Casi d'uso principali}
-
-I casi d'uso principali del sistema sono riportati di seguito in forma sintetica.
 
 \subsubsection{UC1 -- Configurazione di una scaffalatura}
 
 \begin{description}
 	\item[Attore principale] Cliente finale.
 	\item[Precondizioni] Il configuratore e' disponibile e il sistema dispone dei componenti necessari alla composizione.
-	\item[Flusso principale] L'utente avvia il configuratore, seleziona o conferma la categoria di prodotto, inserisce eventuali vincoli iniziali, modifica la configurazione e visualizza gli aggiornamenti dinamici di anteprima e prezzo. Il sistema consente esclusivamente l'uso di componenti compatibili con la categoria scelta.
+	\item[Flusso principale] L'utente avvia il configuratore, inserisce eventuali vincoli iniziali, seleziona o conferma la categoria di prodotto, modifica la configurazione e visualizza gli aggiornamenti dinamici di anteprima e prezzo. Il sistema consente esclusivamente l'uso di componenti compatibili con la categoria scelta.
 	\item[Postcondizioni] Esiste una configurazione coerente, pronta per essere salvata o aggiunta al carrello.
 \end{description}
 
@@ -92,7 +96,7 @@ I casi d'uso principali del sistema sono riportati di seguito in forma sintetica
 \begin{description}
 	\item[Attore principale] Cliente finale.
 	\item[Precondizioni] L'utente si trova in una fase di configurazione e il chatbot e' disponibile.
-	\item[Flusso principale] L'utente apre il chatbot, formula una domanda sul prezzo di uno o piu' componenti e riceve una risposta contestuale che gli consente di proseguire la configurazione.
+	\item[Flusso principale] L'utente apre il chatbot, formula una domanda relativa ai componenti e riceve una risposta contestuale che gli consente di proseguire la configurazione.
 	\item[Postcondizioni] L'utente ottiene supporto senza uscire dal configuratore.
 \end{description}
 
@@ -101,7 +105,7 @@ I casi d'uso principali del sistema sono riportati di seguito in forma sintetica
 \begin{description}
 	\item[Attore principale] Utente autenticato.
 	\item[Precondizioni] L'utente ha creato almeno una configurazione ed e' autenticato.
-	\item[Flusso principale] L'utente salva la configurazione corrente, la ritrova nel proprio profilo in una sessione successiva e la riapre per modificarla o completarla.
+	\item[Flusso principale] L'utente crea e aggiorna progressivamente la configurazione nel CAD, la ritrova nel proprio profilo in una sessione successiva e la riapre per modificarla o completarla.
 	\item[Postcondizioni] La configurazione risulta persistita e riutilizzabile in sessioni future.
 \end{description}
 
@@ -110,8 +114,8 @@ I casi d'uso principali del sistema sono riportati di seguito in forma sintetica
 \begin{description}
 	\item[Attore principale] Utente autenticato.
 	\item[Attore secondario] Amministratore catalogo.
-	\item[Precondizioni] Esiste almeno una configurazione attiva o salvata e uno dei componenti associati subisce una variazione rilevante.
-	\item[Flusso principale] L'amministratore aggiorna il dato di catalogo, il sistema individua le configurazioni impattate e invia una notifica agli utenti coinvolti.
+	\item[Precondizioni] Esiste almeno un contesto utente impattabile (configurazione finalizzata, carrello o sottoscrizione prodotto) e uno dei componenti associati subisce una variazione di prezzo o disponibilità.
+	\item[Flusso principale] L'amministratore aggiorna il dato di catalogo, il sistema propaga l'evento di variazione e invia una notifica agli utenti coinvolti tramite i contesti monitorati.
 	\item[Postcondizioni] L'utente e' informato delle variazioni che possono influenzare la propria configurazione.
 \end{description}
 
@@ -120,8 +124,8 @@ I casi d'uso principali del sistema sono riportati di seguito in forma sintetica
 \begin{description}
 	\item[Attore principale] Amministratore.
 	\item[Precondizioni] L'amministratore e' autenticato nell'area gestionale.
-	\item[Flusso principale] L'amministratore aggiorna prezzi e disponibilita' dei componenti, consulta gli ordini e accede a una sezione di reportistica sintetica.
-	\item[Postcondizioni] I dati risultano aggiornati e l'amministratore dispone di informazioni utili al monitoraggio operativo e commerciale.
+	\item[Flusso principale] L'amministratore aggiorna prezzi e disponibilita' dei componenti, consulta gli ordini e accede a una sezione di reportistica sintetica basata su trend ordini.
+	\item[Postcondizioni] I dati risultano aggiornati e l'amministratore dispone di informazioni utili a monitorare l'andamento delle vendite.
 \end{description}
 
 \subsection{Requisiti di business}
@@ -131,7 +135,7 @@ I casi d'uso principali del sistema sono riportati di seguito in forma sintetica
 	\item[BR2] Il sistema deve aumentare il valore percepito dell'e-commerce Kompo offrendo un configuratore visuale e servizi di assistenza digitale integrati.
 	\item[BR3] Il sistema deve ridurre il rischio di errori d'acquisto dovuti a scarsa comprensione di prezzi, disponibilita', compatibilita' tra componenti e stato della configurazione.
 	\item[BR4] Il sistema deve consentire all'azienda di mantenere allineati configurazioni utente, dati di catalogo e informazioni operative.
-	\item[BR5] Il sistema deve fornire all'area amministrativa una vista sintetica utile al monitoraggio di ordini e trend di vendita.
+	\item[BR5] Il sistema deve fornire all'area amministrativa una vista sintetica utile al monitoraggio di ordini e trend ordini.
 \end{description}
 
 \subsection{Requisiti funzionali}
@@ -141,13 +145,13 @@ I casi d'uso principali del sistema sono riportati di seguito in forma sintetica
 	\item[FR2] Il sistema deve aggiornare l'anteprima della scaffalatura in seguito alle modifiche effettuate nel configuratore.
 	\item[FR3] Il sistema deve aggiornare il prezzo stimato della configurazione in seguito alle modifiche effettuate nel configuratore.
 	\item[FR4] Il sistema deve consentire di aggiungere al carrello una configurazione completata.
-	\item[FR5] Il sistema deve fornire un chatbot integrato per rispondere a richieste contestuali sui prezzi dei componenti.
-	\item[FR6] Il sistema deve consentire agli utenti autenticati di salvare una configurazione associandola al proprio profilo.
+	\item[FR5] Il sistema deve fornire un chatbot integrato per rispondere a richieste riguardanti il catalogo.
+	\item[FR6] Il sistema deve consentire agli utenti autenticati di salvare una configurazione associandola al proprio profilo durante il flusso di configurazione.
 	\item[FR7] Il sistema deve consentire agli utenti autenticati di visualizzare e riprendere configurazioni salvate in precedenza.
-	\item[FR8] Il sistema deve notificare agli utenti autenticati variazioni di prezzo o disponibilita' che impattano configurazioni attive o salvate.
+	\item[FR8] Il sistema deve notificare agli utenti autenticati variazioni di prezzo o disponibilita' che impattano contesti rilevanti (configurazioni finalizzate, carrello o sottoscrizioni prodotto).
 	\item[FR9] Il sistema deve impedire la composizione di scaffalature che mescolano componenti appartenenti a categorie di prodotto diverse.
 	\item[FR10] Il sistema deve consentire agli amministratori di aggiornare dati di catalogo, inclusi prezzo e disponibilita' dei componenti.
-	\item[FR11] Il sistema deve rendere disponibili agli amministratori una vista ordini e una sezione di reportistica sintetica sui trend di vendita.
+	\item[FR11] Il sistema deve rendere disponibili agli amministratori una vista ordini e una sezione di reportistica sintetica sui trend ordini.
 \end{description}
 
 \subsection{Requisiti non funzionali}
@@ -167,5 +171,7 @@ I casi d'uso principali del sistema sono riportati di seguito in forma sintetica
 
 \subsection{Tracciabilita'}
 
-I requisiti presentati in questa sezione derivano dall'analisi degli stakeholder, dalle personas individuate e dagli scenari e casi d'uso principali. Questa struttura garantisce la coerenza tra bisogni degli utenti, comportamento atteso del sistema e qualita' richieste al prodotto finale.
+I requisiti presentati in questa sezione derivano dall'analisi degli stakeholder, dalle personas individuate e dagli scenari e casi d'uso principali.
+Questa struttura garantisce la coerenza tra bisogni degli utenti, comportamento atteso del sistema e qualita' richieste al prodotto finale.
 
+\newpage

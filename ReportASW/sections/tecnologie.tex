@@ -1,70 +1,55 @@
 \section{Tecnologie}
 
-Questa sezione descrive le principali tecnologie adottate nel progetto e le motivazioni che hanno guidato la loro selezione. L'obiettivo non e' fornire un semplice elenco di strumenti, ma mostrare come ogni scelta sia coerente con i requisiti del sistema e con l'architettura descritta nella sezione precedente.
+Per il progetto e' stato adottato uno stack di tipo \textbf{MEVN} esteso a microservizi (MongoDB, Express, Vue, Node.js), con componenti aggiuntivi per realtime e integrazione eventi.
 
-\subsection{Stack frontend}
-
-Il frontend di KompozeR e' stato concepito come una Single Page Application moderna, orientata a interazioni rapide e aggiornamento dinamico dello stato. In questa sottosezione e' opportuno descrivere le tecnologie utilizzate per:
+Le tecnologie utilizzate per sviluppare il sistema sono:
 
 \begin{itemize}
-	\item rendering dell'interfaccia;
-	\item gestione dello stato client;
-	\item routing tra pagine e viste;
-	\item integrazione con API REST e canali real-time.
+	\item \textbf{Node.js} ed \textbf{Express}: sviluppo dei servizi backend e dell'API Gateway;
+	\item \textbf{Vue 3}: sviluppo componente client (SPA);
+	\item \textbf{MongoDB} + \textbf{Mongoose}: persistenza dati per i diversi contesti applicativi;
+	\item \textbf{Socket.IO}: comunicazione realtime per notifiche e chatbot;
+	\item \textbf{Redis}: broker in-memory per eventi publish/subscribe tra servizi;
+	\item \textbf{Docker} + \textbf{Docker Compose}: esecuzione e deploy locale dell'intero sistema.
 \end{itemize}
 
-Per ciascuna tecnologia selezionata conviene motivare la scelta in termini di produttivita', chiarezza architetturale, ecosistema e aderenza ai requisiti dell'applicazione.
-
-\subsection{Stack backend}
-
-Il backend e' organizzato come insieme di servizi web separati. Qui e' utile descrivere:
+I linguaggi e le tecnologie di sviluppo usate nel progetto sono:
 
 \begin{itemize}
-	\item runtime applicativo;
-	\item framework HTTP utilizzato per l'esposizione delle API;
-	\item linguaggio e supporto alla tipizzazione;
-	\item eventuale struttura interna comune dei microservizi.
+	\item \textbf{TypeScript}: sia lato client sia lato server;
+	\item \textbf{HTML}: struttura delle pagine tramite template Vue;
+	\item \textbf{CSS}: definizione stile e layout delle interfacce.
 \end{itemize}
 
-In questa parte va spiegato perche' una soluzione basata su TypeScript e servizi Express risulta adeguata per un sistema web modulare e facilmente evolvibile.
+\subsection{Docker}
 
-\subsection{Persistenza dei dati}
+Docker rappresenta lo standard de-facto per la distribuzione di sistemi multi-componente. 
+Nel progetto KompozeR l'applicazione viene avviata tramite \texttt{docker-compose}, che orchestra frontend, API Gateway, microservizi backend, MongoDB e Redis.
 
-La persistenza e' organizzata secondo il principio di database per servizio. Questa sottosezione dovrebbe spiegare:
+Nel file di compose sono presenti tre gruppi principali di servizi:
 
 \begin{itemize}
-	\item la tecnologia di database scelta;
-	\item le motivazioni di flessibilita' e velocita' di sviluppo;
-	\item la separazione dei dati tra i diversi microservizi;
-	\item l'allineamento tra modello logico del dominio e struttura dei documenti persistiti.
+	\item \textbf{infrastruttura}: \texttt{redis} e istanze Mongo dedicate (auth, catalog, cad, cart, order, notification, chat);
+	\item \textbf{backend}: \texttt{auth-service}, \texttt{catalog-service}, \texttt{cad-service}, \texttt{cart-service}, \texttt{order-service}, \texttt{notification-service}, \texttt{chatbot-service}, \texttt{reporting-service}, \texttt{api-gateway};
+	\item \textbf{frontend}: servizio \texttt{frontend} (Vite).
 \end{itemize}
 
-\subsection{Comunicazione real-time}
+Nel caso di KompozeR il ruolo di "entry point" e' svolto da \texttt{api-gateway}, che centralizza autenticazione JWT, routing delle chiamate HTTP e gestione degli handshake realtime verso i servizi applicativi.
 
-Alcune funzionalita' richiedono uno scambio di informazioni piu' immediato rispetto al classico modello request-response. In questa sottosezione e' utile presentare la tecnologia usata per la comunicazione real-time e spiegare in quali punti del sistema viene impiegata, ad esempio per notifiche utente e chatbot.
+\subsection{WebSocket}
 
-Conviene mantenere qui il focus sul valore applicativo e sull'esperienza utente, senza entrare nel dettaglio dei meccanismi distribuiti avanzati che saranno trattati nel report DS.
-
-\subsection{Containerizzazione e strumenti di esecuzione}
-
-Per il deployment locale e per l'avvio coordinato dei servizi e' utile descrivere gli strumenti utilizzati per containerizzazione e orchestrazione leggera. In particolare si possono motivare:
+WebSocket e' la tecnologia che consente comunicazione bidirezionale e persistente tra client e server. 
+Nel progetto e' implementata tramite Socket.IO per due funzionalita' centrali:
 
 \begin{itemize}
-	\item uso di Docker per isolare i componenti;
-	\item uso di \texttt{docker-compose} per l'avvio dell'intero sistema;
-	\item vantaggi in termini di replicabilita' dell'ambiente e semplicità di setup.
+	\item \textbf{notifiche realtime}: push immediato di eventi utente (es. variazioni di disponibilita'/prezzo rilevanti);
+	\item \textbf{chatbot}: scambio messaggi utente-bot e indicatore di typing in tempo quasi reale.
 \end{itemize}
 
-\subsection{Tecnologie per test e sviluppo}
+Rispetto al polling periodico, questo approccio riduce il numero di richieste inutili e migliora la latenza percepita dall'utente, perche' l'aggiornamento avviene appena l'evento e' disponibile.
 
-Se previste o gia' utilizzate, questa sottosezione puo' descrivere le tecnologie di supporto allo sviluppo e alla qualita' del codice, ad esempio:
+\subsection{Redis}
 
-\begin{itemize}
-	\item strumenti di test unitario e di integrazione;
-	\item linters e formatter;
-	\item strumenti per debugging e ispezione delle API.
-\end{itemize}
+Redis e' usato come componente in-memory per la comunicazione asincrona tra servizi (pub/sub), in particolare per propagare eventi di catalogo verso i moduli che devono reagire in modo disaccoppiato (ad esempio notifiche e riallineamento carrello).
 
-\subsection{Valutazione complessiva dello stack}
-
-In chiusura, conviene sintetizzare perche' lo stack scelto sia adeguato al progetto: buona separazione delle responsabilita', facilita' di sviluppo incrementale, coerenza con una web application moderna e supporto alla futura evoluzione del sistema.
+\newpage

@@ -1,210 +1,86 @@
-# Domain Model
+# Domain Model (allineato al codice)
 
-Definiamo il modello del sistema descrivento i bounded context, le relazioni che li legano, entità ed aggregati. 
+Questo file descrive i bounded context nello stato attuale del progetto implementato.
 
-## Bounded contexts 
+## Bounded Context
 
 1. Authentication (support)
 
-	Responsabilità: gestisce identità, autenticazione e autorizzazione degli utenti del sistema. Crea account guest e account registrati, emette le credenziali di accesso e determina il ruolo dell'utente nelle varie sezioni applicative.
+- Responsabilita: gestione identita, login, registrazione, sessioni e ruoli.
+- Possiede: utenti (`users`) e sessioni (`sessions`).
+- Non possiede: catalogo, configurazioni, carrello, ordini, notifiche, chat, reporting.
 
-	Possiede: utenti, credenziali, ruoli, stato dell'account, sessioni di login o token.
+2. Catalog (support)
 
-	Non possiede: configurazioni CAD, carrelli, catalogo prodotti, notifiche, ordini, report.
+- Responsabilita: gestione componenti, prezzo, disponibilita e ricerca catalogo.
+- Possiede: componenti (`components`).
+- Pubblica eventi su Redis (`catalog:events`) quando cambiano prezzo/disponibilita.
 
-	Note: si assume che uno o più account amministratore vengano creati dallo sviluppatore ed inseriti direttamente nel DB. L'accesso come guest resta possibile, ma non abilita salvataggio configurazioni, collaborazione, notifiche o altre funzionalità che richiedono identità persistente. Per completare un ordine da guest occorre comunque fornire una mail di contatto.
+3. CAD (core)
 
-2. CAD (core)
+- Responsabilita: ciclo di vita della configurazione scaffalatura.
+- Possiede: configurazioni (`configurations`) con stato, ambiente, categoria, piano colonne, design e BOM.
+- Dipende da Catalog per regole/componenti e da Cart/Notification per finalizzazione e sottoscrizioni.
 
-	Responsabilità: gestisce la progettazione dello scaffale e traduce le azioni dell'utente sul configuratore in una configurazione valida dal punto di vista strutturale e commerciale. Coordina inoltre la progettazione collaborativa della stessa configurazione da parte di più utenti.
+4. Cart (core)
 
-	Possiede: progetti/configurazioni, sessioni collaborative, snapshot dello stato, operazioni di modifica, regole di composizione del mobile.
+- Responsabilita: gestione carrello utente e checkout.
+- Possiede: carrelli (`carts`) con item snapshot (sku, prezzo unitario, quantita, totale riga).
+- Reagisce agli eventi catalogo per rimuovere/ripristinare articoli e riallineare prezzi.
 
-	Non possiede: anagrafica utenti, prezzi ufficiali dei prodotti, disponibilità di magazzino, stato del carrello, ordini finali.
+5. Order (core)
 
-	Note: il CAD non è il catalogo. Può conoscere i componenti validi e i loro metadati minimi, ma prezzi e disponibilità restano sotto la responsabilità del Catalog. Il CAD produce una distinta dei pezzi necessari e la struttura del progetto.
-
-3. Cart (core)
-
-	Responsabilità: gestisce il carrello dell'utente, raccoglie gli articoli derivati da una configurazione completata e avvia il processo di ordine.
-
-	Possiede: carrelli, righe carrello, riepiloghi economici, stato dell'ordine inviato o in preparazione.
-
-	Non possiede: regole geometriche del configuratore, catalogo ufficiale, credenziali utente, logica di notifica, statistiche aggregate.
-
-	Note: inizialmente l'ordine viene finalizzato via mail. In una fase successiva il servizio potrà integrarsi con il carrello esistente dell'e-commerce Kompo.
-
-4. Catalog (support)
-
-	Responsabilità: gestisce il catalogo dei componenti disponibili, con prezzi, disponibilità, attributi dimensionali e metadati utili al configuratore.
-
-	Possiede: componenti/prodotti, categorie, prezzi correnti, disponibilità, attributi tecnici, eventuale storico delle modifiche di prezzo o stock.
-
-	Non possiede: progetti utente, carrelli, identità, sessioni collaborative, report.
-
-	Note: l'utente finale non interagisce direttamente con una pagina catalogo dedicata; il catalogo è usato indirettamente da CAD, Cart e Chatbot. L'amministratore può aggiungere nuovi pezzi e modificare prezzo o disponibilità.
-
-5. Chatbot (core)
-
-	Responsabilità: fornisce assistenza contestuale all'utente durante la progettazione, rispondendo a dubbi su prezzi, dimensioni, compatibilità e composizione del progetto corrente.
-
-	Possiede: sessioni di chat, cronologia minima dei messaggi, contesto conversazionale necessario a rispondere.
-
-	Non possiede: verità ufficiale sul catalogo, stato persistente del progetto, carrello, notifiche, identità utente complete.
-
-	Note: il Chatbot interroga altri bounded context per ottenere informazioni aggiornate, ma non ne diventa owner.
+- Responsabilita: persistenza ordini e transizioni di stato.
+- Possiede: ordini (`orders`) con stati `SUBMITTED`, `DONE`, `CANCELLED`.
 
 6. Notification (core)
 
-	Responsabilità: avvisa l'utente quando una configurazione salvata o un insieme di pezzi monitorati subisce variazioni rilevanti, ad esempio indisponibilità o cambio di prezzo.
+- Responsabilita: sottoscrizioni utente e notifiche in-app.
+- Possiede: notifiche (`notifications`), sottoscrizioni (`notificationSubscriptions`), eventi processati (`notificationEvents`).
+- Consuma eventi catalogo da Redis e risolve impatti su contesti CAD/CART/SUBSCRIPTION.
 
-	Possiede: sottoscrizioni, preferenze di notifica, eventi notificabili consegnati o pendenti.
+7. Chatbot (core)
 
-	Non possiede: catalogo, configurazioni complete, carrelli, autenticazione, report.
+- Responsabilita: sessioni chat e messaggistica contestuale.
+- Possiede: sessioni (`chatSessions`) e messaggi (`chatMessages`).
+- Dipende da Catalog e CAD per risposte contestuali.
 
-	Note: il servizio reagisce a cambiamenti provenienti soprattutto dal Catalog e li collega agli utenti o alle configurazioni interessate.
+8. Reporting (support)
 
-7. Reporting (support)
+- Responsabilita: trend ordini per area amministrativa.
+- Non possiede un DB dedicato nel setup corrente: legge la collection `orders` (orderdb) in sola lettura.
 
-	Responsabilità: raccoglie dati sugli ordini e sulle configurazioni finalizzate per produrre statistiche, grafici e report.
+## Context Map (stato corrente)
 
-	Possiede: report generati, viste aggregate, snapshot statistici e metriche storiche.
+- Frontend -> API Gateway: entry point unico per API e websocket.
+- API Gateway -> Authentication: autenticazione/ruoli/sessioni.
+- API Gateway -> Catalog/CAD/Cart/Order/Notification/Chatbot/Reporting: proxy REST.
+- Catalog -> Notification: eventi `PRICE_CHANGED` e `AVAILABILITY_CHANGED` su Redis.
+- Catalog -> Cart: eventi Redis per riallineamento carrello.
+- CAD -> Cart: finalizzazione configurazione e sincronizzazione BOM.
+- CAD -> Notification: creazione sottoscrizioni prodotto in fase di finalize.
+- Order -> Reporting: reporting aggrega trend da `orders`.
+- Chatbot -> Catalog/CAD: recupero contesto per risposte.
 
-	Non possiede: ordini operativi, catalogo corrente, sessioni CAD attive, credenziali utente.
+## Entita globali principali
 
-	Note: è un bounded context di lettura e aggregazione. Non deve diventare il punto di verità del dominio transazionale.
+| Entita | Owner | Uso principale |
+|---|---|---|
+| `User` | Authentication | Identita e ruolo (`GUEST`, `BASE`, `ADMIN`) |
+| `Component` | Catalog | SKU, categoria, tipo, prezzo, disponibilita |
+| `Configuration` | CAD | Workflow configurazione + BOM |
+| `Cart` | Cart | Carrello utente e checkout |
+| `Order` | Order | Stato ordine e storico operativo |
+| `Notification` | Notification | Notifiche prezzo/disponibilita |
+| `NotificationSubscription` | Notification | Monitoraggio SKU per utente |
+| `ChatSession` / `ChatMessage` | Chatbot | Assistenza contestuale |
 
-## Context Map
-Descrizione delle relazioni tra i Bounded Context.
+## Eventi di dominio rilevanti (implementati)
 
-- Authentication -> Frontend: fornisce login, logout e verifica dell'identità sia per utenti guest sia per utenti registrati. Il frontend usa questo bounded context per ottenere il token o lo stato di sessione.
+### Catalog
 
-- Authentication -> Admin features: fornisce autorizzazione e controllo dei ruoli per consentire all'amministratore di gestire catalogo, disponibilità, prezzi e future funzionalità di reportistica.
-
-- CAD -> Catalog: dipende dal Catalog per conoscere i componenti validi, i vincoli dimensionali di base, i prezzi correnti e la disponibilità dei pezzi selezionati. Il CAD non scrive mai nel Catalog.
-
-- CAD -> Authentication: usa l'identità utente per decidere se una configurazione può essere salvata, condivisa o modificata in collaborazione. Gli utenti guest possono usare il configuratore con capacità ridotte.
-
-- CAD -> Cart: pubblica o espone la distinta finale dei componenti necessari a costruire la configurazione. Il Cart trasforma questa distinta in righe carrello.
-
-- Cart -> Catalog: consulta prezzi e disponibilità prima di confermare il contenuto del carrello o l'invio dell'ordine. Il Cart non possiede il prezzo ufficiale dei prodotti.
-
-- Notification -> Catalog: reagisce ai cambiamenti di prezzo e disponibilità dei componenti pubblicati dal Catalog.
-
-- Notification -> CAD: usa i riferimenti alle configurazioni salvate per determinare quali utenti devono essere notificati quando un componente usato nel progetto cambia stato.
-
-- Chatbot -> Catalog: recupera informazioni aggiornate su prezzi, misure e attributi dei componenti.
-
-- Chatbot -> CAD: riceve il contesto della configurazione attiva per dare risposte pertinenti rispetto al progetto che l'utente sta costruendo.
-
-- Reporting -> Cart: raccoglie dati sugli ordini inviati e sui carrelli finalizzati per generare statistiche di vendita.
-
-- Reporting -> CAD: può ricevere informazioni sulle configurazioni concluse per analizzare tipologie di scaffali progettati o componenti più utilizzati.
-
-- Frontend -> API Gateway: il frontend non dialoga direttamente con tutti i bounded context ma usa un entry point unico che instrada le richieste verso i servizi competenti.
-
-In termini di classificazione strategica:
-
-- CAD e Cart sono i bounded context centrali del flusso di valore dell'applicazione.
-- Authentication, Catalog e Reporting sono bounded context di supporto.
-- Chatbot e Notification sono bounded context trasversali, dipendenti da informazioni prodotte da altri contesti ma con una responsabilità funzionale autonoma.
-
-## Entità e value objects
-
-Per semplificare il modello iniziale, si distinguono:
-
-- entita' globali del dominio, comuni al flusso principale dell'applicazione;
-- concetti locali di servizio, che restano importanti ma non vengono trattati subito come entita' globali.
-
-### Entita' globali minime
-
-| Entita' | Descrizione | Aggregate Root | Bounded Context owner | Bounded Context che la referenziano |
-|---|---|---|---|---|
-| `User` | Rappresenta l'identita' dell'utente del sistema, guest o registrato, con ruolo associato. | `User` | Authentication | CAD, Cart, Notification, Reporting |
-| `Product` | Rappresenta il pezzo vendibile concreto del catalogo. | `Product` | Catalog | CAD, Cart, Chatbot, Notification, Reporting |
-| `Configuration` | Rappresenta un progetto di scaffale creato dall'utente nel configuratore. | `Configuration` | CAD | Cart, Notification, Reporting, Chatbot |
-| `Cart` | Rappresenta la selezione acquistabile dell'utente, costruita a partire da una configurazione o manualmente. | `Cart` | Cart | Reporting |
-
-### Struttura concettuale delle entita' globali
-
-#### `User`
-
-- Campi minimi: `id`, `username`, `passwordHash`, `role`
-- Value Object associati: `UserId`, `Email` opzionale, `PasswordHash`, `Role`
-- Note: e' l'unica entita' globale pienamente owner del contesto Authentication.
-
-#### `Product`
-
-- Campi minimi: `id`, `systemType`, `componentType`, `name`, `description`, `dimensions`, `price`, `availability`, `isActive`
-- Value Object associati: `ProductId`, `SystemType`, `ComponentType`, `Dimensions`, `Money`, `Availability`
-- Note: `Product` e' un'entita' unica. `Tondo`, `Quadro` e `Kube` non vengono modellati come aggregati separati, ma come varianti del value object `SystemType`.
-
-#### `Configuration`
-
-- Campi minimi: `id`, `ownerId`, `systemType`, `name`, `status`, `components`, `totalPriceSnapshot`, `createdAt`, `updatedAt`
-- Value Object associati: `ConfigurationId`, `SystemType`, `ConfigurationStatus`, `PlacedComponent`, `GridCell`, `Money`
-- Note: una `Configuration` appartiene sempre a uno specifico `SystemType`; le differenze tra Tondo, Quadro e Kube vivono nelle regole CAD e non in tre entita' distinte.
-
-#### `Cart`
-
-- Campi minimi: `id`, `ownerId`, `items`, `status`, `totalPriceSnapshot`, `createdAt`, `updatedAt`
-- Value Object associati: `CartId`, `CartItem`, `CartStatus`, `Money`, `Quantity`
-- Note: gli item del carrello contengono snapshot dei dati commerciali minimi del prodotto al momento dell'aggiunta.
-
-### Value object globali principali
-
-| Value Object | Significato |
-|---|---|
-| `UserId` | Identificatore logico di un utente |
-| `Role` | Ruolo dell'utente, ad esempio `GUEST`, `BASE`, `ADMIN` |
-| `ProductId` | Identificatore logico di un prodotto |
-| `SystemType` | Famiglia/configurazione del sistema: `TONDO`, `QUADRO`, `KUBE` |
-| `ComponentType` | Tipo di pezzo: `PIEDINO`, `TERMINALE`, `MONTANTE`, `RIPIANO`, `MENSOLA` |
-| `Dimensions` | Misure rilevanti di un prodotto o componente |
-| `Money` | Valore monetario usato per prezzi e snapshot economici |
-| `Availability` | Booleano che segna la disponibilità in magazzino |
-| `ConfigurationStatus` | Stato di una configurazione, ad esempio `DRAFT`, `SAVED`, `FINALIZED` |
-| `PlacedComponent` | Riferimento a un prodotto posizionato dentro una configurazione |
-| `GridCell` | Posizione logica del componente nella griglia CAD |
-| `CartStatus` | Stato del carrello, ad esempio `ACTIVE`, `ORDERED`, `ABANDONED` |
-| `CartItem` | Riga di carrello con prodotto, quantita' e snapshot di prezzo |
-
-### Concetti locali di servizio non trattati come entita' globali
-
-Questi concetti restano rilevanti, ma vengono trattati come specializzazioni locali dei bounded context e non come parte del nucleo globale minimo:
-
-- Authentication: `AccountSession`
-- CAD: `CollaborativeSession`, `EditOperation`, `ProjectSnapshot`
-- Chatbot: `ChatSession`, `ChatMessage`
-- Notification: `NotificationSubscription`, `NotificationEvent`, `DeliveredNotification`
-- Reporting: `GeneratedReport`, `SalesSnapshot`
-
-Questa scelta mantiene il modello iniziale semplice e concentra il nucleo del dominio sul flusso principale:
-
-`User -> Configuration -> Cart`
-
-con `Product` come riferimento centrale condiviso tra CAD, Catalog e Cart.
-
-## Eventi di dominio
-
-### Authentication
-
-- `GuestSessionStarted`
-- `UserRegistered`
-- `UserLoggedIn`
-- `UserLoggedOut`
-- `UserRoleAssigned`
-
-### CAD
-
-- `ConfigurationCreated`
-- `ComponentPlaced`
-- `ComponentRemoved`
-- `ConfigurationSaved`
-- `ConfigurationShared`
-- `CollaborativeSessionStarted`
-- `CollaborativeEditApplied`
-- `ConfigurationFinalized`
+- `PRICE_CHANGED`
+- `AVAILABILITY_CHANGED`
 
 ### Cart
 
@@ -212,39 +88,20 @@ con `Product` come riferimento centrale condiviso tra CAD, Catalog e Cart.
 - `ItemAddedToCart`
 - `ItemRemovedFromCart`
 - `CartUpdatedFromConfiguration`
+- `CartItemsRemovedUnavailable`
+- `CartItemsRestoredAvailable`
+- `CartPricesUpdated`
 - `OrderRequestSubmitted`
 - `OrderConfirmationRequested`
 
-### Catalog
-
-- `ProductCreated`
-- `ProductUpdated`
-- `PriceChanged`
-- `AvailabilityChanged`
-- `ProductDisabled`
-
-### Chatbot
-
-- `ChatSessionOpened`
-- `UserQuestionReceived`
-- `ChatbotResponseGenerated`
-
 ### Notification
 
-- `NotificationSubscriptionCreated`
-- `TrackedProductChanged`
-- `NotificationQueued`
-- `NotificationDelivered`
-
-### Reporting
-
-- `ReportGenerationRequested`
-- `ReportGenerated`
-- `SalesMetricsUpdated`
+- Consumo di eventi Catalog con idempotenza su `eventId`
+- Emissione realtime `notification:push` verso room utente
 
 ## Note di modellazione
 
-- Ogni bounded context possiede i propri dati e pubblica verso gli altri solo API o eventi, mai accesso diretto al DB.
-- I riferimenti tra bounded context devono essere fatti per ID o riferimenti esterni, non tramite condivisione di entita'.
-- I dati di prezzo e disponibilita' sono sempre di proprieta' del Catalog, anche se copiati temporaneamente in CAD o Cart come snapshot.
-- Il CAD e' il contesto piu' sensibile all'estensione Distributed Systems: sessioni collaborative, operazioni e snapshot vanno modellati da subito come concetti distinti.
+- Ogni bounded context mantiene ownership del proprio schema Mongo.
+- I riferimenti inter-context avvengono per ID o snapshot minimi.
+- Prezzo/disponibilita restano di proprieta del Catalog.
+- Nel progetto corrente non e implementata la collaborazione CAD multiutente: le funzionalita collaborative restano fuori dal perimetro runtime attuale.

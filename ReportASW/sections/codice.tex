@@ -1,58 +1,149 @@
 \section{Codice}
 
-Questa sezione non ha l'obiettivo di documentare ogni dettaglio implementativo, ma di mostrare gli aspetti di codice piu' significativi per comprendere come le scelte architetturali siano state tradotte in una soluzione concreta.
+In questa sezione vengono riportati alcuni frammenti di codice rappresentativi del progetto, con l'obiettivo di mostrare come le scelte architetturali siano state tradotte in implementazione concreta.
 
-\subsection{Organizzazione della repository}
+\subsection{Backend}
 
-In questa sottosezione e' utile descrivere la struttura generale del progetto, distinguendo tra frontend, backend e documentazione di supporto. Conviene mettere in evidenza come l'organizzazione delle cartelle rifletta la separazione dei moduli applicativi e favorisca manutenzione e comprensione del sistema.
+Nel listato seguente e' mostrato uno use case del \texttt{chatbotService} (\texttt{SendSessionMessage}) che valida l'input, verifica ownership/stato sessione, persiste i messaggi e genera una risposta contestuale usando repository e provider esterni.
 
-Si puo' inserire un breve tree della repository o una descrizione sintetica delle directory principali.
+\begin{verbatim}
+export class SendSessionMessage {
+	constructor(
+		private readonly repo: ChatRepository,
+		private readonly catalog: CatalogQaProvider,
+		private readonly cad?: CadConfigurationProvider,
+	) {}
 
-\subsection{Struttura tipo di un microservizio}
+	async execute(input: SendSessionMessageInput): Promise<SendSessionMessageOutput> {
+		if (!input.userId?.trim()) throw new ValidationError('userId is required');
+		if (!input.sessionId?.trim()) throw new ValidationError('sessionId is required');
+		if (!input.content?.trim()) throw new ValidationError('content is required');
 
-Ogni microservizio del backend segue una struttura interna coerente, pensata per distinguere chiaramente logica di dominio, logica applicativa e componenti di integrazione tecnica. In questa parte conviene presentare la struttura tipo di un servizio, spiegando il ruolo di cartelle e moduli principali.
+		const session = await this.repo.findSessionById(input.sessionId);
+		if (!session) throw new SessionNotFoundError(input.sessionId);
+		if (session.userId !== input.userId) throw new ForbiddenError(...);
+		if (session.status === 'CLOSED') throw new SessionClosedError(input.sessionId);
 
-Questa sottosezione e' particolarmente utile per mostrare come il progetto mantenga ordine e coerenza interna anche in presenza di piu' servizi distinti.
+		await this.repo.saveMessage(userMessage);
+		const answer = await this.generateAnswer(input.content, session.userId, session.configurationId);
+		await this.repo.saveMessage(botMessage);
+		await this.repo.updateSession({ ...session, updatedAt: new Date() });
 
-\subsection{Esempi di flussi implementativi rilevanti}
+		return { sessionId: input.sessionId, userMessage: ..., botMessage: ... };
+	}
+}
+\end{verbatim}
 
-Per evitare una descrizione dispersiva del codice, e' consigliabile selezionare pochi flussi rappresentativi e commentarli in modo mirato. Alcuni candidati naturali sono:
+Questo approccio evidenzia la separazione tra orchestrazione applicativa e dettagli infrastrutturali: lo use case non conosce MongoDB o HTTP in modo diretto, ma utilizza porte astratte.
+Allo stesso modo, di seguito viene mostrato il repository pattern: prima l'interfaccia di dominio, poi l'adapter Mongo concreto.
+
+\begin{verbatim}
+export interface ChatRepository {
+	createSession(session: ChatSession): Promise<void>;
+	findSessionById(sessionId: string): Promise<ChatSession | null>;
+	updateSession(session: ChatSession): Promise<void>;
+	saveMessage(message: ChatMessage): Promise<void>;
+	listMessagesBySessionId(sessionId: string): Promise<ChatMessage[]>;
+}
+
+export class MongoChatRepository implements ChatRepository {
+	async createSession(session: ChatSession): Promise<void> {
+		await ChatSessionModel.create({ ... });
+	}
+
+	async findSessionById(sessionId: string): Promise<ChatSession | null> {
+		const doc = await ChatSessionModel.findById(sessionId).lean();
+		if (!doc) return null;
+		return { id: doc._id, userId: doc.userId, ... };
+	}
+
+	async saveMessage(message: ChatMessage): Promise<void> {
+		await ChatMessageModel.create({ ... });
+	}
+}
+\end{verbatim}
+
+La combinazione port+adapter permette di testare gli use cases con fake repository e di sostituire facilmente la tecnologia di persistenza senza modificare il dominio.
+
+\subsection{Frontend}
+
+Per il frontend sono riportati due aspetti centrali: gestione errori di autenticazione e notifiche realtime.
+
+Quando l'utente invia il form di login, il componente \texttt{AuthView} richiama lo store di autenticazione, mappa gli errori API in messaggi utente e gestisce la navigazione in caso di successo.
+
+\begin{verbatim}
+async function handleLogin(): Promise<void> {
+	error.value = '';
+	loading.value = true;
+	try {
+		await auth.login(login.username, login.password);
+		await router.push({ name: auth.homeRouteName });
+	} catch (e) {
+		error.value = mapLoginError(e);
+	} finally {
+		loading.value = false;
+	}
+}
+
+function mapLoginError(err: unknown): string {
+	if (!(err instanceof ApiError)) return 'Errore di accesso';
+	if (err.code === 'RESOURCE_NOT_FOUND') return 'Utente Non Trovato';
+	if (err.code === 'INVALID_PASSWORD') return 'Password Errata';
+	return 'Invalid username or password';
+}
+\end{verbatim}
+
+Nel template la gestione errore e' visualizzata in modo diretto con binding reattivo:
+
+\begin{verbatim}
+<p v-if="error" class="auth-error" role="alert" aria-live="assertive">
+	{{ error }}
+</p>
+\end{verbatim}
+
+Per le notifiche realtime, il servizio websocket apre la connessione solo quando token e identita' sono validi e registra listener per push e riconnessione.
+
+\begin{verbatim}
+this.socket = io('/', {
+	path: '/api/ws/notifications/socket.io',
+	transports: ['websocket', 'polling'],
+	auth: { userId },
+	query: { token },
+});
+
+onPush(handler: (payload: NotificationPushPayload) => void): () => void {
+	this.connect();
+	this.socket?.on('notification:push', handler);
+	return () => this.socket?.off('notification:push', handler);
+}
+\end{verbatim}
+
+Nel componente root (\texttt{App.vue}) il client si sottoscrive ai push e aggiorna store/badge/toast in tempo reale:
+
+\begin{verbatim}
+removeNotificationPushListener = notificationSocket.onPush((payload) => {
+	const pushed = payload.data?.notification;
+	if (!pushed) return;
+
+	notifications.applyRealtimePush(notification);
+	notifications.addToast('warning', notification.message);
+
+	if (notification.type === 'AVAILABILITY_CHANGED') {
+		void cart.refreshItemCount();
+	}
+});
+\end{verbatim}
+
+Questo flusso elimina polling esplicito lato pagina e mantiene coerenti interfaccia, badge e stato globale quando arrivano eventi dal backend.
+
+\subsection{Considerazioni finali}
+
+I blocchi di codice sopra, mostrano tre aspetti chiave del codice di KompozeR:
 
 \begin{itemize}
-	\item autenticazione utente e gestione della sessione;
-	\item creazione o salvataggio di una configurazione;
-	\item aggiornamento del catalogo da parte di un amministratore;
-	\item generazione di una notifica a seguito di una modifica rilevante.
+	\item uso sistematico di use case e repository lato backend;
+	\item gestione robusta degli errori lato frontend;
+	\item integrazione realtime basata su socket con aggiornamento immediato della UI.
 \end{itemize}
 
-Per ciascun flusso si possono mostrare uno o due snippet significativi, spiegando:
-
-\begin{itemize}
-	\item punto di ingresso della richiesta;
-	\item logica applicativa principale;
-	\item componenti coinvolti;
-	\item formato della risposta o effetto osservabile lato utente.
-\end{itemize}
-
-\subsection{Componenti frontend significativi}
-
-Il frontend rappresenta una parte essenziale del progetto, poiche' ospita il configuratore, la navigazione dell'utente e l'interazione con i servizi backend. In questa sottosezione conviene illustrare i componenti piu' rilevanti, ad esempio:
-
-\begin{itemize}
-	\item vista del configuratore;
-	\item componenti di riepilogo prezzo e carrello;
-	\item gestione dello stato di autenticazione;
-	\item componenti per notifiche e chatbot.
-\end{itemize}
-
-L'obiettivo non e' mostrare l'intera implementazione dell'interfaccia, ma evidenziare i punti in cui la struttura del codice supporta in modo chiaro le esigenze applicative.
-
-\subsection{Contratti applicativi e validazione}
-
-Una parte rilevante del progetto riguarda la definizione chiara dei contratti dati tra frontend e backend. In questa sezione si puo' richiamare il lavoro svolto su payload REST, messaggi WebSocket e DTO logici, spiegando come questi contratti contribuiscano alla coerenza dell'implementazione.
-
-Questa sottosezione e' utile anche per mostrare che il progetto e' stato costruito con attenzione alla stabilita' delle API e alla manutenibilita' del codice.
-
-\subsection{Considerazioni sull'implementazione}
-
-In chiusura, conviene sottolineare come l'implementazione rispecchi le decisioni di design: separazione dei moduli, centralita' dei contratti, chiarezza dei servizi e attenzione alla leggibilita' del codice. Anche in presenza di una base ancora in evoluzione, questa sezione deve far emergere la coerenza complessiva della soluzione realizzata.
+\newpage

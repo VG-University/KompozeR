@@ -86,11 +86,6 @@ INPUT .\sections\codice.tex
 INPUT .\sections\codice.tex
 INPUT .\sections\codice.tex
 INPUT sections\codice.tex
-INPUT .\sections\test.tex
-INPUT .\sections\test.tex
-INPUT .\sections\test.tex
-INPUT .\sections\test.tex
-INPUT sections\test.tex
 INPUT .\sections\deployment.tex
 INPUT .\sections\deployment.tex
 INPUT .\sections\deployment.tex
