@@ -14,6 +14,7 @@
 
 \usepackage{natbib}
 \usepackage{graphicx}
+\usepackage[colorlinks=true,linkcolor=codekw,urlcolor=codekw,citecolor=codekw]{hyperref}
 \graphicspath{{images/}}
 
 \definecolor{codebg}{RGB}{248,249,251}
@@ -66,9 +67,18 @@
 
 \lstset{style=kompozercode}
 
+\hypersetup{
+    pdftitle={KompozeR - Applicazioni e Servizi Web},
+    pdfauthor={Valerio Giannini},
+    pdfsubject={Relazione di progetto},
+    pdfcreator={LaTeX}
+}
+
 \begin{document}
 
 \maketitle
+\tableofcontents
+\newpage
 \input{sections/introduzione}
 \input{sections/requisiti}
 \input{sections/design}
