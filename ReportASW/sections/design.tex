@@ -2,7 +2,7 @@
 
 Questa sezione descrive la progettazione architetturale di KompozeR in termini di strutturazione del dominio, separazione delle responsabilita e coerenza tra modello e implementazione. L'obiettivo e' mostrare come requisiti, bounded context, servizi, contratti applicativi e persistenza siano stati allineati in un'unica soluzione tecnica.
 
-Nel seguito si fa riferimento anche agli artefatti di progettazione aggiornati in \texttt{utilities} (bounded context, mappa endpoint, definizione DB e domain DTO), riallineati rispetto allo stato corrente del codice.
+Viene inoltre mostrato come il frontend e' stato progettato per guidare l'utente in un flusso di configurazione coerente con i vincoli del dominio.
 
 \subsection{Obiettivi di design}
 
@@ -10,7 +10,7 @@ Le principali decisioni progettuali sono state prese con l'intento di raggiunger
 
 \begin{itemize}
 	\item separazione chiara tra frontend, gateway e servizi backend;
-	\item indipendenza dei moduli del dominio (autenticazione, catalogo, configurazione CAD, carrello, ordini, notifiche, chatbot, reporting);
+	\item indipendenza dei moduli del dominio (autenticazione, catalogo, configuratore CAD, carrello, ordini, notifiche, chatbot, reporting);
 	\item favorire manutenibilita', evoluzione incrementale e chiarezza delle responsabilita';
 	\item supportare un'esperienza utente interattiva, con feedback rapidi su configurazione, prezzo e notifiche;
 	\item centralizzare autenticazione e controllo accessi nel gateway, riducendo duplicazione di logica nei microservizi.
@@ -36,9 +36,8 @@ Dal punto di vista logico, l'architettura si articola in tre livelli:
 \begin{enumerate}
 \item \textbf{Authentication (support)}
 \begin{itemize}
-\item Responsabilita: gestione identita, login, registrazione, sessioni e ruoli.
+\item Responsabilita: gestione identita', login, registrazione, sessioni e ruoli.
 \item Possiede: utenti (\texttt{users}) e sessioni (\texttt{sessions}).
-\item Non possiede: catalogo, configurazioni, carrello, ordini, notifiche, chat, reporting.
 \end{itemize}
 
 \item \textbf{Catalog (support)}

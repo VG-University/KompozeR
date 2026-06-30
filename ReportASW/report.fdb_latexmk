@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1782822380.78094 "c:/Users/giann/Documents/GitHub/KompozeR/ReportASW/report.tex" "report.pdf" "report" 1782822381.60817 0
+["pdflatex"] 1782853943.11656 "c:/Users/giann/Documents/GitHub/KompozeR/ReportASW/report.tex" "report.pdf" "report" 1782853944.00652 0
   "C:/Users/giann/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1778620158 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "C:/Users/giann/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx0800.pk" 1782821801 19872 0f9ca11b5ce825726b1879e7e2b320ee ""
   "C:/Users/giann/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/ecbx1000.pk" 1782821802 25420 c9d9ca448f3047ceded825704b2becef ""
@@ -67,15 +67,15 @@
   "images/Ordini.png" 1782820841 186404 85a04dbb67a7cfbb51f93937a0c758fe ""
   "images/Report.png" 1782820841 201255 ece8e11973884791384d165d673e0125 ""
   "images/configurazioni.png" 1782820841 179884 93719f8f953f1832ba28074ad9187d2c ""
-  "report.aux" 1782822381 8624 22cf2cafbb1e168e44cb69a7cafbd219 "pdflatex"
+  "report.aux" 1782853943 8509 b886162b29bc8c01ea3e5ed0078b6e20 "pdflatex"
   "report.tex" 1782821908 2090 1b4119d56cf49104be135a674ff3e19d ""
-  "sections/codice.tex" 1782822380 8756 5a02c7f29c8ad1a907cb6703d84df7f2 ""
-  "sections/conclusioni.tex" 1782595801 2281 fe00d6fed3222745c759fbc4917a345f ""
-  "sections/deployment.tex" 1782595793 1585 3b42625360c51b7f5e16c854e9057cd3 ""
-  "sections/design.tex" 1782821691 17388 224e368c0ff5eadea84baa5b7d1fd3cf ""
-  "sections/introduzione.tex" 1782595708 2205 b49f15c9c1d14ee4e765f46ae2d3742a ""
-  "sections/requisiti.tex" 1782595729 12838 b6a5850a1f270be088da6d107b11ebcc ""
-  "sections/tecnologie.tex" 1782595770 3046 60d1dcc2f72c8c6561c5360fe6c9ed53 ""
+  "sections/codice.tex" 1782853724 8668 4eb60e5dcd87a9e0b95ac9d6fd9e6251 ""
+  "sections/conclusioni.tex" 1782853942 1504 6550ed79e4ff465fb216b1b4c63410bc ""
+  "sections/deployment.tex" 1782853782 1573 9ce98068d9be557be6900c9b5dccef43 ""
+  "sections/design.tex" 1782853099 17226 1337bc3f5bc549ce3c0e07184f5ccf02 ""
+  "sections/introduzione.tex" 1782852475 2194 3fa05283d36c5e8c6c7bf5627c94090b ""
+  "sections/requisiti.tex" 1782852790 12825 243fb27342b054575b922d6c4af95ffc ""
+  "sections/tecnologie.tex" 1782853463 3037 11ad07c3bdf24172e88152e6889f6749 ""
   (generated)
   "report.aux"
   "report.log"

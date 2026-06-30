@@ -34,7 +34,8 @@ export class SendSessionMessage {
 }
 \end{lstlisting}
 
-Questo approccio evidenzia la separazione tra orchestrazione applicativa e dettagli infrastrutturali: lo use case non conosce MongoDB o HTTP in modo diretto, ma utilizza porte astratte.
+Questo approccio evidenzia la separazione tra orchestrazione applicativa e dettagli infrastrutturali: lo use case non conosce MongoDB o HTTP in modo diretto, ma utilizza porte astratte.\ 
+
 Allo stesso modo, di seguito viene mostrato il repository pattern: prima l'interfaccia di dominio, poi l'adapter Mongo concreto.
 
 \begin{lstlisting}[language=JavaScript,caption={Repository port e adapter Mongo per il dominio chat}]
@@ -139,8 +140,7 @@ removeNotificationPushListener = notificationSocket.onPush((payload) => {
 Questo flusso elimina polling esplicito lato pagina e mantiene coerenti interfaccia, badge e stato globale quando arrivano eventi dal backend.
 
 \subsection{Core CAD: Step 4 e guida alla scelta del ripiano successivo}
-
-In questa sezione è importante mostrare la logica dietro lo Step 4 del configuratore CAD. 
+ 
 Lo Step 4 (design) e' il cuore del progetto: per ogni colonna il backend calcola tutte le altezze candidate (prendendole dal catalogo) per il prossimo pezzo e restituisce una lista completa di opzioni con esito \texttt{allowed=true/false} e motivo del blocco.
 In questo modo il frontend non "indovina" i vincoli, ma mostra scelte guidate e trasparenti.
 
