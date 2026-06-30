@@ -236,7 +236,72 @@ La navigazione applica guardie di route coerenti con ruoli e tipo utente. In par
 
 \subsection{Mockup e prototipazione}
 
-Da disegnare
+Il frontend è stato progettato per garantire una user experience coerente con i requisiti di progetto, facendo in modo che sia utilizzabile ed esteticamente accattivante (sia su desktop che su mobile).
+Di seguito sono riportati i mock up core delle principali viste applicative, con indicazione di layout, componenti e flusso operativo.
+I mockup fanno riferimento alle route effettivamente presenti nel router della SPA:
+\texttt{/configurations}, \texttt{/cad}, \texttt{/catalog}, \texttt{/admin/orders}, \texttt{/admin/reports}.
+
+Tutte le viste sono state progettate con layout condiviso (header + area contenuto), coerenza dei componenti
+(card, filtri, CTA, tabella/grafico) e priorita' alla leggibilita' del flusso operativo.
+
+\subsubsection{Mockup vista Configurazioni - \texttt{/configurations}}
+
+Obiettivo è di fornire una dashboard sintetica delle configurazioni create o in draft con la possibilità di creare nuove configurazioni.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.44]{configurazioni.png}
+\caption{Vista Configurazioni}
+\label{fig:configurazioni}
+\end{figure}
+
+\subsubsection{Mockup vista Configuratore CAD - \texttt{/cad}}
+
+Obiettivo è di creare una vista che guidi l'utente in un workflow a step (ambiente, categoria, colonne, design, finalizzazione),
+mostrando contemporaneamente controllo geometrico e distinta base. L'utente può fare solo azioni che portano ad una soluzione valida.
+
+Questa vista è quella che differisce di più tra versione desktop e mobile, per via della complessità del layout CAD. Di seguito sono riportate entrambe le versioni.
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.44]{Configuratore-desktop.png}
+\caption{Vista Configuratore CAD - Desktop}
+\label{fig:configuratore-cad-desktop}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.44]{Configuratore-mobile.png}
+\caption{Vista Configuratore CAD - Mobile}
+\label{fig:configuratore-cad-mobile}
+\end{figure}
+
+\subsubsection{Mockup vista Gestione Ordini Admin - \texttt{/admin/orders}}
+
+Obiettivo è di dare all'Admin la possibilità di monitorare ordini e avanzare lo stato operativo da \texttt{SUBMITTED}
+a \texttt{DONE} o \texttt{CANCELLED}, con feedback espliciti.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.44]{Ordini.png}
+\caption{Vista Gestione Ordini Admin}
+\label{fig:gestione-ordini-admin}
+\end{figure}
+
+
+\subsubsection{Mockup vista Report Admin - \texttt{/admin/reports}}
+
+Obiettivo è di dare all'Admin la possibilità di analizzare trend ordini su intervallo temporale, con KPI sintetici,
+grafico giornaliero e tabella di dettaglio.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.44]{Report.png}
+\caption{Vista Report Admin}
+\label{fig:report-admin}
+\end{figure}
+
+
+I mockup citati sono stati utilizzati come base per la realizzazione delle viste applicative, con particolare attenzione alla coerenza dei flussi e alla leggibilità dei contenuti.
 
 \subsection{Design delle interfacce utente}
 

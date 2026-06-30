@@ -33,21 +33,44 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {0.3.7}Design Pattern utilizzati}{12}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {0.3.8}Organizzazione del frontend}{13}{}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {0.3.9}Mockup e prototipazione}{14}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {0.3.10}Design delle interfacce utente}{14}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {0.3.11}Considerazioni finali di progetto}{14}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {0.4}Tecnologie}{15}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {0.4.1}Docker}{15}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {0.4.2}WebSocket}{16}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {0.4.3}Redis}{16}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {0.5}Codice}{17}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {0.5.1}Backend}{17}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {0.5.2}Frontend}{18}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {0.5.3}Considerazioni finali}{20}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {0.6}Deployment}{21}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {0.6.1}Servizi in compose}{21}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {0.6.2}Avvio locale}{21}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {0.7}Conclusioni}{22}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {0.7.1}Risultati raggiunti}{22}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {0.7.2}Limiti attuali}{22}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {0.7.3}Sviluppi futuri}{22}{}\protected@file@percent }
-\gdef \@abspage@last{24}
+\@writefile{toc}{\contentsline {subsubsection}{Mockup vista Configurazioni - \texttt  {/configurations}}{14}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Vista Configurazioni}}{14}{}\protected@file@percent }
+\newlabel{fig:configurazioni}{{1}{14}{}{figure.0.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Mockup vista Configuratore CAD - \texttt  {/cad}}{14}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Vista Configuratore CAD - Desktop}}{15}{}\protected@file@percent }
+\newlabel{fig:configuratore-cad-desktop}{{2}{15}{}{figure.0.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Mockup vista Gestione Ordini Admin - \texttt  {/admin/orders}}{15}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Mockup vista Report Admin - \texttt  {/admin/reports}}{15}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Vista Configuratore CAD - Mobile}}{16}{}\protected@file@percent }
+\newlabel{fig:configuratore-cad-mobile}{{3}{16}{}{figure.0.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {0.3.10}Design delle interfacce utente}{16}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Vista Gestione Ordini Admin}}{17}{}\protected@file@percent }
+\newlabel{fig:gestione-ordini-admin}{{4}{17}{}{figure.0.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {0.3.11}Considerazioni finali di progetto}{17}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Vista Report Admin}}{18}{}\protected@file@percent }
+\newlabel{fig:report-admin}{{5}{18}{}{figure.0.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {0.4}Tecnologie}{18}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {0.4.1}Docker}{19}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {0.4.2}WebSocket}{19}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {0.4.3}Redis}{19}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {0.5}Codice}{20}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {0.5.1}Backend}{20}{}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {1}Use case SendSessionMessage nel chatbotService}{20}{}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2}Repository port e adapter Mongo per il dominio chat}{21}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {0.5.2}Frontend}{21}{}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {3}Gestione login ed error mapping in AuthView}{21}{}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {4}Rendering messaggio di errore nel template della vista di accesso}{22}{}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {5}Connessione socket e listener push nel servizio notifiche realtime}{22}{}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {6}Sottoscrizione push in App.vue con aggiornamento store e badge}{23}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {0.5.3}Core CAD: Step 4 e guida alla scelta del ripiano successivo}{23}{}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {7}Backend CAD: calcolo opzioni next shelf con validazione e reason code}{23}{}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {8}Frontend CAD Step 4: select guidata con opzioni disabilitate e motivazione}{24}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {0.5.4}Considerazioni finali}{25}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {0.6}Deployment}{26}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {0.6.1}Servizi in compose}{26}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {0.6.2}Avvio locale}{26}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {0.7}Conclusioni}{27}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {0.7.1}Risultati raggiunti}{27}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {0.7.2}Limiti attuali}{27}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {0.7.3}Sviluppi futuri}{27}{}\protected@file@percent }
+\gdef \@abspage@last{29}

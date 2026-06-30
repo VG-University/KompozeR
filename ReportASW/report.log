@@ -1,10 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.3.2)  27 JUN 2026 23:33
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.2) (preloaded format=pdflatex 2026.3.2)  30 JUN 2026 14:27
 entering extended mode
  restricted \write18 enabled.
- file:line:error style messages enabled.
  %&-line parsing enabled.
-**c:/Users/giann/Documents/GitHub/KompozeR/ReportASW/report.tex
-(c:/Users/giann/Documents/GitHub/KompozeR/ReportASW/report.tex
+**./report.tex
+(report.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
 (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/base\report.cls
@@ -24,436 +23,530 @@ File: size10.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
 \abovecaptionskip=\skip49
 \belowcaptionskip=\skip50
 \bibindent=\dimen148
-) (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/base\inputenc.sty
+)
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/base\inputenc.sty
 Package: inputenc 2024/02/08 v1.3d Input encoding file
 \inpenc@prehook=\toks17
 \inpenc@posthook=\toks18
-) (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/natbib\natbib.sty
+)
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/base\fontenc.sty
+Package: fontenc 2025/07/18 v2.1d Standard LaTeX package
+)
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/xcolor\xcolor.sty
+Package: xcolor 2024/09/29 v3.02 LaTeX color extensions (UK)
+
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 274.
+
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
+File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
+)
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.ltx)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1349.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1353.
+Package xcolor Info: Model `RGB' extended on input line 1365.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1367.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1370.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1371.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1372.
+) (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings.sty
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks19
+)
+\lst@mode=\count284
+\lst@gtempboxa=\box53
+\lst@token=\toks20
+\lst@length=\count285
+\lst@currlwidth=\dimen149
+\lst@column=\count286
+\lst@pos=\count287
+\lst@lostspace=\dimen150
+\lst@width=\dimen151
+\lst@newlines=\count288
+\lst@lineno=\count289
+\lst@maxwidth=\dimen152
+
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstpatch.sty
+File: lstpatch.sty 2025/11/14 1.11b (Carsten Heinz)
+)
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstmisc.sty
+File: lstmisc.sty 2025/11/14 1.11b (Carsten Heinz)
+\c@lstnumber=\count290
+\lst@skipnumbers=\count291
+\lst@framebox=\box54
+)
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/listings\listings.cfg
+File: listings.cfg 2025/11/14 1.11b listings configuration
+))
+Package: listings 2025/11/14 1.11b (Carsten Heinz)
+==> First Aid for listings.sty no longer applied!
+    Expected:
+        2024/09/23 1.10c (Carsten Heinz)
+    but found:
+        2025/11/14 1.11b (Carsten Heinz)
+    so I'm assuming it got fixed.
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/natbib\natbib.sty
 Package: natbib 2010/09/13 8.31b (PWD, AO)
 \bibhang=\skip51
 \bibsep=\skip52
 LaTeX Info: Redefining \cite on input line 694.
-\c@NAT@ctr=\count284
-) (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
+\c@NAT@ctr=\count292
+)
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
 Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
- (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\keyval.sty
-Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
-\KV@toks@=\toks19
-) (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
 Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
- (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
+
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty
 Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
-) (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.cfg
+)
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.c
+fg
 File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: pdftex.def on input line 106.
- (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
-File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
-))
-\Gin@req@height=\dimen149
-\Gin@req@width=\dimen150
-) (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdftex.def
+)
+\Gin@req@height=\dimen153
+\Gin@req@width=\dimen154
+)
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdf
+tex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count285
+\l__color_backend_stack_int=\count293
 ) (report.aux)
 \openout1 = `report.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 16.
-LaTeX Font Info:    ... okay on input line 16.
- (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mkii
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 69.
+LaTeX Font Info:    ... okay on input line 69.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 69.
+LaTeX Font Info:    ... okay on input line 69.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 69.
+LaTeX Font Info:    ... okay on input line 69.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 69.
+LaTeX Font Info:    ... okay on input line 69.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 69.
+LaTeX Font Info:    ... okay on input line 69.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 69.
+LaTeX Font Info:    ... okay on input line 69.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 69.
+LaTeX Font Info:    ... okay on input line 69.
+
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mk
+ii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count286
-\scratchdimen=\dimen151
-\scratchbox=\box53
-\nofMPsegments=\count287
-\nofMParguments=\count288
-\everyMPshowfont=\toks20
-\MPscratchCnt=\count289
-\MPscratchDim=\dimen152
-\MPnumerator=\count290
-\makeMPintoPDFobject=\count291
-\everyMPtoPDFconversion=\toks21
-) (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-base.sty
+\scratchcounter=\count294
+\scratchdimen=\dimen155
+\scratchbox=\box55
+\nofMPsegments=\count295
+\nofMParguments=\count296
+\everyMPshowfont=\toks21
+\MPscratchCnt=\count297
+\MPscratchDim=\dimen156
+\MPnumerator=\count298
+\makeMPintoPDFobject=\count299
+\everyMPtoPDFconversion=\toks22
+)
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-b
+ase.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
-Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
- (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.cfg
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.c
+fg
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
+\c@lstlisting=\count300
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <12> on input line 18.
+(Font)              <12> on input line 71.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 18.
+(Font)              <8> on input line 71.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 18.
-LaTeX Font Info:    Trying to load font information for OMS+cmr on input line 18.
- (C:\Users\giann\AppData\Local\Programs\MiKTeX\tex/latex/base\omscmr.fd
-File: omscmr.fd 2024/11/19 v2.5n Standard LaTeX font definitions
-)
-LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 18.
+(Font)              <6> on input line 71.
  [1
 
-{C:/Users/giann/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}] (sections/introduzione.tex [1]) (sections/requisiti.tex
+{C:/Users/giann/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+(sections/introduzione.tex [1]) (sections/requisiti.tex
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 16.
 
 Underfull \hbox (badness 10000) in paragraph at lines 18--18
-[]\OT1/cmr/bx/n/8 Obiettivi prin-ci-
+[]\T1/cmr/bx/n/8 Obiettivi prin-ci-
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 20--20
-[]\OT1/cmr/m/n/8 Utente che
+[]\T1/cmr/m/n/8 Utente che
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 20--20
-\OT1/cmr/m/n/8 desidera pro-
+\T1/cmr/m/n/8 desidera pro-
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 20--20
-\OT1/cmr/m/n/8 gettare e ac-
+\T1/cmr/m/n/8 gettare e ac-
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 20--20
-\OT1/cmr/m/n/8 quistare una
+\T1/cmr/m/n/8 quistare una
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 20--20
-\OT1/cmr/m/n/8 scaf-falatura per-
+\T1/cmr/m/n/8 scaf-falatura per-
  []
 
 
-Underfull \hbox (badness 2376) in paragraph at lines 20--20
-[]\OT1/cmr/m/n/8 Configurare rap-i-da-
+Underfull \hbox (badness 2418) in paragraph at lines 20--20
+[]\T1/cmr/m/n/8 Configurare rap-i-da-
  []
 
 
-Underfull \hbox (badness 6927) in paragraph at lines 20--20
-\OT1/cmr/m/n/8 mente il prodotto
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 20--20
-\OT1/cmr/m/n/8 cor-retto, capire
- []
-
-
-Underfull \hbox (badness 6125) in paragraph at lines 20--20
-\OT1/cmr/m/n/8 prezzo e com-pat-i-
+Underfull \hbox (badness 6978) in paragraph at lines 20--20
+\T1/cmr/m/n/8 mente il prodotto
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 20--20
-\OT1/cmr/m/n/8 bilita', com-pletare
+\T1/cmr/m/n/8 cor-retto, capire
+ []
+
+
+Underfull \hbox (badness 6157) in paragraph at lines 20--20
+\T1/cmr/m/n/8 prezzo e com-pat-i-
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 20--20
-\OT1/cmr/m/n/8 l'acquisto senza
+\T1/cmr/m/n/8 bilita', com-pletare
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 20--20
+\T1/cmr/m/n/8 l'acquisto senza
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 20--21
-[]\OT1/cmr/m/n/8 Configuratore
+[]\T1/cmr/m/n/8 Configuratore
  []
 
 
-Underfull \hbox (badness 3780) in paragraph at lines 20--21
-\OT1/cmr/m/n/8 chiaro, an-teprima
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 22--22
-[]\OT1/cmr/m/n/8 Cliente reg-is-
+Underfull \hbox (badness 3826) in paragraph at lines 20--21
+\T1/cmr/m/n/8 chiaro, an-teprima
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 22--22
-\OT1/cmr/m/n/8 una con-fig-u-
+[]\T1/cmr/m/n/8 Cliente reg-is-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 22--22
+\T1/cmr/m/n/8 una con-fig-u-
+ []
+
+
+Underfull \hbox (badness 1005) in paragraph at lines 22--22
+[]\T1/cmr/m/n/8 Riordinare o mod-i-
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 22--23
-[]\OT1/cmr/m/n/8 Storico con-fig-u-
+[]\T1/cmr/m/n/8 Storico con-fig-u-
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 22--23
-\OT1/cmr/m/n/8 razioni, ac-cesso
+\T1/cmr/m/n/8 razioni, ac-cesso
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 24--24
-[]\OT1/cmr/m/n/8 Amministratore
+[]\T1/cmr/m/n/8 Amministratore
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 24--24
-[]\OT1/cmr/m/n/8 Operatore che
+[]\T1/cmr/m/n/8 Operatore che
  []
 
 
-Underfull \hbox (badness 3579) in paragraph at lines 24--24
-\OT1/cmr/m/n/8 gestisce prodotti,
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 24--24
-\OT1/cmr/m/n/8 com-po-nenti,
+Underfull \hbox (badness 3612) in paragraph at lines 24--24
+\T1/cmr/m/n/8 gestisce prodotti,
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 24--24
-\OT1/cmr/m/n/8 disponi-bilita' e
+\T1/cmr/m/n/8 com-po-nenti,
  []
 
 
-Underfull \hbox (badness 2409) in paragraph at lines 24--24
-[]\OT1/cmr/m/n/8 Mantenere co-er-ente
+Underfull \hbox (badness 10000) in paragraph at lines 24--24
+\T1/cmr/m/n/8 disponi-bilita' e
  []
 
 
-Underfull \hbox (badness 3942) in paragraph at lines 24--24
-\OT1/cmr/m/n/8 il cat-a-l-ogo e ren-
+Underfull \hbox (badness 2443) in paragraph at lines 24--24
+[]\T1/cmr/m/n/8 Mantenere co-er-ente
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 24--25
-[]\OT1/cmr/m/n/8 Interfacce di
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 24--25
-\OT1/cmr/m/n/8 ges-tione chiare,
+Underfull \hbox (badness 3965) in paragraph at lines 24--24
+\T1/cmr/m/n/8 il cat-a-l-ogo e ren-
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 24--25
-\OT1/cmr/m/n/8 ag-gior-na-menti
+[]\T1/cmr/m/n/8 Interfacce di
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 24--25
-\OT1/cmr/m/n/8 ra-pidi, con-trollo
+\T1/cmr/m/n/8 ges-tione chiare,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 24--25
+\T1/cmr/m/n/8 ag-gior-na-menti
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 24--25
+\T1/cmr/m/n/8 ra-pidi, con-trollo
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 39--39
-[]\OT1/cmr/m/n/8 Committente del
+[]\T1/cmr/m/n/8 Committente del
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 39--40
-[]\OT1/cmr/m/n/8 Aumentare ven-dite,
+[]\T1/cmr/m/n/8 Aumentare ven-dite,
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 41--42
-[]\OT1/cmr/m/n/8 Requisiti chiari, com-
+[]\T1/cmr/m/n/8 Requisiti chiari, com-
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 41--42
-\OT1/cmr/m/n/8 por-ta-mento ver-i-fi-ca-bile,
+\T1/cmr/m/n/8 por-ta-mento ver-i-fi-ca-bile,
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 43--43
-[]\OT1/cmr/m/n/8 Supporta utenti con
+[]\T1/cmr/m/n/8 Supporta utenti con
  []
 
 
-Underfull \hbox (badness 4416) in paragraph at lines 45--45
-[]\OT1/cmr/m/n/8 Responsabile busi-
+Underfull \hbox (badness 4467) in paragraph at lines 45--45
+[]\T1/cmr/m/n/8 Responsabile busi-
  []
 
 [2] [3] [4] [5] [6] [7]) (sections/design.tex
-Overfull \hbox (1.91733pt too wide) in paragraph at lines 3--4
-\OT1/cmr/m/n/10 con-text, servizi, con-tratti ap-plica-tivi e per-sis-tenza siano stati allineati in un'unica
+Overfull \hbox (1.83197pt too wide) in paragraph at lines 3--4
+\T1/cmr/m/n/10 con-text, servizi, con-tratti ap-plica-tivi e per-sis-tenza sian
+o stati allineati in un'unica
  []
 
 [8]
-Overfull \hbox (59.86105pt too wide) in paragraph at lines 48--49
-[]\OT1/cmr/m/n/10 Pubblica eventi su Re-dis (\OT1/cmtt/m/n/10 catalog:events\OT1/cmr/m/n/10 ) quando cam-biano prezzo/disponibilita. 
+Overfull \hbox (59.77377pt too wide) in paragraph at lines 48--49
+[]\T1/cmr/m/n/10 Pubblica eventi su Re-dis (\T1/cmtt/m/n/10 catalog:events\T1/c
+mr/m/n/10 ) quando cam-biano prezzo/disponibilita. 
  []
 
 
-Overfull \hbox (67.10968pt too wide) in paragraph at lines 74--75
-[]\OT1/cmr/m/n/10 Possiede: no-ti-fiche (\OT1/cmtt/m/n/10 notifications\OT1/cmr/m/n/10 ), sot-to-scrizioni (\OT1/cmtt/m/n/10 notificationSubscriptions\OT1/cmr/m/n/10 ),
+Overfull \hbox (67.022pt too wide) in paragraph at lines 74--75
+[]\T1/cmr/m/n/10 Possiede: no-ti-fiche (\T1/cmtt/m/n/10 notifications\T1/cmr/m/
+n/10 ), sot-to-scrizioni (\T1/cmtt/m/n/10 notificationSubscriptions\T1/cmr/m/n/
+10 ),
  []
 
 
-Overfull \hbox (109.52847pt too wide) in paragraph at lines 75--76
-[]\OT1/cmr/m/n/10 Consuma eventi cat-a-l-ogo da Re-dis e ri-solve im-patti su con-testi CAD/CART/SUBSCRIPTION. 
+Overfull \hbox (109.42831pt too wide) in paragraph at lines 75--76
+[]\T1/cmr/m/n/10 Consuma eventi cat-a-l-ogo da Re-dis e ri-solve im-patti su co
+n-testi CAD/CART/SUBSCRIPTION. 
  []
 
 [9]
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 95.
 
-Overfull \hbox (18.93022pt too wide) in paragraph at lines 97--98
-[]\OT1/cmr/m/n/10 API Gate-way $\OMS/cmsy/m/n/10 !$ \OT1/cmr/m/n/10 Cat-a-log/CAD/Cart/Order/Notification/Chatbot/Reporting:
+Overfull \hbox (18.8492pt too wide) in paragraph at lines 97--98
+[]\T1/cmr/m/n/10 API Gate-way $\OMS/cmsy/m/n/10 !$ \T1/cmr/m/n/10 Cat-a-log/CAD
+/Cart/Order/Notification/Chatbot/Reporting:
  []
 
 
-Overfull \hbox (82.89069pt too wide) in paragraph at lines 110--131
+Overfull \hbox (82.84448pt too wide) in paragraph at lines 110--131
  [][] 
  []
 
 [10]
-Overfull \hbox (16.58398pt too wide) in paragraph at lines 147--148
-[]\OT1/cmr/m/n/10 Le in-ter-azioni prin-ci-pali us-ano REST. Le fun-zion-alita' real-time us-ano Socket.IO: 
+Overfull \hbox (16.49872pt too wide) in paragraph at lines 147--148
+[]\T1/cmr/m/n/10 Le in-ter-azioni prin-ci-pali us-ano REST. Le fun-zion-alita' 
+real-time us-ano Socket.IO: 
  []
 
-[11] [12] [13] [14]) (sections/tecnologie.tex
-Overfull \hbox (51.10077pt too wide) in paragraph at lines 26--28
-\OT1/cmr/m/n/10 componente. Nel pro-getto Kom-pozeR l'applicazione viene avvi-ata tramite \OT1/cmtt/m/n/10 docker-compose\OT1/cmr/m/n/10 ,
+[11] [12] [13]
+LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <10> not available
+(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 247.
+<images/configurazioni.png, id=57, 1028.34187pt x 578.16pt>
+File: images/configurazioni.png Graphic file (type png)
+<use images/configurazioni.png>
+Package pdftex.def Info: images/configurazioni.png  used on input line 253.
+(pdftex.def)             Requested size: 452.47183pt x 254.39117pt.
+
+Overfull \hbox (107.47183pt too wide) in paragraph at lines 253--254
+ [][] 
  []
 
+[14 <./images/configurazioni.png (PNG copy)>]
+<images/Configuratore-desktop.png, id=61, 1028.34187pt x 578.16pt>
+File: images/Configuratore-desktop.png Graphic file (type png)
+<use images/Configuratore-desktop.png>
+Package pdftex.def Info: images/Configuratore-desktop.png  used on input line 2
+66.
+(pdftex.def)             Requested size: 452.47183pt x 254.39117pt.
 
-Overfull \hbox (8.1781pt too wide) in paragraph at lines 33--34
-[]\OT1/cmr/bx/n/10 backend\OT1/cmr/m/n/10 : \OT1/cmtt/m/n/10 auth-service\OT1/cmr/m/n/10 , \OT1/cmtt/m/n/10 catalog-service\OT1/cmr/m/n/10 , \OT1/cmtt/m/n/10 cad-service\OT1/cmr/m/n/10 , \OT1/cmtt/m/n/10 cart-service\OT1/cmr/m/n/10 ,
+Overfull \hbox (107.47183pt too wide) in paragraph at lines 266--267
+ [][] 
  []
 
+<images/Configuratore-mobile.png, id=62, 1028.34187pt x 578.16pt>
+File: images/Configuratore-mobile.png Graphic file (type png)
+<use images/Configuratore-mobile.png>
+Package pdftex.def Info: images/Configuratore-mobile.png  used on input line 27
+3.
+(pdftex.def)             Requested size: 452.47183pt x 254.39117pt.
 
-Overfull \hbox (39.69153pt too wide) in paragraph at lines 33--34
-\OT1/cmtt/m/n/10 order-service\OT1/cmr/m/n/10 , \OT1/cmtt/m/n/10 notification-service\OT1/cmr/m/n/10 , \OT1/cmtt/m/n/10 chatbot-service\OT1/cmr/m/n/10 , \OT1/cmtt/m/n/10 reporting-service\OT1/cmr/m/n/10 ,
- []
-
-[15] [16]) (sections/codice.tex
-Overfull \hbox (38.85992pt too wide) in paragraph at lines 7--8
-\OT1/cmr/m/n/10 Nel lis-tato seguente e' mostrato uno use case del \OT1/cmtt/m/n/10 chatbotService \OT1/cmr/m/n/10 (\OT1/cmtt/m/n/10 SendSessionMessage\OT1/cmr/m/n/10 )
- []
-
-
-Overfull \hbox (90.7462pt too wide) in paragraph at lines 35--35
-[] \OT1/cmtt/m/n/10 async execute(input: SendSessionMessageInput): Promise<SendSessionMessageOutput> {[] 
- []
-
-
-Overfull \hbox (59.24648pt too wide) in paragraph at lines 35--35
-[]  \OT1/cmtt/m/n/10 if (!input.userId?.trim()) throw new ValidationError('userId is required');[] 
- []
-
-
-Overfull \hbox (90.7462pt too wide) in paragraph at lines 35--35
-[]  \OT1/cmtt/m/n/10 if (!input.sessionId?.trim()) throw new ValidationError('sessionId is required');[] 
- []
-
-
-Overfull \hbox (69.74638pt too wide) in paragraph at lines 35--35
-[]  \OT1/cmtt/m/n/10 if (!input.content?.trim()) throw new ValidationError('content is required');[] 
+Overfull \hbox (107.47183pt too wide) in paragraph at lines 273--274
+ [][] 
  []
 
 
-Overfull \hbox (6.74693pt too wide) in paragraph at lines 35--35
-[]  \OT1/cmtt/m/n/10 const session = await this.repo.findSessionById(input.sessionId);[] 
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+<images/Ordini.png, id=63, 1028.34187pt x 578.16pt>
+File: images/Ordini.png Graphic file (type png)
+<use images/Ordini.png>
+Package pdftex.def Info: images/Ordini.png  used on input line 285.
+(pdftex.def)             Requested size: 452.47183pt x 254.39117pt.
+
+Overfull \hbox (107.47183pt too wide) in paragraph at lines 285--286
+ [][] 
  []
 
 
-Overfull \hbox (17.24684pt too wide) in paragraph at lines 35--35
-[]  \OT1/cmtt/m/n/10 if (session.userId !== input.userId) throw new ForbiddenError(...);[] 
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+<images/Report.png, id=64, 1028.34187pt x 578.16pt>
+File: images/Report.png Graphic file (type png)
+<use images/Report.png>
+Package pdftex.def Info: images/Report.png  used on input line 298.
+(pdftex.def)             Requested size: 452.47183pt x 254.39117pt.
+
+Overfull \hbox (107.47183pt too wide) in paragraph at lines 298--299
+ [][] 
  []
 
 
-Overfull \hbox (80.24629pt too wide) in paragraph at lines 35--35
-[]  \OT1/cmtt/m/n/10 if (session.status === 'CLOSED') throw new SessionClosedError(input.sessionId);[] 
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[15 <./images/Configuratore-desktop.png (PNG copy)>] [16 <./images/Configurator
+e-mobile.png (PNG copy)>] [17 <./images/Ordini.png (PNG copy)>])
+(sections/tecnologie.tex [18 <./images/Report.png (PNG copy)>]
+Overfull \hbox (50.72635pt too wide) in paragraph at lines 26--28
+\T1/cmr/m/n/10 componente. Nel pro-getto Kom-pozeR l'applicazione viene avvi-at
+a tramite \T1/cmtt/m/n/10 docker-compose\T1/cmr/m/n/10 ,
  []
 
 
-Overfull \hbox (174.74547pt too wide) in paragraph at lines 35--35
-[]  \OT1/cmtt/m/n/10 const answer = await this.generateAnswer(input.content, session.userId, session.configurationId);[] 
+Overfull \hbox (8.10046pt too wide) in paragraph at lines 33--34
+[]\T1/cmr/bx/n/10 backend\T1/cmr/m/n/10 : \T1/cmtt/m/n/10 auth-service\T1/cmr/m
+/n/10 , \T1/cmtt/m/n/10 catalog-service\T1/cmr/m/n/10 , \T1/cmtt/m/n/10 cad-ser
+vice\T1/cmr/m/n/10 , \T1/cmtt/m/n/10 cart-service\T1/cmr/m/n/10 ,
  []
 
 
-Overfull \hbox (27.74675pt too wide) in paragraph at lines 35--35
-[]  \OT1/cmtt/m/n/10 await this.repo.updateSession({ ...session, updatedAt: new Date() });[] 
+Overfull \hbox (39.60666pt too wide) in paragraph at lines 33--34
+\T1/cmtt/m/n/10 order-service\T1/cmr/m/n/10 , \T1/cmtt/m/n/10 notification-serv
+ice\T1/cmr/m/n/10 , \T1/cmtt/m/n/10 chatbot-service\T1/cmr/m/n/10 , \T1/cmtt/m/
+n/10 reporting-service\T1/cmr/m/n/10 ,
+ []
+
+[19]) (sections/codice.tex
+Overfull \hbox (38.7674pt too wide) in paragraph at lines 7--8
+\T1/cmr/m/n/10 Nel lis-tato seguente e' mostrato uno use case del \T1/cmtt/m/n/
+10 chatbotService \T1/cmr/m/n/10 (\T1/cmtt/m/n/10 SendSessionMessage\T1/cmr/m/n
+/10 )
+ []
+
+LaTeX Font Info:    Font shape `T1/cmtt/bx/n' in size <9> not available
+(Font)              Font shape `T1/cmtt/m/n' tried instead on input line 10.
+[20] [21] [22] [23] [24] [25]) (sections/deployment.tex
+Overfull \hbox (50.1294pt too wide) in paragraph at lines 14--15
+[]\T1/cmr/m/n/10 L'interazione tra i com-po-nenti e' or-ches-trata au-to-mati-c
+a-mente tramite \T1/cmtt/m/n/10 docker-compose\T1/cmr/m/n/10 .
  []
 
 
-Overfull \hbox (48.74657pt too wide) in paragraph at lines 35--35
-[]  \OT1/cmtt/m/n/10 return { sessionId: input.sessionId, userMessage: ..., botMessage: ... };[] 
+Overfull \hbox (3.9487pt too wide) in paragraph at lines 34--35
+[]\T1/cmr/m/n/10 backend + in-fras-trut-tura: \T1/cmtt/m/n/10 docker compose -f
+ docker-compose.dev.yml
  []
 
-
-Overfull \hbox (11.99689pt too wide) in paragraph at lines 64--64
-[] \OT1/cmtt/m/n/10 listMessagesBySessionId(sessionId: string): Promise<ChatMessage[]>;[] 
+[26]) (sections/conclusioni.tex
+Overfull \hbox (6.35754pt too wide) in paragraph at lines 3--5
+\T1/cmr/m/n/10 KompozeR e' stato con-cepito come un'estensione evo-luta dell'e-
+commerce Kompo,
  []
 
-[17]
-Overfull \hbox (32.9967pt too wide) in paragraph at lines 64--64
-[] \OT1/cmtt/m/n/10 async findSessionById(sessionId: string): Promise<ChatSession | null> {[] 
- []
-
-
-Overfull \hbox (11.99689pt too wide) in paragraph at lines 94--94
-[] \OT1/cmtt/m/n/10 if (err.code === 'RESOURCE_NOT_FOUND') return 'Utente Non Trovato';[] 
- []
-
-[18]
-Overfull \hbox (22.4968pt too wide) in paragraph at lines 102--102
-[]\OT1/cmtt/m/n/10 <p v-if="error" class="auth-error" role="alert" aria-live="assertive">[] 
- []
-
-
-Overfull \hbox (38.24666pt too wide) in paragraph at lines 119--119
-[]\OT1/cmtt/m/n/10 onPush(handler: (payload: NotificationPushPayload) => void): () => void {[] 
- []
-
-
-Overfull \hbox (38.24666pt too wide) in paragraph at lines 135--135
-[]\OT1/cmtt/m/n/10 removeNotificationPushListener = notificationSocket.onPush((payload) => {[] 
- []
-
-[19] [20]) (sections/deployment.tex
-Overfull \hbox (50.22214pt too wide) in paragraph at lines 14--15
-[]\OT1/cmr/m/n/10 L'interazione tra i com-po-nenti e' or-ches-trata au-to-mati-ca-mente tramite \OT1/cmtt/m/n/10 docker-compose\OT1/cmr/m/n/10 .
- []
-
-
-Overfull \hbox (4.02621pt too wide) in paragraph at lines 34--35
-[]\OT1/cmr/m/n/10 backend + in-fras-trut-tura: \OT1/cmtt/m/n/10 docker compose -f docker-compose.dev.yml
- []
-
-[21]) (sections/conclusioni.tex
-Overfull \hbox (6.99951pt too wide) in paragraph at lines 3--5
-\OT1/cmr/m/n/10 KompozeR e' stato con-cepito come un'estensione evo-luta dell'e-commerce Kompo,
- []
-
-[22] [23]) (report.aux)
+[27] [28]) (report.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 1804 strings out of 467867
- 29690 string characters out of 5418335
- 446759 words of memory out of 5000000
- 30688 multiletter control sequences out of 15000+600000
- 632788 words of font info for 57 fonts, out of 8000000 for 9000
+ 4364 strings out of 467867
+ 63730 string characters out of 5418335
+ 692997 words of memory out of 5000000
+ 33220 multiletter control sequences out of 15000+600000
+ 639879 words of font info for 63 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,10n,65p,451b,326s stack positions out of 10000i,1000n,20000p,200000b,200000s
- <C:\Users\giann\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\tcrm1000.pk><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx10.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx8.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on report.pdf (24 pages, 197536 bytes).
+ 57i,10n,65p,402b,1720s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ <C:\Users\giann\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ectt
+0900.pk> <C:\Users\giann\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi60
+0\ecrm0500.pk> <C:\Users\giann\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec
+/dpi600\ectt1000.pk> <C:\Users\giann\AppData\Local\MiKTeX\fonts/pk/ljfour/jknap
+pen/ec/dpi600\tcrm1000.pk> <C:\Users\giann\AppData\Local\MiKTeX\fonts/pk/ljfour
+/jknappen/ec/dpi600\ecrm0800.pk> <C:\Users\giann\AppData\Local\MiKTeX\fonts/pk/
+ljfour/jknappen/ec/dpi600\ecbx0800.pk> <C:\Users\giann\AppData\Local\MiKTeX\fon
+ts/pk/ljfour/jknappen/ec/dpi600\ecbx1000.pk> <C:\Users\giann\AppData\Local\MiKT
+eX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\giann\AppData\Loca
+l\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1000.pk> <C:\Users\giann\AppDat
+a\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\giann\
+AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\
+giann\AppData\Local\MiKTeX\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1728.pk><C:/U
+sers/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.
+pfb><C:/Users/giann/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/l
+atxfont/lcircle1.pfb>
+Output written on report.pdf (29 pages, 1190668 bytes).
 PDF statistics:
- 129 PDF objects out of 1000 (max. 8388607)
+ 628 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 26 words of extra memory for PDF output out of 10000 (max. 10000000)
 

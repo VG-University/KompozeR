@@ -6,7 +6,7 @@ In questa sezione vengono riportati alcuni frammenti di codice rappresentativi d
 
 Nel listato seguente e' mostrato uno use case del \texttt{chatbotService} (\texttt{SendSessionMessage}) che valida l'input, verifica ownership/stato sessione, persiste i messaggi e genera una risposta contestuale usando repository e provider esterni.
 
-\begin{verbatim}
+\begin{lstlisting}[language=JavaScript,caption={Use case SendSessionMessage nel chatbotService}]
 export class SendSessionMessage {
 	constructor(
 		private readonly repo: ChatRepository,
@@ -32,12 +32,12 @@ export class SendSessionMessage {
 		return { sessionId: input.sessionId, userMessage: ..., botMessage: ... };
 	}
 }
-\end{verbatim}
+\end{lstlisting}
 
 Questo approccio evidenzia la separazione tra orchestrazione applicativa e dettagli infrastrutturali: lo use case non conosce MongoDB o HTTP in modo diretto, ma utilizza porte astratte.
 Allo stesso modo, di seguito viene mostrato il repository pattern: prima l'interfaccia di dominio, poi l'adapter Mongo concreto.
 
-\begin{verbatim}
+\begin{lstlisting}[language=JavaScript,caption={Repository port e adapter Mongo per il dominio chat}]
 export interface ChatRepository {
 	createSession(session: ChatSession): Promise<void>;
 	findSessionById(sessionId: string): Promise<ChatSession | null>;
@@ -61,7 +61,7 @@ export class MongoChatRepository implements ChatRepository {
 		await ChatMessageModel.create({ ... });
 	}
 }
-\end{verbatim}
+\end{lstlisting}
 
 La combinazione port+adapter permette di testare gli use cases con fake repository e di sostituire facilmente la tecnologia di persistenza senza modificare il dominio.
 
@@ -71,7 +71,7 @@ Per il frontend sono riportati due aspetti centrali: gestione errori di autentic
 
 Quando l'utente invia il form di login, il componente \texttt{AuthView} richiama lo store di autenticazione, mappa gli errori API in messaggi utente e gestisce la navigazione in caso di successo.
 
-\begin{verbatim}
+\begin{lstlisting}[language=JavaScript,caption={Gestione login ed error mapping in AuthView}]
 async function handleLogin(): Promise<void> {
 	error.value = '';
 	loading.value = true;
@@ -91,19 +91,19 @@ function mapLoginError(err: unknown): string {
 	if (err.code === 'INVALID_PASSWORD') return 'Password Errata';
 	return 'Invalid username or password';
 }
-\end{verbatim}
+\end{lstlisting}
 
 Nel template la gestione errore e' visualizzata in modo diretto con binding reattivo:
 
-\begin{verbatim}
+\begin{lstlisting}[language=HTML,caption={Rendering messaggio di errore nel template della vista di accesso}]
 <p v-if="error" class="auth-error" role="alert" aria-live="assertive">
 	{{ error }}
 </p>
-\end{verbatim}
+\end{lstlisting}
 
 Per le notifiche realtime, il servizio websocket apre la connessione solo quando token e identita' sono validi e registra listener per push e riconnessione.
 
-\begin{verbatim}
+\begin{lstlisting}[language=JavaScript,caption={Connessione socket e listener push nel servizio notifiche realtime}]
 this.socket = io('/', {
 	path: '/api/ws/notifications/socket.io',
 	transports: ['websocket', 'polling'],
@@ -116,11 +116,13 @@ onPush(handler: (payload: NotificationPushPayload) => void): () => void {
 	this.socket?.on('notification:push', handler);
 	return () => this.socket?.off('notification:push', handler);
 }
-\end{verbatim}
+\end{lstlisting}
+
+\newpage
 
 Nel componente root (\texttt{App.vue}) il client si sottoscrive ai push e aggiorna store/badge/toast in tempo reale:
 
-\begin{verbatim}
+\begin{lstlisting}[language=JavaScript,caption={Sottoscrizione push in App.vue con aggiornamento store e badge}]
 removeNotificationPushListener = notificationSocket.onPush((payload) => {
 	const pushed = payload.data?.notification;
 	if (!pushed) return;
@@ -132,9 +134,76 @@ removeNotificationPushListener = notificationSocket.onPush((payload) => {
 		void cart.refreshItemCount();
 	}
 });
-\end{verbatim}
+\end{lstlisting}
 
 Questo flusso elimina polling esplicito lato pagina e mantiene coerenti interfaccia, badge e stato globale quando arrivano eventi dal backend.
+
+\subsection{Core CAD: Step 4 e guida alla scelta del ripiano successivo}
+
+In questa sezione è importante mostrare la logica dietro lo Step 4 del configuratore CAD. 
+Lo Step 4 (design) e' il cuore del progetto: per ogni colonna il backend calcola tutte le altezze candidate (prendendole dal catalogo) per il prossimo pezzo e restituisce una lista completa di opzioni con esito \texttt{allowed=true/false} e motivo del blocco.
+In questo modo il frontend non "indovina" i vincoli, ma mostra scelte guidate e trasparenti.
+
+\begin{lstlisting}[language=JavaScript,caption={Backend CAD: calcolo opzioni next shelf con validazione e reason code}]
+const options: NextOptionDto[] = candidates.map((heightMm) => {
+	if (heightMm <= 0 || !Number.isFinite(heightMm)) {
+		return {
+			heightMm,
+			allowed: false,
+			reasonCode: 'INVALID_GAP',
+			reason: 'Gap height must be positive',
+		};
+	}
+
+	const validation = validateColumnCandidate(
+		columnLevels,
+		targetColumnIndex,
+		heightMm,
+		{
+			footHeightsMm: firstLevelHeightsMm,
+			uprightHeightsMm: rules.uprightHeightsMm,
+			terminalHeightsMm: rules.terminalHeightsMm,
+			maxHeightMm: environment.maxHeightMm,
+		},
+	);
+
+	if (!validation.valid) {
+		return {
+			heightMm,
+			allowed: false,
+			reasonCode: validation.reasonCode ?? 'SPINE_CONFLICT',
+			reason: validation.reason ?? 'This choice violates shared-spine constraints',
+		};
+	}
+
+	return { heightMm, allowed: true };
+});
+\end{lstlisting}
+
+Lato UI, la select mostra sia le opzioni valide sia quelle non valide, includendo il \texttt{reasonCode}; se nessuna opzione e' valida viene mostrato un riepilogo dei motivi di blocco.
+
+\begin{lstlisting}[language=HTML,caption={Frontend CAD Step 4: select guidata con opzioni disabilitate e motivazione}]
+<select
+	class="field__input"
+	:disabled="!canEditDesign || designLoading"
+	v-model.number="selectedGapByColumn[column.index]"
+>
+	<option
+		v-for="option in effectiveOptions(column.index)"
+		:key="`opt-${column.index}-${option.heightMm}`"
+		:value="option.allowed ? option.heightMm : null"
+		:disabled="!option.allowed"
+	>
+		{{ option.heightMm }}mm{{ option.allowed ? '' : ` - ${option.reasonCode || 'NON_CONSENTITA'}` }}
+	</option>
+</select>
+
+<p class="mini blocked-reasons" v-else-if="!hasAllowedOption(column.index)">
+	Nessuna scelta valida: {{ blockedReasonsSummary(column.index) }}
+</p>
+\end{lstlisting}
+
+Questa strategia impedisce all'utente di fare scelte non valide, riduce errori e frustrazione, e rende trasparente il motivo per cui alcune opzioni sono bloccate.
 
 \subsection{Considerazioni finali}
 
